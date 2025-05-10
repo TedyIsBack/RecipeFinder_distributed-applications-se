@@ -16,9 +16,9 @@ namespace RecipeFinderAPI.Migrations
                 columns: table => new
                 {
                     CategoryId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ShortCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ShortCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsFeatured = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -32,7 +32,7 @@ namespace RecipeFinderAPI.Migrations
                 columns: table => new
                 {
                     IngredientId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Calories = table.Column<double>(type: "float", nullable: false),
                     Unit = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsAllergen = table.Column<bool>(type: "bit", nullable: false),
@@ -44,31 +44,14 @@ namespace RecipeFinderAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Recipes",
-                columns: table => new
-                {
-                    RecipeId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PreparationTime = table.Column<int>(type: "int", nullable: false),
-                    Calories = table.Column<double>(type: "float", nullable: false),
-                    Difficulty = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsVegan = table.Column<bool>(type: "bit", nullable: false),
-                    IsVegetarian = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Recipes", x => x.RecipeId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -78,28 +61,53 @@ namespace RecipeFinderAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RecipeCategories",
+                name: "Recipes",
                 columns: table => new
                 {
-                    RecipeCategoryId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     RecipeId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CategoryId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PreparationTime = table.Column<int>(type: "int", nullable: false),
+                    Calories = table.Column<double>(type: "float", nullable: false),
+                    Difficulty = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsVegan = table.Column<bool>(type: "bit", nullable: false),
+                    IsVegetarian = table.Column<bool>(type: "bit", nullable: false),
+                    CategoryId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RecipeCategories", x => x.RecipeCategoryId);
+                    table.PrimaryKey("PK_Recipes", x => x.RecipeId);
                     table.ForeignKey(
-                        name: "FK_RecipeCategories_Category_CategoryId",
+                        name: "FK_Recipes_Category_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Category",
                         principalColumn: "CategoryId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FavoriteRecipes",
+                columns: table => new
+                {
+                    FavoriteRecipeId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    RecipeId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FavoriteRecipes", x => x.FavoriteRecipeId);
                     table.ForeignKey(
-                        name: "FK_RecipeCategories_Recipes_RecipeId",
+                        name: "FK_FavoriteRecipes_Recipes_RecipeId",
                         column: x => x.RecipeId,
                         principalTable: "Recipes",
                         principalColumn: "RecipeId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_FavoriteRecipes_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -107,8 +115,8 @@ namespace RecipeFinderAPI.Migrations
                 columns: table => new
                 {
                     RecipeIngredientId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    RecipeId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    IngredientId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    RecipeId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    IngredientId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Quantity = table.Column<double>(type: "float", nullable: false)
                 },
                 constraints: table =>
@@ -119,38 +127,13 @@ namespace RecipeFinderAPI.Migrations
                         column: x => x.IngredientId,
                         principalTable: "Ingredients",
                         principalColumn: "IngredientId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_RecipeIngredients_Recipes_RecipeId",
                         column: x => x.RecipeId,
                         principalTable: "Recipes",
                         principalColumn: "RecipeId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "FavoriteRecipes",
-                columns: table => new
-                {
-                    FavoriteRecipeId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    RecipeId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FavoriteRecipes", x => x.FavoriteRecipeId);
-                    table.ForeignKey(
-                        name: "FK_FavoriteRecipes_Recipes_RecipeId",
-                        column: x => x.RecipeId,
-                        principalTable: "Recipes",
-                        principalColumn: "RecipeId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_FavoriteRecipes_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "UserId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -164,16 +147,6 @@ namespace RecipeFinderAPI.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RecipeCategories_CategoryId",
-                table: "RecipeCategories",
-                column: "CategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RecipeCategories_RecipeId",
-                table: "RecipeCategories",
-                column: "RecipeId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_RecipeIngredients_IngredientId",
                 table: "RecipeIngredients",
                 column: "IngredientId");
@@ -182,6 +155,11 @@ namespace RecipeFinderAPI.Migrations
                 name: "IX_RecipeIngredients_RecipeId",
                 table: "RecipeIngredients",
                 column: "RecipeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Recipes_CategoryId",
+                table: "Recipes",
+                column: "CategoryId");
         }
 
         /// <inheritdoc />
@@ -191,22 +169,19 @@ namespace RecipeFinderAPI.Migrations
                 name: "FavoriteRecipes");
 
             migrationBuilder.DropTable(
-                name: "RecipeCategories");
-
-            migrationBuilder.DropTable(
                 name: "RecipeIngredients");
 
             migrationBuilder.DropTable(
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Category");
-
-            migrationBuilder.DropTable(
                 name: "Ingredients");
 
             migrationBuilder.DropTable(
                 name: "Recipes");
+
+            migrationBuilder.DropTable(
+                name: "Category");
         }
     }
 }

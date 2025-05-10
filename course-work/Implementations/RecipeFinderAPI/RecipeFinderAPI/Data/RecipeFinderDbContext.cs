@@ -14,7 +14,6 @@ namespace RecipeFinderAPI.Data
         public DbSet<RecipeIngredient> RecipeIngredients { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<FavoriteRecipe> FavoriteRecipes { get; set; }
-        public DbSet<RecipeCategory> RecipeCategories { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             #region Users
@@ -29,6 +28,11 @@ namespace RecipeFinderAPI.Data
             modelBuilder.Entity<Recipe>()
                 .HasKey(x => x.RecipeId);
 
+            modelBuilder.Entity<Recipe>()
+                 .HasOne(x => x.Category)
+                 .WithMany(x => x.Recipes)
+                 .HasForeignKey(x => x.CategoryId)
+                 .OnDelete(DeleteBehavior.Restrict);
             #endregion
 
             #region Ingredients
@@ -52,12 +56,14 @@ namespace RecipeFinderAPI.Data
             modelBuilder.Entity<FavoriteRecipe>()
                 .HasOne(x => x.User)
                 .WithMany(x => x.FavoriteRecipe)
-                .HasForeignKey(x => x.UserId);
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<FavoriteRecipe>()
                 .HasOne(x => x.Recipe)
                 .WithMany(x => x.FavoriteRecipes)
-                .HasForeignKey(x => x.RecipeId);
+                .HasForeignKey(x => x.RecipeId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             #endregion
 
@@ -69,29 +75,14 @@ namespace RecipeFinderAPI.Data
             modelBuilder.Entity<RecipeIngredient>()
                 .HasOne(x => x.Recipe)
                 .WithMany(x => x.RecipeIngredients)
-                .HasForeignKey(x => x.RecipeId);
+                .HasForeignKey(x => x.RecipeId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<RecipeIngredient>()
                 .HasOne(x => x.Ingredient)
                 .WithMany(x => x.RecipeIngredients)
-                .HasForeignKey(x => x.IngredientId);
-
-            #endregion
-
-            #region RecipeCategories
-
-            modelBuilder.Entity<RecipeCategory>()
-                .HasKey(x => x.RecipeCategoryId);
-
-            modelBuilder.Entity<RecipeCategory>()
-                .HasOne(x => x.Recipe)
-                .WithMany(x => x.RecipeCategories)
-                .HasForeignKey(x => x.RecipeId);
-
-            modelBuilder.Entity<RecipeCategory>()
-                .HasOne(x => x.Category)
-                .WithMany(x => x.RecipeCategories)
-                .HasForeignKey(x => x.CategoryId);
+                .HasForeignKey(x => x.IngredientId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             #endregion
 

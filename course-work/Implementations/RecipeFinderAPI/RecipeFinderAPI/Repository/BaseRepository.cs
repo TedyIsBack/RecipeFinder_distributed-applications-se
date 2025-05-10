@@ -29,6 +29,11 @@ namespace RecipeFinderAPI.Repositories
             return await _items.FirstOrDefaultAsync(filter);
         }
 
+        public IQueryable<T> Query()
+        {
+            return _items.AsQueryable();
+        }
+
         public async Task AddAsync(T item)
         {
             await _items.AddAsync(item);

@@ -14,6 +14,7 @@ namespace RecipeFinderAPI.Data
             var context = scope.ServiceProvider.GetRequiredService<RecipeFinderDbContext>();
 
             string adminUsername = "admin";
+            string adminEmail = "admin@gmail.com";
             string adminPassword = "admin123";
 
             // Провери дали съществува вече такъв потребител
@@ -24,6 +25,7 @@ namespace RecipeFinderAPI.Data
             {
                 var newAdmin = new User
                 {
+                    Email = adminEmail,
                     Username = adminUsername,
                     Password = adminPassword,
                     Role = Constants.AdminRole.ToString(), 

@@ -1,9 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RecipeFinderAPI.Infrastructure.DTOs
+namespace RecipeFinderAPI.Infrastructure.DTOs.AuthDTOs
 {
-    public class LoginDto
+    public class RegisterDto
     {
+        [Required]
+        //[EmailAddress]
+        //[StringLength(100, MinimumLength = 5)]
+        public string Email { get; set; }
+
         [Required]
         [StringLength(30, MinimumLength = 3)]
         public string Username { get; set; }

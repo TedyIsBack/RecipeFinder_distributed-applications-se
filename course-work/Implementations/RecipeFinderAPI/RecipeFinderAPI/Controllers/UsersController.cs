@@ -12,6 +12,8 @@ namespace RecipeFinderAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = Constants.AdminRole)]
+
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -20,7 +22,6 @@ namespace RecipeFinderAPI.Controllers
             _userService = userService;
         }
 
-        [Authorize(Roles = Constants.AdminRole)]
         [HttpGet]
         public async Task<IEnumerable<ResponseUserDto>> GetAllUsers(
             [FromQuery] int page = 1,
@@ -29,36 +30,6 @@ namespace RecipeFinderAPI.Controllers
             return await _userService.GetAllUsersAsync();
         }
 
-        [Auth]
-        [HttpGet("account")]
-        public async Task<IActionResult> GetLoggedUser()
-        {
-            string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (loggedUserId  == null)
-                return Unauthorized();
-
-            var user = await _userService.GetUserByIdAsync(loggedUserId);
-
-            if (user == null)
-                return NotFound();
-
-            return Ok(user);
-        }
-
-        [Authorize(Roles = Constants.AdminRole)]
-        [HttpPost]
-        public async Task<IActionResult> CreateUser([FromBody] CreateUserDto createUserDto)
-        {
-            if (createUserDto == null)
-                return BadRequest("Invalid user data.");
-
-            var createdUser = await _userService.CreateUserAsync(createUserDto);
-
-            return CreatedAtAction(nameof(GetAllUsers),
-                new { id = createdUser.Id },
-                createdUser);
-        }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserDto updateUserDto)
@@ -67,10 +38,22 @@ namespace RecipeFinderAPI.Controllers
                 return BadRequest("User ID mismatch.");
 
             var updatedUser = await _userService.UpdateUserAsync(updateUserDto);
+
             if (updatedUser == null)
                 return NotFound();
 
             return Ok(updatedUser);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            bool isDeleted = await _userService.DeleteUserAsync(id);
+
+            if (!isDeleted)
+                return NotFound();
+
+            return NoContent();
         }
     }
 }

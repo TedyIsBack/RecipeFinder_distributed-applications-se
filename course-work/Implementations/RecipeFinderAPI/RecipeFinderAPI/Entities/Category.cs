@@ -13,7 +13,7 @@
         public bool IsFeatured { get; set; } //about popularity
         public DateTime CreatedAt { get; set; }
 
-        public virtual ICollection<RecipeCategory> RecipeCategories { get; set; }
+        public virtual ICollection<Recipe> Recipes { get; set; }
 
     }
 }

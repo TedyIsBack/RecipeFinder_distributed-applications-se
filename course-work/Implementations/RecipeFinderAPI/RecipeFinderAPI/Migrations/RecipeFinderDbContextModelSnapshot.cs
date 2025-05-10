@@ -11,7 +11,7 @@ using RecipeFinderAPI.Data;
 namespace RecipeFinderAPI.Migrations
 {
     [DbContext(typeof(RecipeFinderDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    partial class RecipeFinderDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -37,11 +37,9 @@ namespace RecipeFinderAPI.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ShortCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("CategoryId");
@@ -55,11 +53,9 @@ namespace RecipeFinderAPI.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("RecipeId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("FavoriteRecipeId");
@@ -86,7 +82,6 @@ namespace RecipeFinderAPI.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Unit")
@@ -105,8 +100,10 @@ namespace RecipeFinderAPI.Migrations
                     b.Property<double>("Calories")
                         .HasColumnType("float");
 
+                    b.Property<string>("CategoryId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Difficulty")
@@ -119,7 +116,6 @@ namespace RecipeFinderAPI.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PreparationTime")
@@ -127,29 +123,9 @@ namespace RecipeFinderAPI.Migrations
 
                     b.HasKey("RecipeId");
 
-                    b.ToTable("Recipes");
-                });
-
-            modelBuilder.Entity("RecipeFinderAPI.Entities.RecipeCategory", b =>
-                {
-                    b.Property<string>("RecipeCategoryId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("CategoryId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("RecipeId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("RecipeCategoryId");
-
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("RecipeId");
-
-                    b.ToTable("RecipeCategories");
+                    b.ToTable("Recipes");
                 });
 
             modelBuilder.Entity("RecipeFinderAPI.Entities.RecipeIngredient", b =>
@@ -158,14 +134,12 @@ namespace RecipeFinderAPI.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("IngredientId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<double>("Quantity")
                         .HasColumnType("float");
 
                     b.Property<string>("RecipeId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("RecipeIngredientId");
@@ -185,19 +159,19 @@ namespace RecipeFinderAPI.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<string>("Password")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Role")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Username")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId");
@@ -210,37 +184,26 @@ namespace RecipeFinderAPI.Migrations
                     b.HasOne("RecipeFinderAPI.Entities.Recipe", "Recipe")
                         .WithMany("FavoriteRecipes")
                         .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("RecipeFinderAPI.Entities.User", "User")
                         .WithMany("FavoriteRecipe")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Recipe");
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("RecipeFinderAPI.Entities.RecipeCategory", b =>
+            modelBuilder.Entity("RecipeFinderAPI.Entities.Recipe", b =>
                 {
                     b.HasOne("RecipeFinderAPI.Entities.Category", "Category")
-                        .WithMany("RecipeCategories")
+                        .WithMany("Recipes")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("RecipeFinderAPI.Entities.Recipe", "Recipe")
-                        .WithMany("RecipeCategories")
-                        .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Category");
-
-                    b.Navigation("Recipe");
                 });
 
             modelBuilder.Entity("RecipeFinderAPI.Entities.RecipeIngredient", b =>
@@ -248,14 +211,12 @@ namespace RecipeFinderAPI.Migrations
                     b.HasOne("RecipeFinderAPI.Entities.Ingredient", "Ingredient")
                         .WithMany("RecipeIngredients")
                         .HasForeignKey("IngredientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("RecipeFinderAPI.Entities.Recipe", "Recipe")
                         .WithMany("RecipeIngredients")
                         .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Ingredient");
 
@@ -264,7 +225,7 @@ namespace RecipeFinderAPI.Migrations
 
             modelBuilder.Entity("RecipeFinderAPI.Entities.Category", b =>
                 {
-                    b.Navigation("RecipeCategories");
+                    b.Navigation("Recipes");
                 });
 
             modelBuilder.Entity("RecipeFinderAPI.Entities.Ingredient", b =>
@@ -275,8 +236,6 @@ namespace RecipeFinderAPI.Migrations
             modelBuilder.Entity("RecipeFinderAPI.Entities.Recipe", b =>
                 {
                     b.Navigation("FavoriteRecipes");
-
-                    b.Navigation("RecipeCategories");
 
                     b.Navigation("RecipeIngredients");
                 });

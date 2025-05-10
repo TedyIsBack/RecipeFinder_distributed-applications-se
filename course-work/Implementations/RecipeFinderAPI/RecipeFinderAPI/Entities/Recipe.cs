@@ -1,4 +1,6 @@
-﻿namespace RecipeFinderAPI.Entities
+﻿using System.Collections.Generic;
+
+namespace RecipeFinderAPI.Entities
 {
     public class Recipe
     {
@@ -16,9 +18,10 @@
         public bool IsVegan { get; set; }
         public bool IsVegetarian { get; set; }
 
+        public string CategoryId { get; set; }
+        public virtual Category Category { get; set; }
         public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; }
         public virtual ICollection<FavoriteRecipe> FavoriteRecipes { get; set; }
-        public virtual ICollection<RecipeCategory> RecipeCategories {  get; set; }
 
     }
 

@@ -1,4 +1,5 @@
 ﻿using RecipeFinderAPI.Entities;
+using RecipeFinderAPI.Infrastructure;
 using RecipeFinderAPI.Infrastructure.DTOs.IngredientDTOs;
 using System.Linq.Expressions;
 
@@ -10,7 +11,7 @@ namespace RecipeFinderAPI.Services.Interfaces
         Task<ResponseIngredientDto> CreateIngredientAsync(CreateIngredientDto createIngredientDto);
         Task<ResponseIngredientDto> UpdateIngredientAsync(UpdateIngredientDto updateIngredientDto);
         Task<bool> DeleteIngredientAsync(string id);
-        Task<List<ResponseIngredientDto>> GetAllIngredientAsync(Expression<Func<Ingredient, bool>> filter = null,
+        Task<PagedResult<ResponseIngredientDto>> GetAllIngredientAsync(Expression<Func<Ingredient, bool>> filter = null,
             int page = 1,
             int itemsPerPage = 10);
     }

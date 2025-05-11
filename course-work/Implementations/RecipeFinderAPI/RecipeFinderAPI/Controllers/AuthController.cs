@@ -24,6 +24,10 @@ namespace RecipeFinderAPI.Controllers
             if (registerDto == null)
                 return BadRequest("Invalid client request");
 
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             try
             {
                 var user = await _authService.CreateUserAsync(registerDto);

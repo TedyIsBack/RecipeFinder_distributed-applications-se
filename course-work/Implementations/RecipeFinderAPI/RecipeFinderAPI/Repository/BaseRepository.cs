@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RecipeFinderAPI.Data;
+using RecipeFinderAPI.Infrastructure;
 using System.Linq.Expressions;
 
 namespace RecipeFinderAPI.Repositories
@@ -16,12 +17,30 @@ namespace RecipeFinderAPI.Repositories
             _items = _context.Set<T>();
         }
 
-        public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>> filter = null)
+        public async Task<PagedResult<T>> GetAllAsync(
+            Expression<Func<T, bool>> filter = null,
+            int page = 1,
+            int pageSize = 10)
         {
             IQueryable<T> query = _items;
+
             if (filter != null)
                 query = query.Where(filter);
-            return await query.ToListAsync();
+
+            int totalCount = await query.CountAsync(); 
+
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<T>
+            {
+                Items = items,
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize
+            };
         }
 
         public async Task<T> FirstOrDefault(Expression<Func<T, bool>> filter)
@@ -29,10 +48,7 @@ namespace RecipeFinderAPI.Repositories
             return await _items.FirstOrDefaultAsync(filter);
         }
 
-        public IQueryable<T> Query()
-        {
-            return _items.AsQueryable();
-        }
+ 
 
         public async Task AddAsync(T item)
         {
@@ -51,5 +67,10 @@ namespace RecipeFinderAPI.Repositories
             _items.Remove(item);
             await _context.SaveChangesAsync();
         }
+        
+        /*public IQueryable<T> Query()
+        {
+            return _items.AsQueryable();
+        }*/
     }
 }

@@ -1,5 +1,8 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using RecipeFinderAPI.Entities;
+using RecipeFinderAPI.Infrastructure;
 using RecipeFinderAPI.Infrastructure.DTOs.IngredientDTOs;
 using RecipeFinderAPI.Repositories;
 using RecipeFinderAPI.Services.Interfaces;
@@ -105,18 +108,14 @@ namespace RecipeFinderAPI.Services
             return true;
         }
 
-        public async Task<List<ResponseIngredientDto>> GetAllIngredientAsync(
+        public async Task<PagedResult<ResponseIngredientDto>> GetAllIngredientAsync(
             Expression<Func<Ingredient, bool>> filter = null,
             int page = 1,
             int itemsPerPage = 10)
         {
-            List<Ingredient> ingredients = await _ingredientRepository.GetAllAsync(filter);
-            var pagedIngredients = _ingredientRepository.Query()
-                .Where(filter)
-                .Skip((page - 1) * itemsPerPage)
-                .Take(itemsPerPage);
+            var ingredients = await _ingredientRepository.GetAllAsync(filter, page, itemsPerPage);
 
-            return pagedIngredients.Select(x => new ResponseIngredientDto()
+            var response = ingredients.Items.Select(x => new ResponseIngredientDto()
             {
                 Id = x.IngredientId,
                 Name = x.Name,
@@ -125,8 +124,14 @@ namespace RecipeFinderAPI.Services
                 Unit = x.Unit,
                 IsAllergen = x.IsAllergen
             }).ToList();
+
+            return new PagedResult<ResponseIngredientDto>()
+            {
+                Items = response,
+                TotalCount = ingredients.TotalCount,
+                Page = ingredients.Page,
+                PageSize = ingredients.PageSize
+            };
         }
-
-
     }
 }

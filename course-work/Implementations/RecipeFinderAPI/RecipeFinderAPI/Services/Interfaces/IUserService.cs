@@ -1,4 +1,5 @@
 ﻿using RecipeFinderAPI.Entities;
+using RecipeFinderAPI.Infrastructure;
 using RecipeFinderAPI.Infrastructure.DTOs.UsersDTOs;
 using System.Linq.Expressions;
 
@@ -13,7 +14,7 @@ namespace RecipeFinderAPI.Services.Interfaces
         //Task<ResponseUserDto> CreateUserAsync(CreateUserDto createUserDto);
         Task<ResponseUserDto> UpdateUserAsync(UpdateUserDto updateUserDto);
         Task<bool> DeleteUserAsync(string userId);
-        Task<List<ResponseUserDto>> GetAllUsersAsync(Expression<Func<User, bool>> filter = null,
+        Task<PagedResult<ResponseUserDto>> GetAllUsersAsync(Expression<Func<User, bool>> filter = null,
             int page = 1,
             int itemsPerPage = 10);
     }

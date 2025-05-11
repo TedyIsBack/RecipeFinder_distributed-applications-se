@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RecipeFinderAPI.Data;
 using RecipeFinderAPI.Entities;
+using RecipeFinderAPI.Infrastructure;
 using RecipeFinderAPI.Infrastructure.DTOs.UsersDTOs;
 using RecipeFinderAPI.Repositories;
 using RecipeFinderAPI.Services.Interfaces;
@@ -57,25 +58,28 @@ namespace RecipeFinderAPI.Services
             };
         }
 
-        public async Task<List<ResponseUserDto>> GetAllUsersAsync(
+        public async Task<PagedResult<ResponseUserDto>> GetAllUsersAsync(
             Expression<Func<User, bool>> filter = null,
             int page = 1,
             int itemsPerPage = 10)
         {
-            List<User> users = await _userRepository.GetAllAsync(filter);
-
-            var pagedUsers = users
-                .Skip((page - 1) * itemsPerPage)
-                .Take(itemsPerPage);
-
-            return pagedUsers.Select(x => new ResponseUserDto
+            var users = await _userRepository.GetAllAsync(filter, page, itemsPerPage);
+            var responseUsers = users.Items.Select(u => new ResponseUserDto()
             {
-                Id = x.UserId,
-                Email = x.Email,
-                Username = x.Username,
-                Role = x.Role,
-                CreatedAt = x.CreatedAt.ToLongTimeString()
+                Id = u.UserId,
+                Email = u.Email,
+                Username = u.Username,
+                Role = u.Role,
+                CreatedAt = u.CreatedAt.ToLongTimeString()
             }).ToList();
+
+            return new PagedResult<ResponseUserDto>()
+            {
+                Items = responseUsers,
+                TotalCount = users.TotalCount,
+                Page = users.Page,
+                PageSize = users.PageSize
+            };
         }
 
 

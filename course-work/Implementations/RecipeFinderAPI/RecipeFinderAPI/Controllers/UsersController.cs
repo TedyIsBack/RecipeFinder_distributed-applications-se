@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
+
 using RecipeFinderAPI.Common;
+using RecipeFinderAPI.Entities;
+using RecipeFinderAPI.Infrastructure;
 using RecipeFinderAPI.Infrastructure.DTOs.UsersDTOs;
 using RecipeFinderAPI.Services.Interfaces;
-using System.Reflection.Metadata;
-using System.Security.Claims;
+using System.Linq.Expressions;
+
 
 namespace RecipeFinderAPI.Controllers
 {
@@ -23,11 +24,16 @@ namespace RecipeFinderAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<ResponseUserDto>> GetAllUsers(
+        public async Task<PagedResult<ResponseUserDto>> GetAllUsers(
+            [FromQuery] string Username = null,
+            [FromQuery] bool IsActive = true,
             [FromQuery] int page = 1,
             [FromQuery] int itemsPerPage = 10)
         {
-            return await _userService.GetAllUsersAsync();
+            Expression<Func<User, bool>> filter = x =>
+             (string.IsNullOrEmpty(Username) || x.Username.Contains(Username)) &&
+             (x.IsActive == IsActive);
+            return await _userService.GetAllUsersAsync(filter,page,itemsPerPage);
         }
 
 

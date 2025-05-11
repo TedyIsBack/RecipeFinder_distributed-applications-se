@@ -12,7 +12,7 @@ using RecipeFinderAPI.Data;
 namespace RecipeFinderAPI.Migrations
 {
     [DbContext(typeof(RecipeFinderDbContext))]
-    [Migration("20250511151817_Init")]
+    [Migration("20250511215153_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -35,7 +35,8 @@ namespace RecipeFinderAPI.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<bool>("IsSeasonal")
                         .HasColumnType("bit");
@@ -122,7 +123,8 @@ namespace RecipeFinderAPI.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("ImgUrl")
                         .IsRequired()

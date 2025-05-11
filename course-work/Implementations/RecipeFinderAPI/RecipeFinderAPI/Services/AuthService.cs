@@ -3,8 +3,9 @@ using RecipeFinderAPI.Entities;
 using RecipeFinderAPI.Infrastructure.DTOs.AuthDTOs;
 using RecipeFinderAPI.Infrastructure.DTOs.UsersDTOs;
 using RecipeFinderAPI.Repositories;
+using RecipeFinderAPI.Services.Interfaces;
 
-namespace RecipeFinderAPI.Services.Interfaces
+namespace RecipeFinderAPI.Services
 {
     public class AuthService : IAuthService
     {

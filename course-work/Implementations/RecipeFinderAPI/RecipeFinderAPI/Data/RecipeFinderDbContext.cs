@@ -21,6 +21,9 @@ namespace RecipeFinderAPI.Data
             modelBuilder.Entity<User>()
                 .HasKey(x => x.UserId);
 
+            modelBuilder.Entity<User>()
+                .Property(x => x.CreatedAt);
+
             #endregion
 
             #region Recipes
@@ -47,6 +50,9 @@ namespace RecipeFinderAPI.Data
             modelBuilder.Entity<Category>()
                 .HasKey(x => x.CategoryId);
 
+            modelBuilder.Entity<Category>()
+                .HasIndex(x => x.ShortCode).IsUnique();
+
             #endregion
 
             #region FavoriteRecipes
@@ -57,13 +63,14 @@ namespace RecipeFinderAPI.Data
                 .HasOne(x => x.User)
                 .WithMany(x => x.FavoriteRecipe)
                 .HasForeignKey(x => x.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
+
 
             modelBuilder.Entity<FavoriteRecipe>()
                 .HasOne(x => x.Recipe)
                 .WithMany(x => x.FavoriteRecipes)
                 .HasForeignKey(x => x.RecipeId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             #endregion
 
@@ -76,7 +83,7 @@ namespace RecipeFinderAPI.Data
                 .HasOne(x => x.Recipe)
                 .WithMany(x => x.RecipeIngredients)
                 .HasForeignKey(x => x.RecipeId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<RecipeIngredient>()
                 .HasOne(x => x.Ingredient)

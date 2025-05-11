@@ -31,18 +31,26 @@ namespace RecipeFinderAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsFeatured")
+                    b.Property<bool>("IsSeasonal")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("ShortCode")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.HasKey("CategoryId");
+
+                    b.HasIndex("ShortCode")
+                        .IsUnique();
 
                     b.ToTable("Category");
                 });
@@ -72,20 +80,25 @@ namespace RecipeFinderAPI.Migrations
                     b.Property<string>("IngredientId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<double>("Calories")
+                    b.Property<double>("CaloriesPer100g")
                         .HasColumnType("float");
 
-                    b.Property<bool>("IsAllergen")
-                        .HasColumnType("bit");
+                    b.Property<string>("ImgUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsOrganic")
+                    b.Property<bool?>("IsAllergen")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Unit")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("IngredientId");
 
@@ -101,12 +114,15 @@ namespace RecipeFinderAPI.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("CategoryId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Difficulty")
+                    b.Property<string>("ImgUrl")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsVegan")
@@ -116,7 +132,9 @@ namespace RecipeFinderAPI.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("PreparationTime")
                         .HasColumnType("int");
@@ -160,19 +178,27 @@ namespace RecipeFinderAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Role")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("Username")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.HasKey("UserId");
 
@@ -184,12 +210,12 @@ namespace RecipeFinderAPI.Migrations
                     b.HasOne("RecipeFinderAPI.Entities.Recipe", "Recipe")
                         .WithMany("FavoriteRecipes")
                         .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("RecipeFinderAPI.Entities.User", "User")
                         .WithMany("FavoriteRecipe")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Recipe");
 
@@ -201,7 +227,8 @@ namespace RecipeFinderAPI.Migrations
                     b.HasOne("RecipeFinderAPI.Entities.Category", "Category")
                         .WithMany("Recipes")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Category");
                 });
@@ -216,7 +243,7 @@ namespace RecipeFinderAPI.Migrations
                     b.HasOne("RecipeFinderAPI.Entities.Recipe", "Recipe")
                         .WithMany("RecipeIngredients")
                         .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Ingredient");
 

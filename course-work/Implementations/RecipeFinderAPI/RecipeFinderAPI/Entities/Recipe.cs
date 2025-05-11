@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace RecipeFinderAPI.Entities
 {
@@ -10,14 +12,30 @@ namespace RecipeFinderAPI.Entities
         }
 
         public string RecipeId { get; set; }
+
+        [Required]
+        [MaxLength(100)]
         public string Name { get; set; }
+
+        [Required]
         public string Description { get; set; }
+
+        [Required]
+        public string ImgUrl { get; set; }
+
+        [Required]
+        [Range(1, 720)]
         public int PreparationTime { get; set; }
+
+        [Required]
+        [Range(0, double.MaxValue)]
         public double Calories { get; set; }
-        public string? Difficulty { get; set; }
+
         public bool IsVegan { get; set; }
+
         public bool IsVegetarian { get; set; }
 
+        [Required]
         public string CategoryId { get; set; }
         public virtual Category Category { get; set; }
         public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; }

@@ -32,7 +32,7 @@ namespace RecipeFinderAPI.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserDto updateUserDto)
+        public async Task<IActionResult> UpdateUser([FromQuery]string id, [FromBody] UpdateUserDto updateUserDto)
         {
             if (id != updateUserDto.Id)
                 return BadRequest("User ID mismatch.");

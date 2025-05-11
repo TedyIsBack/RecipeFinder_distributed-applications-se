@@ -18,7 +18,7 @@ namespace RecipeFinderAPI.Controllers
             _authService = authService;
         }
 
-        [HttpPost]
+        [HttpPost("register")]
         public async Task<IActionResult> PostAsync([FromBody] RegisterDto registerDto)
         {
             if (registerDto == null)
@@ -35,7 +35,7 @@ namespace RecipeFinderAPI.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPut("login")]
         public async Task<IActionResult> PutAsync([FromBody] LoginDto loginDto, [FromServices] TokenService tokenService)
         {
             User loggedUser = await _authService.ValidateUserCredentialsAsync(loginDto.Username, loginDto.Password);

@@ -1,4 +1,6 @@
-﻿namespace RecipeFinderAPI.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace RecipeFinderAPI.Entities
 {
     public class User
     {
@@ -9,14 +11,25 @@
 
         public string UserId { get; set; }
 
+
+        [Required]
+        [MaxLength(50)]
+        [EmailAddress]
         public string Email { get; set; }
+        [Required]
+        [MaxLength(30)]
         public string Username { get; set; }
+
+        [Required]
+        [MaxLength(255)] 
         public string Password { get; set; }
-        public string Role { get; set; } //admin or user
+
+        [Required]
+        [MaxLength(10)]
+        public string Role { get; set; }
         public bool IsActive { get; set; }
 
         public DateTime CreatedAt { get; set; }
-
         public virtual ICollection<FavoriteRecipe> FavoriteRecipe { get; set; }
     }
 }

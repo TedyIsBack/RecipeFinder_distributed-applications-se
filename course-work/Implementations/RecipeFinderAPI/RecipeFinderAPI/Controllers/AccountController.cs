@@ -21,7 +21,7 @@ namespace RecipeFinderAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetLoggedUserInfo()
         {
-            string? loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (loggedUserId == null)
                 return Unauthorized();
@@ -37,7 +37,7 @@ namespace RecipeFinderAPI.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateLoggedUserInfo([FromBody] UpdateAccountDto updateAccountDto)
         {
-            string? loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (loggedUserId == null)
                 return Unauthorized();

@@ -12,7 +12,7 @@ namespace RecipeFinderAPI.Services
     public class UserService : IUserService
     {
 
-        private BaseRepository<User> _userRepository;
+        private readonly BaseRepository<User> _userRepository;
         public UserService(BaseRepository<User> userRepository)
         {
             _userRepository = userRepository;
@@ -37,8 +37,6 @@ namespace RecipeFinderAPI.Services
             return responseUserDto;
         }
 
-      
-
         public async Task<ResponseUserDto> UpdateUserAsync(UpdateUserDto updateUserDto)
         {
             var user = await _userRepository.FirstOrDefault(u => u.UserId == updateUserDto.Id);
@@ -52,6 +50,7 @@ namespace RecipeFinderAPI.Services
             return new ResponseUserDto()
             {
                 Id = user.UserId,
+                Email = user.Email,
                 Username = user.Username,
                 Role = user.Role,
                 CreatedAt = user.CreatedAt.ToLongTimeString()

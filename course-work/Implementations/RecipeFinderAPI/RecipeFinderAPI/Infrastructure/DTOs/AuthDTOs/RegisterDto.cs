@@ -5,15 +5,17 @@ namespace RecipeFinderAPI.Infrastructure.DTOs.AuthDTOs
     public class RegisterDto
     {
         [Required]
-        //[EmailAddress]
-        //[StringLength(100, MinimumLength = 5)]
+        [EmailAddress]
+        [StringLength(50, ErrorMessage = "Email address is too long.")]
         public string Email { get; set; }
 
         [Required]
-        [StringLength(30, MinimumLength = 3)]
+        [StringLength(30, MinimumLength = 3, ErrorMessage = "Username must be at least 3 characters long.")]
         public string Username { get; set; }
+
         [Required]
-        //[StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long.")]
+        [StringLength(30, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long.")]
+
         public string Password { get; set; }
     }
 }

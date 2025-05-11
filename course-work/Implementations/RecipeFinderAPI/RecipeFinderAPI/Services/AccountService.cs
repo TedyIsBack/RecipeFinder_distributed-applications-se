@@ -11,7 +11,7 @@ namespace RecipeFinderAPI.Services
 {
     public class AccountService : IAccountService
     {
-        private BaseRepository<User> _userRepository;
+        private readonly BaseRepository<User> _userRepository;
 
         public AccountService(BaseRepository<User> userRepository)
         {
@@ -35,6 +35,7 @@ namespace RecipeFinderAPI.Services
                 responseAccountDto = new ResponseAccountDto()
                 {
                     Id = user.UserId,
+                    Email = user.Email,
                     Username = user.Username,
                     CreatedAt = user.CreatedAt.ToLongTimeString(),
                     favoriteRecipes = user.FavoriteRecipe.Select(x => new ResponseFavoriteRecipeDto
@@ -45,7 +46,6 @@ namespace RecipeFinderAPI.Services
                         Description = x.Recipe.Description,
                         PreparationTime = x.Recipe.PreparationTime,
                         Calories = x.Recipe.Calories,
-                        Difficulty = x.Recipe.Difficulty,
                         IsVegan = x.Recipe.IsVegan,
                         IsVegetarian = x.Recipe.IsVegetarian,
                         CategoryId = x.Recipe.CategoryId,
@@ -73,6 +73,7 @@ namespace RecipeFinderAPI.Services
             return new ResponseAccountDto()
             {
                 Id = user.UserId,
+                Email = user.Email,
                 Username = user.Username,
                 CreatedAt = user.CreatedAt.ToLongTimeString(),
                 favoriteRecipes = user.FavoriteRecipe.Select(x => new ResponseFavoriteRecipeDto
@@ -83,7 +84,6 @@ namespace RecipeFinderAPI.Services
                     Description = x.Recipe.Description,
                     PreparationTime = x.Recipe.PreparationTime,
                     Calories = x.Recipe.Calories,
-                    Difficulty = x.Recipe.Difficulty,
                     IsVegan = x.Recipe.IsVegan,
                     IsVegetarian = x.Recipe.IsVegetarian,
                     CategoryId = x.Recipe.CategoryId,

@@ -37,7 +37,7 @@ namespace RecipeFinderAPI.Services
                     Id = user.UserId,
                     Email = user.Email,
                     Username = user.Username,
-                    CreatedAt = user.CreatedAt.ToLongTimeString(),
+                    CreatedAt = user.CreatedAt.ToLongDateString() + " " + user.CreatedAt.ToLongTimeString(),
                     favoriteRecipes = user.FavoriteRecipe.Select(x => new ResponseFavoriteRecipeDto
                     {
                         Id = x.RecipeId,
@@ -56,11 +56,11 @@ namespace RecipeFinderAPI.Services
             return responseAccountDto;
         }
 
-        public async Task<ResponseAccountDto> UpdateUserAsync(UpdateAccountDto updateAccountDto)
+        public async Task<ResponseAccountDto> UpdateUserAsync(string id, UpdateAccountDto updateAccountDto)
         {
             User user = await _userRepository
             .Query()
-            .Where(u => u.UserId == updateAccountDto.Id)
+            .Where(u => u.UserId == id)
             .Include(u => u.FavoriteRecipe)
             .ThenInclude(fr => fr.Recipe)
             .ThenInclude(r => r.Category)
@@ -75,7 +75,7 @@ namespace RecipeFinderAPI.Services
                 Id = user.UserId,
                 Email = user.Email,
                 Username = user.Username,
-                CreatedAt = user.CreatedAt.ToLongTimeString(),
+                CreatedAt = user.CreatedAt.ToLongDateString() + " " + user.CreatedAt.ToLongTimeString(),
                 favoriteRecipes = user.FavoriteRecipe.Select(x => new ResponseFavoriteRecipeDto
                 {
                     Id = x.RecipeId,

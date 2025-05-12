@@ -6,7 +6,7 @@ namespace RecipeFinderAPI.Entities
     {
         public Ingredient()
         {
-            IngredientId = new Guid().ToString();
+            IngredientId = Guid.NewGuid().ToString();
         }
         public string IngredientId { get; set; }
 

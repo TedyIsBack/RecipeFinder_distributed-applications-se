@@ -32,15 +32,15 @@ namespace RecipeFinderAPI.Services
                     Email = user.Email,
                     Username = user.Username,
                     Role = user.Role,
-                    CreatedAt = user.CreatedAt.ToLongTimeString()
+                    CreatedAt = user.CreatedAt.ToLongDateString() + " " + user.CreatedAt.ToLongTimeString()
                 };
             }
             return responseUserDto;
         }
 
-        public async Task<ResponseUserDto> UpdateUserAsync(UpdateUserDto updateUserDto)
+        public async Task<ResponseUserDto> UpdateUserAsync(string id, UpdateUserDto updateUserDto)
         {
-            var user = await _userRepository.FirstOrDefault(u => u.UserId == updateUserDto.Id);
+            var user = await _userRepository.FirstOrDefault(u => u.UserId == id);
 
 
             user.Username = updateUserDto.Username;
@@ -54,7 +54,7 @@ namespace RecipeFinderAPI.Services
                 Email = user.Email,
                 Username = user.Username,
                 Role = user.Role,
-                CreatedAt = user.CreatedAt.ToLongTimeString()
+                CreatedAt = user.CreatedAt.ToLongDateString() + " " + user.CreatedAt.ToLongTimeString()
             };
         }
 
@@ -70,7 +70,7 @@ namespace RecipeFinderAPI.Services
                 Email = u.Email,
                 Username = u.Username,
                 Role = u.Role,
-                CreatedAt = u.CreatedAt.ToLongTimeString()
+                CreatedAt =  u.CreatedAt.ToLongDateString() + " " + u.CreatedAt.ToLongTimeString()
             }).ToList();
 
             return new PagedResult<ResponseUserDto>()

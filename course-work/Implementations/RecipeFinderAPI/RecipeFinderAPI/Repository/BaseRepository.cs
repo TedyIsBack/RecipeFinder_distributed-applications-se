@@ -22,7 +22,7 @@ namespace RecipeFinderAPI.Repositories
             int page = 1,
             int pageSize = 10)
         {
-            IQueryable<T> query = _items;
+            IQueryable<T> query = Query();
 
             if (filter != null)
                 query = query.Where(filter);
@@ -48,7 +48,6 @@ namespace RecipeFinderAPI.Repositories
             return await _items.FirstOrDefaultAsync(filter);
         }
 
- 
 
         public async Task AddAsync(T item)
         {
@@ -67,10 +66,10 @@ namespace RecipeFinderAPI.Repositories
             _items.Remove(item);
             await _context.SaveChangesAsync();
         }
-        
-        /*public IQueryable<T> Query()
+
+        public IQueryable<T> Query()
         {
             return _items.AsQueryable();
-        }*/
+        }
     }
 }

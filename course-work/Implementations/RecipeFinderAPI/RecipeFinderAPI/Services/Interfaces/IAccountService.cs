@@ -5,6 +5,6 @@ namespace RecipeFinderAPI.Services.Interfaces
     public interface IAccountService
     {
         Task<ResponseAccountDto> GetUserByIdAsync(string loggedUserId);
-        Task<ResponseAccountDto> UpdateUserAsync(UpdateAccountDto updateAccountDto);
+        Task<ResponseAccountDto> UpdateUserAsync(string id,UpdateAccountDto updateAccountDto);
     }
 }

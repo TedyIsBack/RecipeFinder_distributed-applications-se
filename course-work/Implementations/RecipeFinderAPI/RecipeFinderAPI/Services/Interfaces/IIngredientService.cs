@@ -9,7 +9,7 @@ namespace RecipeFinderAPI.Services.Interfaces
     {
         Task<ResponseIngredientDto> GetIngredientByIdAsync(string id);
         Task<ResponseIngredientDto> CreateIngredientAsync(CreateIngredientDto createIngredientDto);
-        Task<ResponseIngredientDto> UpdateIngredientAsync(UpdateIngredientDto updateIngredientDto);
+        Task<ResponseIngredientDto> UpdateIngredientAsync(string id,UpdateIngredientDto updateIngredientDto);
         Task<bool> DeleteIngredientAsync(string id);
         Task<PagedResult<ResponseIngredientDto>> GetAllIngredientAsync(Expression<Func<Ingredient, bool>> filter = null,
             int page = 1,

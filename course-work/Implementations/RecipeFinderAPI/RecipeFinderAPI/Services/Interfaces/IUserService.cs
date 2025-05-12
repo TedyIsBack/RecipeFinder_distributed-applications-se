@@ -12,7 +12,7 @@ namespace RecipeFinderAPI.Services.Interfaces
         //Task<User> ValidateUserCredentialsAsync(string username, string password);
         Task<ResponseUserDto> GetUserByIdAsync(string userId);
         //Task<ResponseUserDto> CreateUserAsync(CreateUserDto createUserDto);
-        Task<ResponseUserDto> UpdateUserAsync(UpdateUserDto updateUserDto);
+        Task<ResponseUserDto> UpdateUserAsync(string id,UpdateUserDto updateUserDto);
         Task<bool> DeleteUserAsync(string userId);
         Task<PagedResult<ResponseUserDto>> GetAllUsersAsync(Expression<Func<User, bool>> filter = null,
             int page = 1,

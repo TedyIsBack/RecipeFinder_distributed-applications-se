@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using RecipeFinderAPI.Common;
 using RecipeFinderAPI.Entities;
 using RecipeFinderAPI.Infrastructure;
 using RecipeFinderAPI.Infrastructure.DTOs.IngredientDTOs;
@@ -20,6 +23,7 @@ namespace RecipeFinderAPI.Controllers
 
 
         [HttpGet]
+        [Authorize]
         public async Task<PagedResult<ResponseIngredientDto>> GetAllIngredients(
             [FromQuery] string name = null,
             [FromQuery] bool? isAllergen = null,
@@ -35,6 +39,7 @@ namespace RecipeFinderAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetIngredientById(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -51,6 +56,7 @@ namespace RecipeFinderAPI.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = Constants.AdminRole)]
         public async Task<IActionResult> CreateIngredient([FromBody] CreateIngredientDto createIngredientDto)
         {
             if (createIngredientDto == null)
@@ -62,7 +68,7 @@ namespace RecipeFinderAPI.Controllers
             try
             {
                 var result = await _ingredientService.CreateIngredientAsync(createIngredientDto);
-                return Ok();
+                return Ok(result);
             }
             catch (InvalidOperationException ex)
             {
@@ -71,5 +77,30 @@ namespace RecipeFinderAPI.Controllers
         }
 
 
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = Constants.AdminRole)]
+        public async Task<IActionResult> UpdateIngredient(string id, UpdateIngredientDto updateIngredientDto)
+        {
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var updatedIngredient = await _ingredientService.UpdateIngredientAsync(id,updateIngredientDto);
+
+            return Ok(updatedIngredient);
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = Constants.AdminRole)]
+        public async Task<IActionResult> DeleteIngredient(string id)
+        {
+            bool isDeleted = await _ingredientService.DeleteIngredientAsync(id);
+
+            if (!isDeleted)
+                return NotFound();
+
+            return NoContent();
+        }
     }
 }

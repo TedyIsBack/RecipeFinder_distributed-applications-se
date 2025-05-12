@@ -33,20 +33,17 @@ namespace RecipeFinderAPI.Controllers
             Expression<Func<User, bool>> filter = x =>
              (string.IsNullOrEmpty(Username) || x.Username.Contains(Username)) &&
              (x.IsActive == IsActive);
-            return await _userService.GetAllUsersAsync(filter,page,itemsPerPage);
+            return await _userService.GetAllUsersAsync(filter, page, itemsPerPage);
         }
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser([FromQuery]string id, [FromBody] UpdateUserDto updateUserDto)
+        public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserDto updateUserDto)
         {
-            if (id != updateUserDto.Id)
-                return BadRequest("User ID mismatch.");
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var updatedUser = await _userService.UpdateUserAsync(updateUserDto);
-
-            if (updatedUser == null)
-                return NotFound();
+            var updatedUser = await _userService.UpdateUserAsync(id,updateUserDto);
 
             return Ok(updatedUser);
         }

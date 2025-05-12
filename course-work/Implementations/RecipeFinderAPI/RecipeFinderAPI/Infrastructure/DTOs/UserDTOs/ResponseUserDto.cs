@@ -10,6 +10,7 @@ namespace RecipeFinderAPI.Infrastructure.DTOs.UsersDTOs
         public string Username { get; set; }
         public string Role { get; set; }
         public string CreatedAt { get; set; }
+        public bool IsActive { get; set; }
 
     }
 }

@@ -42,10 +42,8 @@ namespace RecipeFinderAPI.Controllers
             if (loggedUserId == null)
                 return Unauthorized();
 
-            if (loggedUserId != updateAccountDto.Id)
-                return BadRequest("User ID mismatch.");
 
-            var updatedUser = await _accountService.UpdateUserAsync(updateAccountDto);
+            var updatedUser = await _accountService.UpdateUserAsync(loggedUserId,updateAccountDto);
 
             if (updatedUser == null)
                 return NotFound();

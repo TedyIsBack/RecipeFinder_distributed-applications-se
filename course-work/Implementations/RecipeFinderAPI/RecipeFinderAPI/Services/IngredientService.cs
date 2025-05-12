@@ -31,19 +31,20 @@ namespace RecipeFinderAPI.Services
 
             Ingredient ingredient = new Ingredient()
             {
-                Name = existingIngredient.Name,
-                ImgUrl = existingIngredient.ImgUrl.IsNullOrEmpty() ?
+                Name = createIngredientDto.Name,
+                ImgUrl = createIngredientDto.ImgUrl.IsNullOrEmpty() ?
                 "https://images.ctfassets.net/kugm9fp9ib18/3aHPaEUU9HKYSVj1CTng58/d6750b97344c1dc31bdd09312d74ea5b/menu-default-image_220606_web.png"
                 : createIngredientDto.ImgUrl,
-                CaloriesPer100g = existingIngredient.CaloriesPer100g,
-                Unit = existingIngredient.Unit,
-                IsAllergen = existingIngredient.IsAllergen
+                CaloriesPer100g = createIngredientDto.CaloriesPer100g,
+                Unit = createIngredientDto.Unit,
+                IsAllergen = createIngredientDto.IsAllergen
             };
 
             await _ingredientRepository.AddAsync(ingredient);
 
             return new ResponseIngredientDto()
             {
+                Id = ingredient.IngredientId,
                 Name = ingredient.Name,
                 ImgUrl = ingredient.ImgUrl,
                 CaloriesPer100g = ingredient.CaloriesPer100g,
@@ -72,9 +73,9 @@ namespace RecipeFinderAPI.Services
             return responseIngredientDto;
         }
 
-        public async Task<ResponseIngredientDto> UpdateIngredientAsync(UpdateIngredientDto updateIngredientDto)
+        public async Task<ResponseIngredientDto> UpdateIngredientAsync(string id,UpdateIngredientDto updateIngredientDto)
         {
-            var ingredient = await _ingredientRepository.FirstOrDefault(x => x.IngredientId == updateIngredientDto.Id);
+            var ingredient = await _ingredientRepository.FirstOrDefault(x => x.IngredientId == id);
 
             ingredient.Name = updateIngredientDto.Name;
             ingredient.ImgUrl = updateIngredientDto.ImgUrl.IsNullOrEmpty() ?
@@ -133,5 +134,7 @@ namespace RecipeFinderAPI.Services
                 PageSize = ingredients.PageSize
             };
         }
+
+
     }
 }

@@ -20,12 +20,12 @@ namespace RecipeFinderAPI.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetUserFavoriteRecipes(
-           [FromQuery] string name,
+        public async Task<IActionResult> GetFavorites(
+           [FromQuery] string? name,
            [FromQuery] int page = 1,
            [FromQuery] int itemsPerPage = 10)
         {
-            string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string loggedUserId =  User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (loggedUserId == null)
                 return Unauthorized();
@@ -41,7 +41,7 @@ namespace RecipeFinderAPI.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost("{recipeId}")]
         public async Task<IActionResult> AddToFavorites(string recipeId)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -57,7 +57,7 @@ namespace RecipeFinderAPI.Controllers
             return Ok("Recipe added to favorites");
         }
 
-        [HttpDelete]
+        [HttpDelete("{recipeId}")]
         public async Task<IActionResult> RemoveFromFavorites(string recipeId)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);

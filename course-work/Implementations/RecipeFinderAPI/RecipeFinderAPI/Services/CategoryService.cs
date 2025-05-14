@@ -86,6 +86,11 @@ namespace RecipeFinderAPI.Services
         {
             Category category = await _categoryRepository.FirstOrDefault(x => x.CategoryId == id);
 
+            if(category == null)
+            {
+                return null;
+            }
+
             ResponseCategoryDto responseCategoryDto = new ResponseCategoryDto();
 
             if(category != null)
@@ -104,6 +109,12 @@ namespace RecipeFinderAPI.Services
         public async Task<ResponseCategoryDto> UpdateCategoryAsync(string id, UpdateCategoryDto updateCategoryDto)
         {
             var category = await _categoryRepository.FirstOrDefault(x => x.CategoryId == id);
+
+            var existingCategory = await _categoryRepository.FirstOrDefault(x => x.Name == updateCategoryDto.Name);
+            if (existingCategory != null && existingCategory.CategoryId != id)
+            {
+                throw new InvalidOperationException("This category already exists.");
+            }
 
             category.Description = updateCategoryDto.Description;
             category.Name = updateCategoryDto.Name;

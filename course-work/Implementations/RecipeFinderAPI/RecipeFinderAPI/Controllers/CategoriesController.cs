@@ -26,7 +26,7 @@ namespace RecipeFinderAPI.Controllers
         [HttpGet]
         [Authorize]
         public async Task<PagedResult<ResponseCategoryDto>> GetAllCategories(
-              [FromQuery] string name = null,
+            [FromQuery] string? name = null,
             [FromQuery] bool? IsSeasonal = null,
             [FromQuery] int page = 1,
             [FromQuery] int itemsPerPage = 10)
@@ -45,13 +45,13 @@ namespace RecipeFinderAPI.Controllers
             if (string.IsNullOrEmpty(id))
                 return BadRequest("Invalid client request");
 
-            var ingredient = await _categoryService.GetCategoryByIdAsync(id);
+            var category = await _categoryService.GetCategoryByIdAsync(id);
 
-            if (ingredient == null)
+            if (category == null)
             {
                 return NotFound();
             }
-            return Ok(ingredient);
+            return Ok(category);
         }
 
 
@@ -80,15 +80,22 @@ namespace RecipeFinderAPI.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = Constants.AdminRole)]
-        public async Task<IActionResult> UpdateCategory(string id, UpdateCategoryDto updateCategoryDto)
+        public async Task<IActionResult> UpdateCategory(string id, [FromBody] UpdateCategoryDto updateCategoryDto)
         {
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
-            var updatedCategory = await _categoryService.UpdateCategoryAsync(id, updateCategoryDto);
+                var updatedCategory = await _categoryService.UpdateCategoryAsync(id, updateCategoryDto);
+                return Ok(updatedCategory);
 
-            return Ok(updatedCategory);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message); 
+            }
         }
 
         [HttpDelete("{id}")]

@@ -7,7 +7,7 @@ namespace RecipeFinderAPI.Infrastructure.DTOs.FavoriteDTOs
     public class ResponseFavoriteDto
     {
 
-        public string Id { get; set; }
+        public string FavoritesId { get; set; }
         public string RecipeId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }

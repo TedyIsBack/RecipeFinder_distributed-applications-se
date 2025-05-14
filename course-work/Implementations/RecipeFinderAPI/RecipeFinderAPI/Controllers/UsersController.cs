@@ -25,7 +25,7 @@ namespace RecipeFinderAPI.Controllers
 
         [HttpGet]
         public async Task<PagedResult<ResponseUserDto>> GetAllUsers(
-            [FromQuery] string Username = null,
+            [FromQuery] string? Username = null,
             [FromQuery] bool IsActive = true,
             [FromQuery] int page = 1,
             [FromQuery] int itemsPerPage = 10)

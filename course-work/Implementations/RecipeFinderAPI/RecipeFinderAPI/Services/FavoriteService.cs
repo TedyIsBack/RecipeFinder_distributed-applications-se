@@ -49,41 +49,42 @@ namespace RecipeFinderAPI.Services
             return true; 
         }
 
-        public async Task<bool> IsRecipeFavoritedAsync(string userId, string recipeId)
-        {
-            var favorite = await _favoriteRepo.FirstOrDefault(f => f.UserId == userId && f.RecipeId == recipeId);
-            return favorite != null; 
-        }
+        //public async Task<bool> IsRecipeFavoritedAsync(string userId, string recipeId)
+        //{
+        //    var favorite = await _favoriteRepo.FirstOrDefault(f => f.UserId == userId && f.RecipeId == recipeId);
+        //    return favorite != null; 
+        //}
 
         public async Task<PagedResult<ResponseFavoriteDto>> GetUserFavoriteRecipesAsync(
-       string userId,
-       Expression<Func<Recipe, bool>> filter = null,
-       int page = 1,
-       int itemsPerPage = 10)
+      string userId,
+      Expression<Func<Recipe, bool>> filter = null,
+      int page = 1,
+      int itemsPerPage = 10)
         {
-            var favoriteQuery = _favoriteRepo.Query()
-                .Where(x => x.UserId == userId)
-                .Include(x => x.Recipe)
+            var query = _favoriteRepo.Query()
+                .Where(f => f.UserId == userId)
+                .Include(f => f.Recipe)
                     .ThenInclude(r => r.Category)
-                .Include(x => x.Recipe)
+                .Include(f => f.Recipe)
                     .ThenInclude(r => r.RecipeIngredients)
-                        .ThenInclude(ri => ri.Ingredient)
-                .Select(x => new { x.FavoriteRecipeId, x.Recipe });
+                        .ThenInclude(ri => ri.Ingredient);
 
+            // Преобразуваме filter от Recipe -> bool в FavoriteRecipe -> bool
+            Expression<Func<FavoriteRecipe, bool>> favoriteFilter = null;
             if (filter != null)
             {
-                favoriteQuery = favoriteQuery.Where(x => filter.Compile()(x.Recipe));
+                var parameter = Expression.Parameter(typeof(FavoriteRecipe), "f");
+                var body = Expression.Invoke(filter, Expression.PropertyOrField(parameter, "Recipe"));
+                favoriteFilter = Expression.Lambda<Func<FavoriteRecipe, bool>>(body, parameter);
             }
 
-            var totalCount = await favoriteQuery.CountAsync();
-            var pagedFavorites = await favoriteQuery
-                .Skip((page - 1) * itemsPerPage)
-                .Take(itemsPerPage)
-                .ToListAsync();
+            // Използваме BaseRepository
+            var pagedResult = await _favoriteRepo.GetAllAsync(query, favoriteFilter, page, itemsPerPage);
 
-            var responseItems = pagedFavorites.Select(fav => new ResponseFavoriteDto
+            // Преобразуване към ResponseFavoriteDto
+            var responseItems = pagedResult.Items.Select(fav => new ResponseFavoriteDto
             {
-                Id = fav.FavoriteRecipeId, 
+                FavoritesId = fav.FavoriteRecipeId,
                 RecipeId = fav.Recipe.RecipeId,
                 Name = fav.Recipe.Name,
                 Description = fav.Recipe.Description,
@@ -93,9 +94,9 @@ namespace RecipeFinderAPI.Services
                 IsVegan = fav.Recipe.IsVegan,
                 IsVegetarian = fav.Recipe.IsVegetarian,
                 CategoryId = fav.Recipe.CategoryId,
-                Category =
-                new ResponseCategoryDto
+                Category = new ResponseCategoryDto
                 {
+                    Id = fav.Recipe.CategoryId
                     Name = fav.Recipe.Category.Name,
                     Description = fav.Recipe.Category.Description,
                     ShortCode = fav.Recipe.Category.ShortCode,
@@ -116,11 +117,12 @@ namespace RecipeFinderAPI.Services
             return new PagedResult<ResponseFavoriteDto>
             {
                 Items = responseItems,
-                TotalCount = totalCount,
+                TotalCount = pagedResult.TotalCount,
                 Page = page,
                 itemsPerPage = itemsPerPage
             };
         }
+
 
 
     }

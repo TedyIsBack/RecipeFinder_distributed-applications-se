@@ -1,4 +1,5 @@
-﻿using RecipeFinderAPI.Infrastructure.DTOs.CategoryDTOs;
+﻿using RecipeFinderAPI.Infrastructure.DTOs.AccountDTOs;
+using RecipeFinderAPI.Infrastructure.DTOs.CategoryDTOs;
 using RecipeFinderAPI.Infrastructure.DTOs.IngredientDTOs;
 using System.ComponentModel.DataAnnotations;
 
@@ -21,6 +22,8 @@ namespace RecipeFinderAPI.Infrastructure.DTOs.RecipeDTOs
         public bool IsVegetarian { get; set; }
         public string CategoryId { get; set; }
         public ResponseCategoryDto Category { get; set; }
-        public ICollection<ResponseIngredientDto> RecipeIngredients { get; set; }
+        public string CreatedBy { get; set; }
+        public ResponseAccountDto CreatedByUser { get; set; }
+        public ICollection<ResponseRecipeIngredientDto> RecipeIngredients { get; set; }
     }
 }

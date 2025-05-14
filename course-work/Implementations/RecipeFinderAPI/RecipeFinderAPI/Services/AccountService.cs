@@ -19,13 +19,15 @@ namespace RecipeFinderAPI.Services
 
         public async Task<ResponseAccountDto> GetUserByIdAsync(string loggedUserId)
         {
-            User user = await _userRepository
+           /* User user = await _userRepository
              .Query()
              .Where(u => u.UserId == loggedUserId)
              .Include(u => u.FavoriteRecipe)
              .ThenInclude(fr => fr.Recipe)
              .ThenInclude(r => r.Category)
-             .FirstOrDefaultAsync();
+             .FirstOrDefaultAsync();*/
+
+            User user = await _userRepository.FirstOrDefault(u => u.UserId == loggedUserId);
 
             ResponseAccountDto responseAccountDto = new ResponseAccountDto();
            
@@ -42,13 +44,15 @@ namespace RecipeFinderAPI.Services
 
         public async Task<ResponseAccountDto> UpdateUserAsync(string id, UpdateAccountDto updateAccountDto)
         {
-            User user = await _userRepository
-            .Query()
-            .Where(u => u.UserId == id)
-            .Include(u => u.FavoriteRecipe)
-            .ThenInclude(fr => fr.Recipe)
-            .ThenInclude(r => r.Category)
-            .FirstOrDefaultAsync();
+            /* User user = await _userRepository
+             .Query()
+             .Where(u => u.UserId == id)
+             .Include(u => u.FavoriteRecipe)
+             .ThenInclude(fr => fr.Recipe)
+             .ThenInclude(r => r.Category)
+             .FirstOrDefaultAsync();*/
+
+            User user = await _userRepository.FirstOrDefault(u => u.UserId == id);
 
             user.Username = updateAccountDto.Username;
 

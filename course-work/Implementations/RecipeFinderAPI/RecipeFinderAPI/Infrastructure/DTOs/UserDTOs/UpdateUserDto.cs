@@ -2,7 +2,7 @@
 
 namespace RecipeFinderAPI.Infrastructure.DTOs.UsersDTOs
 {
-    public class UpdateUserDto 
+    public class UpdateUserDto
     {
         //public string Id { get; set; }
 

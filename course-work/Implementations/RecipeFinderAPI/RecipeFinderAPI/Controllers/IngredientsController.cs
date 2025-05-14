@@ -21,21 +21,27 @@ namespace RecipeFinderAPI.Controllers
             _ingredientService = ingredientService;
         }
 
-
         [HttpGet]
         [Authorize]
-        public async Task<PagedResult<ResponseIngredientDto>> GetAllIngredients(
-            [FromQuery] string name = null,
+        public async Task<IActionResult> GetAllIngredients(
+            [FromQuery] string? name = null,
             [FromQuery] bool? isAllergen = null,
             [FromQuery] int page = 1,
             [FromQuery] int itemsPerPage = 10)
         {
+            try
+            {
+                Expression<Func<Ingredient, bool>> filter = x =>
+                    (string.IsNullOrEmpty(name) || x.Name.Contains(name)) &&
+                    (!isAllergen.HasValue || x.IsAllergen == isAllergen);
 
-            Expression<Func<Ingredient, bool>> filter = x =>
-              (string.IsNullOrEmpty(name) || x.Name.Contains(name)) &&
-              (!isAllergen.HasValue || x.IsAllergen == isAllergen);
-
-            return await _ingredientService.GetAllIngredientAsync(filter,page,itemsPerPage);
+                var result = await _ingredientService.GetAllIngredientAsync(filter, page, itemsPerPage);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpGet("{id}")]
@@ -45,15 +51,20 @@ namespace RecipeFinderAPI.Controllers
             if (string.IsNullOrEmpty(id))
                 return BadRequest("Invalid client request");
 
-            var ingredient = await _ingredientService.GetIngredientByIdAsync(id);
-
-            if (ingredient == null)
+            try
             {
-                return NotFound();
-            }
-            return Ok(ingredient);
-        }
+                var ingredient = await _ingredientService.GetIngredientByIdAsync(id);
 
+                if (ingredient == null)
+                    return NotFound();
+
+                return Ok(ingredient);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
 
         [HttpPost]
         [Authorize(Roles = Constants.AdminRole)]
@@ -74,33 +85,51 @@ namespace RecipeFinderAPI.Controllers
             {
                 return BadRequest(ex.Message);
             }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
-
-
 
         [HttpPut("{id}")]
         [Authorize(Roles = Constants.AdminRole)]
-        public async Task<IActionResult> UpdateIngredient(string id, UpdateIngredientDto updateIngredientDto)
+        public async Task<IActionResult> UpdateIngredient(string id,[FromBody] UpdateIngredientDto updateIngredientDto)
         {
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var updatedIngredient = await _ingredientService.UpdateIngredientAsync(id,updateIngredientDto);
-
-            return Ok(updatedIngredient);
+            try
+            {
+                var updatedIngredient = await _ingredientService.UpdateIngredientAsync(id, updateIngredientDto);
+                return Ok(updatedIngredient);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound("Ingredient not found.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = Constants.AdminRole)]
         public async Task<IActionResult> DeleteIngredient(string id)
         {
-            bool isDeleted = await _ingredientService.DeleteIngredientAsync(id);
+            try
+            {
+                bool isDeleted = await _ingredientService.DeleteIngredientAsync(id);
 
-            if (!isDeleted)
-                return NotFound();
+                if (!isDeleted)
+                    return NotFound();
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
     }
 }

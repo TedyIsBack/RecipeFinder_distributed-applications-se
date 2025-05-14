@@ -34,9 +34,6 @@ namespace RecipeFinderAPI.Infrastructure.DTOs.RecipesDTOs
         public string CategoryId { get; set; }
 
         [Required]
-        public  ResponseCategoryDto Category { get; set; }
-
-        [Required]
-        public ICollection<ResponseIngredientDto> RecipeIngredients { get; set; }
+        public ICollection<CreateRecipeIngredientDto> RecipeIngredients { get; set; }
     }
 }

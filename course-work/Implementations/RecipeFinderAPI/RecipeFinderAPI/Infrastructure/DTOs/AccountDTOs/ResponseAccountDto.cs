@@ -9,6 +9,5 @@ namespace RecipeFinderAPI.Infrastructure.DTOs.AccountDTOs
 
         public string CreatedAt { get; set; }
 
-        //public IEnumerable<ResponseFavoriteRecipeDto> favoriteRecipes { get; set; } = new List<ResponseFavoriteRecipeDto>();
     }
 }

@@ -30,6 +30,7 @@ namespace RecipeFinderAPI
             builder.Services.AddTransient<IIngredientService, IngredientService>();
             builder.Services.AddTransient<ICategoryService, CategoryService>();
             builder.Services.AddTransient<IFavoriteService, FavoriteService>();
+            builder.Services.AddTransient<IRecipeService, RecipeService>();
 
             builder.Services.AddScoped<TokenService>();
             builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));

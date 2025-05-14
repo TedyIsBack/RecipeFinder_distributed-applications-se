@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using RecipeFinderAPI.Common;
 using RecipeFinderAPI.Entities;
 using RecipeFinderAPI.Infrastructure;
 using RecipeFinderAPI.Infrastructure.DTOs.IngredientDTOs;
@@ -33,7 +34,7 @@ namespace RecipeFinderAPI.Services
             {
                 Name = createIngredientDto.Name,
                 ImgUrl = createIngredientDto.ImgUrl.IsNullOrEmpty() ?
-                "https://images.ctfassets.net/kugm9fp9ib18/3aHPaEUU9HKYSVj1CTng58/d6750b97344c1dc31bdd09312d74ea5b/menu-default-image_220606_web.png"
+                Constants.DefaultRecipeImage
                 : createIngredientDto.ImgUrl,
                 CaloriesPer100g = createIngredientDto.CaloriesPer100g,
                 Unit = createIngredientDto.Unit,
@@ -53,33 +54,41 @@ namespace RecipeFinderAPI.Services
             };
         }
 
-        public async Task<ResponseIngredientDto> GetIngredientByIdAsync(string id)
+        public async Task<ResponseIngredientDto> GetIngredientByIdAsync(string ingredientId)
         {
-            Ingredient ingredient = await _ingredientRepository.FirstOrDefault(x => x.IngredientId == id);
-            ResponseIngredientDto responseIngredientDto = new ResponseIngredientDto();
-            if (ingredient != null)
-            {
-                responseIngredientDto = new ResponseIngredientDto()
-                {
-                    Id = ingredient.IngredientId,
-                    Name = ingredient.Name,
-                    ImgUrl = ingredient.ImgUrl,
-                    CaloriesPer100g = ingredient.CaloriesPer100g,
-                    Unit = ingredient.Unit,
-                    IsAllergen = ingredient.IsAllergen
-                };
-            }
+            Ingredient ingredient = await _ingredientRepository.FirstOrDefault(x => x.IngredientId == ingredientId);
 
+            if (ingredient == null)
+                throw new InvalidOperationException("This ingredient already exists.");
+
+            ResponseIngredientDto responseIngredientDto = new ResponseIngredientDto();
+
+            responseIngredientDto = new ResponseIngredientDto()
+            {
+                Id = ingredient.IngredientId,
+                Name = ingredient.Name,
+                ImgUrl = ingredient.ImgUrl,
+                CaloriesPer100g = ingredient.CaloriesPer100g,
+                Unit = ingredient.Unit,
+                IsAllergen = ingredient.IsAllergen
+            };
             return responseIngredientDto;
         }
 
-        public async Task<ResponseIngredientDto> UpdateIngredientAsync(string id,UpdateIngredientDto updateIngredientDto)
+        public async Task<ResponseIngredientDto> UpdateIngredientAsync(string ingredientId, UpdateIngredientDto updateIngredientDto)
         {
-            var ingredient = await _ingredientRepository.FirstOrDefault(x => x.IngredientId == id);
+            var ingredient = await _ingredientRepository.FirstOrDefault(x => x.IngredientId == ingredientId);
+
+            var existingIngredient = await _ingredientRepository.FirstOrDefault(x => x.Name == updateIngredientDto.Name);
+
+            if(existingIngredient != null && existingIngredient.IngredientId != ingredientId)
+            {
+                throw new InvalidOperationException("This ingredient already exists.");
+            }
 
             ingredient.Name = updateIngredientDto.Name;
             ingredient.ImgUrl = updateIngredientDto.ImgUrl.IsNullOrEmpty() ?
-                "https://images.ctfassets.net/kugm9fp9ib18/3aHPaEUU9HKYSVj1CTng58/d6750b97344c1dc31bdd09312d74ea5b/menu-default-image_220606_web.png"
+                Constants.DefaultRecipeImage
                 : updateIngredientDto.ImgUrl;
             ingredient.CaloriesPer100g = updateIngredientDto.CaloriesPer100g;
             ingredient.Unit = updateIngredientDto.Unit;
@@ -98,9 +107,9 @@ namespace RecipeFinderAPI.Services
             };
         }
 
-        public async Task<bool> DeleteIngredientAsync(string id)
+        public async Task<bool> DeleteIngredientAsync(string ingredientId)
         {
-            var ingredient = await _ingredientRepository.FirstOrDefault(x => x.IngredientId == id);
+            var ingredient = await _ingredientRepository.FirstOrDefault(x => x.IngredientId == ingredientId);
             if (ingredient == null)
             {
                 return false;
@@ -114,7 +123,7 @@ namespace RecipeFinderAPI.Services
             int page = 1,
             int itemsPerPage = 10)
         {
-            var ingredients = await _ingredientRepository.GetAllAsync(_ingredientRepository.Query(),filter, page, itemsPerPage);
+            var ingredients = await _ingredientRepository.GetAllAsync(_ingredientRepository.Query(), filter, page, itemsPerPage);
 
             var response = ingredients.Items.Select(x => new ResponseIngredientDto()
             {
@@ -135,6 +144,21 @@ namespace RecipeFinderAPI.Services
             };
         }
 
+        public async Task<List<ResponseIngredientDto>> GetIngredientsByIdsAsync(List<string> ingredientIds)
+        {
+            var ingredients = await _ingredientRepository.Query()
+                .Where(x => ingredientIds.Contains(x.IngredientId))
+                .ToListAsync();
 
+            return ingredients.Select(ingredient => new ResponseIngredientDto
+            {
+                Id = ingredient.IngredientId,
+                Name = ingredient.Name,
+                ImgUrl = ingredient.ImgUrl,
+                CaloriesPer100g = ingredient.CaloriesPer100g,
+                Unit = ingredient.Unit,
+                IsAllergen = ingredient.IsAllergen
+            }).ToList();
+        }
     }
 }

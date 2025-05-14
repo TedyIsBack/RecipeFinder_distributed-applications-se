@@ -8,17 +8,11 @@ namespace RecipeFinderAPI.Services.Interfaces
 {
     public interface IRecipeService
     {
-        Task<ResponseRecipeDto> GetRecipeByIdAsync(string id);
-        Task<ResponseRecipeDto> CreateRecipeAsync(CreateRecipeDto createRecipeDto);
-        Task<ResponseRecipeDto> UpdateRecipeAsync(string id, UpdateRecipeDto updateRecipeDto);
-        Task<bool> DeleteRecipeAsync(string id);
-        Task<PagedResult<ResponseRecipeDto>> GetAllRecipeAsync(Expression<Func<Recipe, bool>> filter = null,
-            int page = 1,
-            int itemsPerPage = 10);
-
-        Task<PagedResult<ResponseRecipeDto>> GetAllUserRecipesAsync(
-            string userId,
-            Expression<Func<Recipe, bool>> filter = null,
+        Task<ResponseRecipeDto> GetRecipeByIdAsync(string recipeId);
+        Task<ResponseRecipeDto> CreateRecipeAsync(string userId, CreateRecipeDto createRecipeDto);
+        Task<ResponseRecipeDto> UpdateRecipeAsync(string userId, string recipeId, UpdateRecipeDto updateRecipeDto);
+        Task<bool> DeleteRecipeAsync(string recipeId);
+        Task<PagedResult<ResponseRecipeDto>> GetAllRecipesAsync(Expression<Func<Recipe, bool>> filter = null,
             int page = 1,
             int itemsPerPage = 10);
     }

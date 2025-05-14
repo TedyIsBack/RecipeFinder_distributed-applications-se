@@ -96,7 +96,7 @@ namespace RecipeFinderAPI.Services
                 CategoryId = fav.Recipe.CategoryId,
                 Category = new ResponseCategoryDto
                 {
-                    Id = fav.Recipe.CategoryId
+                    Id = fav.Recipe.CategoryId,
                     Name = fav.Recipe.Category.Name,
                     Description = fav.Recipe.Category.Description,
                     ShortCode = fav.Recipe.Category.ShortCode,

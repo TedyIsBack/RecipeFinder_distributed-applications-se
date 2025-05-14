@@ -12,7 +12,7 @@ using RecipeFinderAPI.Data;
 namespace RecipeFinderAPI.Migrations
 {
     [DbContext(typeof(RecipeFinderDbContext))]
-    [Migration("20250511215153_Init")]
+    [Migration("20250513215521_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -65,9 +65,11 @@ namespace RecipeFinderAPI.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("RecipeId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("FavoriteRecipeId");
@@ -144,9 +146,14 @@ namespace RecipeFinderAPI.Migrations
                     b.Property<int>("PreparationTime")
                         .HasColumnType("int");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("RecipeId");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Recipes");
                 });
@@ -157,12 +164,14 @@ namespace RecipeFinderAPI.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("IngredientId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<double>("Quantity")
                         .HasColumnType("float");
 
                     b.Property<string>("RecipeId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("RecipeIngredientId");
@@ -215,12 +224,14 @@ namespace RecipeFinderAPI.Migrations
                     b.HasOne("RecipeFinderAPI.Entities.Recipe", "Recipe")
                         .WithMany("FavoriteRecipes")
                         .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("RecipeFinderAPI.Entities.User", "User")
                         .WithMany("FavoriteRecipe")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Recipe");
 
@@ -235,7 +246,14 @@ namespace RecipeFinderAPI.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("RecipeFinderAPI.Entities.User", "CreatedBy")
+                        .WithMany("Recipes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("Category");
+
+                    b.Navigation("CreatedBy");
                 });
 
             modelBuilder.Entity("RecipeFinderAPI.Entities.RecipeIngredient", b =>
@@ -243,12 +261,14 @@ namespace RecipeFinderAPI.Migrations
                     b.HasOne("RecipeFinderAPI.Entities.Ingredient", "Ingredient")
                         .WithMany("RecipeIngredients")
                         .HasForeignKey("IngredientId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("RecipeFinderAPI.Entities.Recipe", "Recipe")
                         .WithMany("RecipeIngredients")
                         .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Ingredient");
 
@@ -275,6 +295,8 @@ namespace RecipeFinderAPI.Migrations
             modelBuilder.Entity("RecipeFinderAPI.Entities.User", b =>
                 {
                     b.Navigation("FavoriteRecipe");
+
+                    b.Navigation("Recipes");
                 });
 #pragma warning restore 612, 618
         }

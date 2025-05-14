@@ -19,6 +19,5 @@ namespace RecipeFinderAPI.Infrastructure.DTOs.CategoryDTOs
 
         [Required]
         public bool IsSeasonal { get; set; }
-        public DateTime CreatedAt { get; set; }
     }
 }

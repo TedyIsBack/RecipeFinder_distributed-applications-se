@@ -32,8 +32,10 @@ namespace RecipeFinderAPI.Services
                 CreatedAt = DateTime.UtcNow
             };
 
+            await _categoryRepository.AddAsync(category);
             return new ResponseCategoryDto
             {
+                Id = category.CategoryId,
                 Name = category.Name,
                 Description = category.Description,
                 ShortCode = category.ShortCode,
@@ -59,7 +61,7 @@ namespace RecipeFinderAPI.Services
             int page = 1, 
             int itemsPerPage = 10)
         {
-            var categories = await _categoryRepository.GetAllAsync(filter, page, itemsPerPage);
+            var categories = await _categoryRepository.GetAllAsync(_categoryRepository.Query(),filter, page, itemsPerPage);
 
             var reposnse = categories.Items.Select(x => new ResponseCategoryDto()
             {
@@ -76,7 +78,7 @@ namespace RecipeFinderAPI.Services
                 Items = reposnse,
                 TotalCount = categories.TotalCount,
                 Page = categories.Page,
-                PageSize = categories.PageSize
+                itemsPerPage = categories.itemsPerPage
             };
         }
 
@@ -107,7 +109,6 @@ namespace RecipeFinderAPI.Services
             category.Name = updateCategoryDto.Name;
             category.ShortCode = updateCategoryDto.ShortCode;
             category.IsSeasonal = updateCategoryDto.IsSeasonal;
-            category.CreatedAt = DateTime.UtcNow;
 
             await _categoryRepository.UpdateAsync(category);
 

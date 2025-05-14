@@ -32,6 +32,7 @@ namespace RecipeFinderAPI.Services
                     Email = user.Email,
                     Username = user.Username,
                     Role = user.Role,
+                    IsActive = user.IsActive,
                     CreatedAt = user.CreatedAt.ToLongDateString() + " " + user.CreatedAt.ToLongTimeString()
                 };
             }
@@ -54,6 +55,7 @@ namespace RecipeFinderAPI.Services
                 Email = user.Email,
                 Username = user.Username,
                 Role = user.Role,
+                IsActive = user.IsActive,
                 CreatedAt = user.CreatedAt.ToLongDateString() + " " + user.CreatedAt.ToLongTimeString()
             };
         }
@@ -63,13 +65,14 @@ namespace RecipeFinderAPI.Services
             int page = 1,
             int itemsPerPage = 10)
         {
-            var users = await _userRepository.GetAllAsync(filter, page, itemsPerPage);
+            var users = await _userRepository.GetAllAsync(_userRepository.Query(),filter, page, itemsPerPage);
             var responseUsers = users.Items.Select(u => new ResponseUserDto()
             {
                 Id = u.UserId,
                 Email = u.Email,
                 Username = u.Username,
                 Role = u.Role,
+                IsActive = u.IsActive,
                 CreatedAt =  u.CreatedAt.ToLongDateString() + " " + u.CreatedAt.ToLongTimeString()
             }).ToList();
 
@@ -78,7 +81,7 @@ namespace RecipeFinderAPI.Services
                 Items = responseUsers,
                 TotalCount = users.TotalCount,
                 Page = users.Page,
-                PageSize = users.PageSize
+                itemsPerPage = users.itemsPerPage
             };
         }
 

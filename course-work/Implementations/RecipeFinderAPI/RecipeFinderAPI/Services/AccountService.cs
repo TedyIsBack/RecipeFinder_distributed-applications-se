@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RecipeFinderAPI.Entities;
 using RecipeFinderAPI.Infrastructure.DTOs.AccountDTOs;
-using RecipeFinderAPI.Infrastructure.DTOs.FavoriteRecipesDTOs;
 using RecipeFinderAPI.Infrastructure.DTOs.UsersDTOs;
 using RecipeFinderAPI.Repositories;
 using RecipeFinderAPI.Services.Interfaces;
@@ -13,7 +12,7 @@ namespace RecipeFinderAPI.Services
     {
         private readonly BaseRepository<User> _userRepository;
 
-        public AccountService(BaseRepository<User> userRepository)
+        public AccountService(BaseRepository<User> userRepository, IFavoriteService favoriteService)
         {
             _userRepository = userRepository;
         }
@@ -29,32 +28,17 @@ namespace RecipeFinderAPI.Services
              .FirstOrDefaultAsync();
 
             ResponseAccountDto responseAccountDto = new ResponseAccountDto();
-
-            if (user != null)
+           
+            return new ResponseAccountDto()
             {
-                responseAccountDto = new ResponseAccountDto()
-                {
-                    Id = user.UserId,
-                    Email = user.Email,
-                    Username = user.Username,
-                    CreatedAt = user.CreatedAt.ToLongDateString() + " " + user.CreatedAt.ToLongTimeString(),
-                    favoriteRecipes = user.FavoriteRecipe.Select(x => new ResponseFavoriteRecipeDto
-                    {
-                        Id = x.RecipeId,
-                        RecipeId = x.RecipeId,
-                        Name = x.Recipe.Name,
-                        Description = x.Recipe.Description,
-                        PreparationTime = x.Recipe.PreparationTime,
-                        Calories = x.Recipe.Calories,
-                        IsVegan = x.Recipe.IsVegan,
-                        IsVegetarian = x.Recipe.IsVegetarian,
-                        CategoryId = x.Recipe.CategoryId,
-                        CategoryName = x.Recipe.Category.Name
-                    }).ToList()
-                };
-            }
-            return responseAccountDto;
+                Id = user.UserId,
+                Email = user.Email,
+                Username = user.Username,
+                CreatedAt = user.CreatedAt.ToLongDateString() + " " + user.CreatedAt.ToLongTimeString(),
+            };
         }
+
+    
 
         public async Task<ResponseAccountDto> UpdateUserAsync(string id, UpdateAccountDto updateAccountDto)
         {
@@ -76,19 +60,6 @@ namespace RecipeFinderAPI.Services
                 Email = user.Email,
                 Username = user.Username,
                 CreatedAt = user.CreatedAt.ToLongDateString() + " " + user.CreatedAt.ToLongTimeString(),
-                favoriteRecipes = user.FavoriteRecipe.Select(x => new ResponseFavoriteRecipeDto
-                {
-                    Id = x.RecipeId,
-                    RecipeId = x.RecipeId,
-                    Name = x.Recipe.Name,
-                    Description = x.Recipe.Description,
-                    PreparationTime = x.Recipe.PreparationTime,
-                    Calories = x.Recipe.Calories,
-                    IsVegan = x.Recipe.IsVegan,
-                    IsVegetarian = x.Recipe.IsVegetarian,
-                    CategoryId = x.Recipe.CategoryId,
-                    CategoryName = x.Recipe.Category.Name
-                }).ToList()
             };
         }
     }

@@ -36,6 +36,13 @@ namespace RecipeFinderAPI.Data
                  .WithMany(x => x.Recipes)
                  .HasForeignKey(x => x.CategoryId)
                  .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Recipe>()
+                   .HasOne(x => x.User)
+                   .WithMany(x => x.Recipes)
+                   .HasForeignKey(x => x.CreatedBy)
+                   .OnDelete(DeleteBehavior.SetNull);
+
             #endregion
 
             #region Ingredients

@@ -31,5 +31,6 @@ namespace RecipeFinderAPI.Entities
 
         public DateTime CreatedAt { get; set; }
         public virtual ICollection<FavoriteRecipe> FavoriteRecipe { get; set; }
+        public virtual ICollection<Recipe> Recipes { get; set; }
     }
 }

@@ -42,6 +42,8 @@ namespace RecipeFinderAPI.Entities
         public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; }
         public virtual ICollection<FavoriteRecipe> FavoriteRecipes { get; set; }
 
+        public string? CreatedBy { get; set; }  
+        public virtual User User { get; set; }
     }
 
 }

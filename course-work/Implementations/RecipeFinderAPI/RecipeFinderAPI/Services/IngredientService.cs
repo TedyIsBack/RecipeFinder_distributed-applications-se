@@ -114,7 +114,7 @@ namespace RecipeFinderAPI.Services
             int page = 1,
             int itemsPerPage = 10)
         {
-            var ingredients = await _ingredientRepository.GetAllAsync(filter, page, itemsPerPage);
+            var ingredients = await _ingredientRepository.GetAllAsync(_ingredientRepository.Query(),filter, page, itemsPerPage);
 
             var response = ingredients.Items.Select(x => new ResponseIngredientDto()
             {
@@ -131,7 +131,7 @@ namespace RecipeFinderAPI.Services
                 Items = response,
                 TotalCount = ingredients.TotalCount,
                 Page = ingredients.Page,
-                PageSize = ingredients.PageSize
+                itemsPerPage = ingredients.itemsPerPage
             };
         }
 

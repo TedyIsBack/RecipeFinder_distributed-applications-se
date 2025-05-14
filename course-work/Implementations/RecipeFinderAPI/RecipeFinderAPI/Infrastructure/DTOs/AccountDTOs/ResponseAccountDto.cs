@@ -1,5 +1,4 @@
-﻿using RecipeFinderAPI.Infrastructure.DTOs.FavoriteRecipesDTOs;
-
+﻿
 namespace RecipeFinderAPI.Infrastructure.DTOs.AccountDTOs
 {
     public class ResponseAccountDto
@@ -10,6 +9,6 @@ namespace RecipeFinderAPI.Infrastructure.DTOs.AccountDTOs
 
         public string CreatedAt { get; set; }
 
-        public List<ResponseFavoriteRecipeDto> favoriteRecipes { get; set; } = new List<ResponseFavoriteRecipeDto>();
+        //public IEnumerable<ResponseFavoriteRecipeDto> favoriteRecipes { get; set; } = new List<ResponseFavoriteRecipeDto>();
     }
 }

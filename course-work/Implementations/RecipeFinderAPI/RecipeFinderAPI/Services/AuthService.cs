@@ -59,6 +59,7 @@ namespace RecipeFinderAPI.Services
                 Email = user.Email,
                 Username = user.Username,
                 Role = user.Role,
+                IsActive = user.IsActive,
                 CreatedAt = user.CreatedAt.ToLongDateString() + " " + user.CreatedAt.ToLongTimeString()
             };
         }

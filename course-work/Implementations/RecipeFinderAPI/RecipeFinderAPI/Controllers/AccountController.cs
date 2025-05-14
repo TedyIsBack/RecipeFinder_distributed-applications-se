@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RecipeFinderAPI.Common;
+using RecipeFinderAPI.Entities;
 using RecipeFinderAPI.Infrastructure.DTOs.AccountDTOs;
 using RecipeFinderAPI.Services.Interfaces;
+using System.Linq.Expressions;
 using System.Security.Claims;
 
 namespace RecipeFinderAPI.Controllers
@@ -13,6 +15,7 @@ namespace RecipeFinderAPI.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
+
         public AccountController(IAccountService accountService)
         {
             _accountService = accountService;
@@ -43,7 +46,7 @@ namespace RecipeFinderAPI.Controllers
                 return Unauthorized();
 
 
-            var updatedUser = await _accountService.UpdateUserAsync(loggedUserId,updateAccountDto);
+            var updatedUser = await _accountService.UpdateUserAsync(loggedUserId, updateAccountDto);
 
             if (updatedUser == null)
                 return NotFound();
@@ -51,4 +54,5 @@ namespace RecipeFinderAPI.Controllers
             return Ok(updatedUser);
         }
     }
+
 }

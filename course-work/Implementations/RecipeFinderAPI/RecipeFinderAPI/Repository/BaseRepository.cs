@@ -18,20 +18,19 @@ namespace RecipeFinderAPI.Repositories
         }
 
         public async Task<PagedResult<T>> GetAllAsync(
+            IQueryable<T> query,
             Expression<Func<T, bool>> filter = null,
             int page = 1,
-            int pageSize = 10)
+            int itemsPerPage = 10)
         {
-            IQueryable<T> query = Query();
-
             if (filter != null)
                 query = query.Where(filter);
 
             int totalCount = await query.CountAsync(); 
 
             var items = await query
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
+                .Skip((page - 1) * itemsPerPage)
+                .Take(itemsPerPage)
                 .ToListAsync();
 
             return new PagedResult<T>
@@ -39,7 +38,7 @@ namespace RecipeFinderAPI.Repositories
                 Items = items,
                 TotalCount = totalCount,
                 Page = page,
-                PageSize = pageSize
+                itemsPerPage = itemsPerPage
             };
         }
 

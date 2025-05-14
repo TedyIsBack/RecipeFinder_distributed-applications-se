@@ -4,6 +4,7 @@ namespace RecipeFinderAPI.Infrastructure.DTOs.IngredientDTOs
 {
     public class UpdateIngredientDto
     {
+
         [Required]
         [StringLength(50, MinimumLength = 3, ErrorMessage = "Ingredient name must be at least 3 characters long")]
         public string Name { get; set; }

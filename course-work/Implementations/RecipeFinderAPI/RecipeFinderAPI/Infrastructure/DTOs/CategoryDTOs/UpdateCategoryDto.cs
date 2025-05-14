@@ -7,7 +7,7 @@ namespace RecipeFinderAPI.Infrastructure.DTOs.CategoryDTOs
 
         //public string Id { get; set; }
         [Required]
-        [MaxLength(100)]
+        [StringLength(100, MinimumLength = 3, ErrorMessage = "Ingredient name must be at least 3 characters long")]
         public string Name { get; set; }
 
         [Required]
@@ -15,11 +15,11 @@ namespace RecipeFinderAPI.Infrastructure.DTOs.CategoryDTOs
         public string Description { get; set; }
 
         [Required]
-        [MaxLength(10)]
+        [StringLength(10, MinimumLength = 1, ErrorMessage = "Category code must be at least 1 character long")]
         public string ShortCode { get; set; }
+
 
         [Required]
         public bool IsSeasonal { get; set; }
-        public string CreatedAt { get; set; }
     }
 }

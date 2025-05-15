@@ -1,7 +1,6 @@
 ﻿using RecipeFinderAPI.Entities;
 using RecipeFinderAPI.Infrastructure.DTOs.CategoryDTOs;
 using RecipeFinderAPI.Infrastructure.DTOs.IngredientDTOs;
-using RecipeFinderAPI.Infrastructure.DTOs.RecipeDTOs;
 using RecipeFinderAPI.Infrastructure;
 using RecipeFinderAPI.Repositories;
 using RecipeFinderAPI.Services.Interfaces;

@@ -183,9 +183,15 @@ namespace RecipeFinderAPI.Services
             };
         }
 
-        public async Task<ResponseRecipeDto> GetRecipeByIdAsync(string id)
+        public async Task<ResponseRecipeDto> GetRecipeByIdAsync(string recipeId)
         {
-            var recipe = await _recipeRepository.FirstOrDefault(x => x.RecipeId == id);
+            var recipe = await _recipeRepository.Query()
+             .Include(r => r.User)
+             .Include(r => r.Category)
+             .Include(r => r.RecipeIngredients)
+                 .ThenInclude(ri => ri.Ingredient)
+             .FirstOrDefaultAsync(x => x.RecipeId == recipeId);
+
 
             if (recipe == null)
                 throw new Exception("Recipe not found");
@@ -207,8 +213,36 @@ namespace RecipeFinderAPI.Services
                 PreparationTime = recipe.PreparationTime,
                 IsVegan = recipe.IsVegan,
                 IsVegetarian = recipe.IsVegetarian,
+                CreatedBy = recipe.CreatedBy,
+                CreatedByUser = new ResponseAccountDto()
+                {
+                    CreatedAt = recipe.User.CreatedAt.ToLongDateString(),
+                    Email = recipe.User.Email,
+                    Username = recipe.User.Username,
+                    Id = recipe.User.UserId
+
+                },
                 CategoryId = recipe.CategoryId,
-                RecipeIngredients = recipeIngredients
+                Category = new ResponseCategoryDto
+                {
+                    Name = recipe.Category.Name,
+                    Description = recipe.Category.Description,
+                    ShortCode = recipe.Category.ShortCode,
+                    IsSeasonal = recipe.Category.IsSeasonal,
+                    CreatedAt = recipe.Category.CreatedAt.ToLongDateString()
+                },
+
+                RecipeIngredients = recipe.RecipeIngredients.Select(ri => new ResponseRecipeIngredientDto
+                {
+                    RecipeIngredientId = ri.RecipeIngredientId,
+                    IngredientId = ri.IngredientId,
+                    Quantity = ri.Quantity,
+                    Name = ri.Ingredient.Name,
+                    ImgUrl = ri.Ingredient.ImgUrl,
+                    CaloriesPer100g = ri.Ingredient.CaloriesPer100g,
+                    Unit = ri.Ingredient.Unit,
+                    IsAllergen = ri.Ingredient.IsAllergen
+                }).ToList()
             };
 
             return responseRecipe;

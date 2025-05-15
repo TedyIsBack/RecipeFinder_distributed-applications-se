@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RecipeFinderAPI.Common;
 using RecipeFinderAPI.Entities;
+using RecipeFinderAPI.Infrastructure;
 using RecipeFinderAPI.Infrastructure.DTOs.RecipeDTOs;
 using RecipeFinderAPI.Infrastructure.DTOs.RecipesDTOs;
 using RecipeFinderAPI.Services.Interfaces;
@@ -11,6 +12,9 @@ using System.Security.Claims;
 
 namespace RecipeFinderAPI.Controllers
 {
+    /// <summary>
+    /// Access to all recipes
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = Constants.UserRole)]
@@ -23,9 +27,22 @@ namespace RecipeFinderAPI.Controllers
             _recipeService = recipeService;
         }
 
+        /// <summary>
+        /// Returns recipes created by logged user. Supports filtering by recipe name, and if recipe is vegan or vegetarian.
+        /// </summary>
+        /// <param name="name">Optional: Filter recipe by name (partial match).</param>
+        /// <param name="isVegan">Optional: Filter recipe by vegan status (true/false).</param>
+        /// <param name="isVegetarian">Optional: Filter recipe by vegetarian status (true/false).</param>
+        /// <param name="page">Page number (default is 1).</param>
+        /// <param name="itemsPerPage">Number of items per page (default is 10).</param>
         [HttpGet("created")]
+        [ProducesResponseType(typeof(PagedResult<ResponseRecipeDto>), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> GetCreatedRecipes(
           [FromQuery] string? name,
+          [FromQuery] bool? isVegan,
+          [FromQuery] bool? isVegetarian,
           [FromQuery] int page = 1,
           [FromQuery] int itemsPerPage = 10)
         {
@@ -34,8 +51,7 @@ namespace RecipeFinderAPI.Controllers
                 return Unauthorized();
 
             Expression<Func<Recipe, bool>> filter = x =>
-         (string.IsNullOrEmpty(name) || x.Name.Contains(name)) && (x.CreatedBy == loggedUserId);
-
+                (string.IsNullOrEmpty(name) || x.Name.Contains(name)) && (x.CreatedBy == loggedUserId);
 
             var recipes = await _recipeService.GetAllRecipesAsync(filter, page, itemsPerPage);
 
@@ -45,23 +61,33 @@ namespace RecipeFinderAPI.Controllers
             return Ok(recipes);
         }
 
+        /// <summary>
+        /// Returns all recipes. Supports filtering by recipe name, and if recipe is vegan or vegetarian.
+        /// </summary>
+        /// <param name="name">Optional: Filter recipe by name (partial match).</param>
+        /// <param name="isVegan">Optional: Filter recipe by vegan status (true/false).</param>
+        /// <param name="isVegetarian">Optional: Filter recipe by vegetarian status (true/false).</param>
+        /// <param name="page">Page number (default is 1).</param>
+        /// <param name="itemsPerPage">Number of items per page (default is 10).</param>
         [HttpGet]
+        [ProducesResponseType(typeof(PagedResult<ResponseRecipeDto>), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> GetAllRecipes(
-          [FromQuery] string? name,
-          [FromQuery] bool? isVegan,
-          [FromQuery] bool? isVegetarian,
-          [FromQuery] int page = 1,
-          [FromQuery] int itemsPerPage = 10)
+            [FromQuery] string? name,
+            [FromQuery] bool? isVegan,
+            [FromQuery] bool? isVegetarian,
+            [FromQuery] int page = 1,
+            [FromQuery] int itemsPerPage = 10)
         {
             Expression<Func<Recipe, bool>> filter = null;
             if (!string.IsNullOrEmpty(name) || isVegan.HasValue || isVegetarian.HasValue)
             {
                 filter = x =>
-             (string.IsNullOrEmpty(name) || x.Name.Contains(name)) && (x.IsVegan == isVegan) && (x.IsVegetarian == isVegetarian);
-
+                    (string.IsNullOrEmpty(name) || x.Name.Contains(name)) && (x.IsVegan == isVegan) && (x.IsVegetarian == isVegetarian);
             }
 
-            var recipes = await _recipeService.GetAllRecipesAsync(filter,page, itemsPerPage);
+            var recipes = await _recipeService.GetAllRecipesAsync(filter, page, itemsPerPage);
 
             if (recipes == null)
                 return NotFound();
@@ -69,7 +95,14 @@ namespace RecipeFinderAPI.Controllers
             return Ok(recipes);
         }
 
+        /// <summary>
+        /// Create new recipe. Only logged user can create it.
+        /// </summary>
+        /// <param name="createRecipeDto">Data to create recipe</param>
         [HttpPost]
+        [ProducesResponseType(typeof(ResponseRecipeDto), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> CreateRecipe([FromBody] CreateRecipeDto createRecipeDto)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -83,11 +116,17 @@ namespace RecipeFinderAPI.Controllers
                 return BadRequest("Recipe could not be created.");
 
             return Ok(created);
-
-            //return CreatedAtAction(nameof(GetCreatedRecipes), new { id = created.Id }, created);
         }
 
+        /// <summary>
+        /// Edit existing recipe by id. Only the recipe's creator can edit it.
+        /// </summary>
+        /// <param name="recipeId">id of existing recipe</param>
+        /// <param name="updateRecipeDto">Recipe data which only recipe's creator can edit</param>
         [HttpPut("{recipeId}")]
+        [ProducesResponseType(typeof(ResponseRecipeDto), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> UpdateRecipe(string recipeId, [FromBody] UpdateRecipeDto updateRecipeDto)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -103,7 +142,14 @@ namespace RecipeFinderAPI.Controllers
             return Ok(updated);
         }
 
+        /// <summary>
+        /// Delete existing recipe by id. Only the recipe's creator can delete it.
+        /// </summary>
+        /// <param name="recipeId">id of existing recipe</param>
         [HttpDelete("{recipeId}")]
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteRecipe(string recipeId)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -111,7 +157,6 @@ namespace RecipeFinderAPI.Controllers
             if (loggedUserId == null)
                 return Unauthorized("User is not logged in.");
 
-            // Проверка дали рецептата съществува и дали потребителят е собственик на нея
             var recipe = await _recipeService.GetRecipeByIdAsync(recipeId);
             if (recipe == null)
                 return NotFound("Recipe not found.");
@@ -119,7 +164,6 @@ namespace RecipeFinderAPI.Controllers
             if (recipe.CreatedBy != loggedUserId)
                 return Unauthorized("You are not authorized to delete this recipe.");
 
-            // Изтриване на рецептата
             bool deleted = await _recipeService.DeleteRecipeAsync(recipeId);
             if (!deleted)
                 return NotFound("Failed to delete recipe.");

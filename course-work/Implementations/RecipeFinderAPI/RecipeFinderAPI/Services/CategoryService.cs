@@ -40,7 +40,6 @@ namespace RecipeFinderAPI.Services
                 Description = category.Description,
                 ShortCode = category.ShortCode,
                 IsSeasonal = category.IsSeasonal,
-                CreatedAt = category.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")
             };
 
         }
@@ -70,7 +69,6 @@ namespace RecipeFinderAPI.Services
                 Description = x.Description,
                 ShortCode = x.ShortCode,
                 IsSeasonal = x.IsSeasonal,
-                CreatedAt = x.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")
             }).ToList();
 
             return new PagedResult<ResponseCategoryDto>()
@@ -100,7 +98,6 @@ namespace RecipeFinderAPI.Services
                 responseCategoryDto.Description = category.Description;
                 responseCategoryDto.ShortCode = category.ShortCode;
                 responseCategoryDto.IsSeasonal = category.IsSeasonal;
-                responseCategoryDto.CreatedAt = category.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss");
             }
 
             return responseCategoryDto;
@@ -130,7 +127,6 @@ namespace RecipeFinderAPI.Services
                 Description = category.Description,
                 ShortCode = category.ShortCode,
                 IsSeasonal = category.IsSeasonal,
-                CreatedAt = category.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")
             };
         }
     }

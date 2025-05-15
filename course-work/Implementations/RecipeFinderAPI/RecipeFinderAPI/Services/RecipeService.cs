@@ -99,6 +99,14 @@ namespace RecipeFinderAPI.Services
                 IsVegan = newRecipe.IsVegan,
                 IsVegetarian = newRecipe.IsVegetarian,
                 CategoryId = newRecipe.CategoryId,
+                Category = new ResponseCategoryDto()
+                {
+                    Id = newRecipe.Category.CategoryId,
+                    Name = newRecipe.Category.Name,
+                    Description = newRecipe.Category.Description,
+                    IsSeasonal = newRecipe.Category.IsSeasonal,
+                    ShortCode = newRecipe.Category.ShortCode,
+                },
                 RecipeIngredients = recipeIngredientsDto,
                 CreatedBy = userId,
                 CreatedByUser = new ResponseAccountDto()
@@ -139,6 +147,7 @@ namespace RecipeFinderAPI.Services
                 Name = recipe.Name,
                 Description = recipe.Description,
                 ImgUrl = recipe.ImgUrl,
+                Calories = recipe.Calories,
                 PreparationTime = recipe.PreparationTime,
                 IsVegan = recipe.IsVegan,
                 IsVegetarian = recipe.IsVegetarian,
@@ -154,11 +163,11 @@ namespace RecipeFinderAPI.Services
                 CategoryId = recipe.CategoryId,
                 Category = new ResponseCategoryDto
                 {
+                    Id = recipe.CategoryId,
                     Name = recipe.Category.Name,
                     Description = recipe.Category.Description,
                     ShortCode = recipe.Category.ShortCode,
                     IsSeasonal = recipe.Category.IsSeasonal,
-                    CreatedAt = recipe.Category.CreatedAt.ToLongDateString()
                 },
 
                 RecipeIngredients = recipe.RecipeIngredients.Select(ri => new ResponseRecipeIngredientDto
@@ -229,7 +238,6 @@ namespace RecipeFinderAPI.Services
                     Description = recipe.Category.Description,
                     ShortCode = recipe.Category.ShortCode,
                     IsSeasonal = recipe.Category.IsSeasonal,
-                    CreatedAt = recipe.Category.CreatedAt.ToLongDateString()
                 },
 
                 RecipeIngredients = recipe.RecipeIngredients.Select(ri => new ResponseRecipeIngredientDto
@@ -360,7 +368,6 @@ namespace RecipeFinderAPI.Services
                     ShortCode = recipe.Category.ShortCode,
                     Description = recipe.Category.Description,
                     IsSeasonal = recipe.Category.IsSeasonal,
-                    CreatedAt = recipe.Category.CreatedAt.ToLongDateString()
                 },
                 RecipeIngredients = recipeIngredientsDto,
                 Calories = recipe.Calories

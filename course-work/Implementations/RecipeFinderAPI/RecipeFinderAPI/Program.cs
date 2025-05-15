@@ -8,6 +8,7 @@ using RecipeFinderAPI.Infrastructure;
 using RecipeFinderAPI.Repositories;
 using RecipeFinderAPI.Services;
 using RecipeFinderAPI.Services.Interfaces;
+using System.Reflection;
 using System.Text;
 
 namespace RecipeFinderAPI
@@ -57,30 +58,39 @@ namespace RecipeFinderAPI
                 });
 
             // Add controllers and configure CORS policy
-            builder.Services.AddControllers();
-
-          /*  // CORS configuration
-            builder.Services.AddCors(options =>
+            //builder.Services.AddControllers();
+            builder.Services.AddControllers(options =>
             {
-                options.AddPolicy("AllowFrontend", policy =>
-                {
-                    policy.WithOrigins("https://localhost:5001") // Replace with your actual frontend URL
-                          .AllowAnyHeader()
-                          .AllowAnyMethod();
-                });
-            });*/
+                options.ReturnHttpNotAcceptable = true; // Ако не е application/json, връща 406
+            });
 
-            
+            /*  // CORS configuration
+              builder.Services.AddCors(options =>
+              {
+                  options.AddPolicy("AllowFrontend", policy =>
+                  {
+                      policy.WithOrigins("https://localhost:5001") // Replace with your actual frontend URL
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                  });
+              });*/
+
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo
+                options.IncludeXmlComments(Path.Combine(
+                AppContext.BaseDirectory,
+                 $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"), true);
+
+                options.SwaggerDoc("default", new OpenApiInfo
                 {
                     Title = "RecipeFinderAPI",
-                    Version = "v1"
+                    //Version = "v1",
+                    Description = "An API which allows users to perform Recipe operations."
                 });
 
-                
+
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = "JWT Authorization header using the Bearer scheme. Example: 'Bearer {token}'",
@@ -123,7 +133,11 @@ namespace RecipeFinderAPI
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                //app.UseSwaggerUI();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/default/swagger.json", "RecipeFinderAPI");
+                });
             }
             else
             {

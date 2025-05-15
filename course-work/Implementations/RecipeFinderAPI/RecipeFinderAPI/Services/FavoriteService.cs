@@ -100,7 +100,6 @@ namespace RecipeFinderAPI.Services
                     Description = fav.Recipe.Category.Description,
                     ShortCode = fav.Recipe.Category.ShortCode,
                     IsSeasonal = fav.Recipe.Category.IsSeasonal,
-                    CreatedAt = fav.Recipe.Category.CreatedAt.ToString("D")
                 },
                 RecipeIngredients = fav.Recipe.RecipeIngredients.Select(ri => new ResponseIngredientDto
                 {

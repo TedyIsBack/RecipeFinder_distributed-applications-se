@@ -8,7 +8,6 @@
         public string Description { get; set; }
         public string ShortCode { get; set; }
         public bool IsSeasonal { get; set; }
-        public string CreatedAt { get; set; }
 
     }
 }

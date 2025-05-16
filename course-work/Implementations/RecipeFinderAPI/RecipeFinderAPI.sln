@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35919.96 d17.13
+VisualStudioVersion = 17.13.35919.96
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecipeFinderAPI", "RecipeFinderAPI\RecipeFinderAPI.csproj", "{F2D77C07-0310-4B75-8103-3E0D67773476}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecipeFinderMVC", "RecipeFinderMVC\RecipeFinderMVC.csproj", "{FF50CAB8-A122-4BFD-87EC-D4A4218B4F84}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{F2D77C07-0310-4B75-8103-3E0D67773476}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2D77C07-0310-4B75-8103-3E0D67773476}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2D77C07-0310-4B75-8103-3E0D67773476}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF50CAB8-A122-4BFD-87EC-D4A4218B4F84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF50CAB8-A122-4BFD-87EC-D4A4218B4F84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF50CAB8-A122-4BFD-87EC-D4A4218B4F84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF50CAB8-A122-4BFD-87EC-D4A4218B4F84}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

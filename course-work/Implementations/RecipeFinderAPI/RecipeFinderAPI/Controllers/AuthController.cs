@@ -13,7 +13,7 @@ namespace RecipeFinderAPI.Controllers
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
-    [Produces("application/json")] 
+    [Produces("application/json")]
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
@@ -28,10 +28,10 @@ namespace RecipeFinderAPI.Controllers
         /// </summary>
         /// <param name="registerDto">User registration data (e.g. email, password, etc.).</param>
         /// <returns>The created user or error.</returns>
+        /// <response code="400">Invalid user data</response>
+        /// <response code="404">User not found</response>
         [HttpPost("register")]
         [ProducesResponseType(typeof(ResponseUserDto), 200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
         public async Task<IActionResult> PostAsync([FromBody] RegisterDto registerDto)
         {
             if (registerDto == null)
@@ -40,15 +40,12 @@ namespace RecipeFinderAPI.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            try
-            {
-                var user = await _authService.CreateUserAsync(registerDto);
-                return Ok(user);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var user = await _authService.CreateUserAsync(registerDto);
+
+            if (user == null)
+                return NotFound();
+
+            return Ok(user);
         }
 
         /// <summary>
@@ -56,15 +53,15 @@ namespace RecipeFinderAPI.Controllers
         /// </summary>
         /// <param name="loginDto">User login data (username and password).</param>
         /// <returns>JWT token if valid login.</returns>
-        [HttpPut("login")]
+        /// <response code="403">User not found</response>
+        /// <response code="404">User not found</response>
+        [HttpPost("login")]
         [ProducesResponseType(typeof(object), 200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
         public async Task<IActionResult> PutAsync([FromBody] LoginDto loginDto, [FromServices] TokenService tokenService)
         {
             User loggedUser = await _authService.ValidateUserCredentialsAsync(loginDto.Username, loginDto.Password);
             if (loggedUser == null)
-                return Unauthorized();
+                return NotFound();
 
             string jwt = tokenService.GenerateToken(loggedUser.UserId, loggedUser.Role);
 

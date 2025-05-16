@@ -29,11 +29,13 @@ namespace RecipeFinderAPI.Controllers
         /// </summary>
         /// <param name="Username">Optional: Filter users by username (partial match).</param>
         /// <param name="IsActive">Optional: Filter users by active status (default is true).</param>
-        /// <param name="page">Page number (default is 1).</param>
-        /// <param name="itemsPerPage">Number of items per page (default is 10).</param>
+        /// <param name="page">Page number .</param>
+        /// <param name="itemsPerPage">Number of items per page .</param>
+        /// <response code="200">Returns all users</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="403">Forbidden. Only admin can perform this action.</response>
         [HttpGet]
         [ProducesResponseType(typeof(PagedResult<ResponseUserDto>), 200)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<PagedResult<ResponseUserDto>> GetAllUsers(
             [FromQuery] string? Username = null,
             [FromQuery] bool IsActive = true,
@@ -49,19 +51,22 @@ namespace RecipeFinderAPI.Controllers
         /// <summary>
         /// Update existing user details by id.
         /// </summary>
-        /// <param name="id">id of existing user</param>
+        /// <param name="userId">id of existing user</param>
         /// <param name="updateUserDto">user data which admin can edit (username,role)</param>
-        [HttpPut("{id}")]
+        /// <response code="200">User is updates successfully</response>
+        /// <response code="400">Invalid/missing user id or invalid data</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="403">Forbidden. Only admin can perform this action.</response>
+        /// <response code="404">User with this id doesn't exist</response>
+        [HttpPut("{userId}")]
         [ProducesResponseType(typeof(ResponseUserDto), 200)]
         [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserDto updateUserDto)
+        public async Task<IActionResult> UpdateUser(string userId, [FromBody] UpdateUserDto updateUserDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var updatedUser = await _userService.UpdateUserAsync(id, updateUserDto);
+            var updatedUser = await _userService.UpdateUserAsync(userId, updateUserDto);
 
             if (updatedUser == null)
                 return NotFound();
@@ -69,22 +74,26 @@ namespace RecipeFinderAPI.Controllers
             return Ok(updatedUser);
         }
 
+
+
         /// <summary>
         /// Delete existing user by id. Admin only.
         /// </summary>
-        /// <param name="id">id of existing user</param>
-        [HttpDelete("{id}")]
+        /// <param name="userId">id of existing user</param>
+        /// <response code="400">Invalid/missing user id</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="403">Forbidden. Only admin can perform this action.</response>
+        /// <response code="404">User with this user doesn't exist</response>
+        [HttpDelete("{userId}")]
         [ProducesResponseType(204)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
-        public async Task<IActionResult> DeleteUser(string id)
+        public async Task<IActionResult> DeleteUser(string userId)
         {
-            bool isDeleted = await _userService.DeleteUserAsync(id);
+            bool isDeleted = await _userService.DeleteUserAsync(userId);
 
             if (!isDeleted)
                 return NotFound();
 
-            return NoContent();
+            return Ok();
         }
     }
 }

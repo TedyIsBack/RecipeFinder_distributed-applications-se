@@ -86,8 +86,10 @@ namespace RecipeFinderAPI
                 options.SwaggerDoc("default", new OpenApiInfo
                 {
                     Title = "RecipeFinderAPI",
-                    //Version = "v1",
-                    Description = "An API which allows users to perform Recipe operations."
+                    Version = "default",
+                    Description = @"RecipeFinder lets users search, add, and manage recipes easily. It's built to help you find meals based on basic preferences.
+
+- [GitHub Repo](https://github.com/TedyIsBack/RecipeFinder_distributed-applications-se/tree/master/course-work/Implementations/RecipeFinderAPI)"
                 });
 
 

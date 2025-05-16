@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using RecipeFinderAPI.Entities;
 using RecipeFinderAPI.Infrastructure;
 using RecipeFinderAPI.Infrastructure.DTOs.FavoriteDTOs;
@@ -15,8 +16,8 @@ namespace RecipeFinderAPI.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]  // Задължителна автентикация
-    [Produces("application/json")]  // Винаги JSON отговор
+    [Authorize]
+    [Produces("application/json")]
     public class FavoritesController : ControllerBase
     {
         private readonly IFavoriteService _favoriteService;
@@ -31,12 +32,12 @@ namespace RecipeFinderAPI.Controllers
         /// <param name="name">Optional: Filter recipe by name (partial match).</param>
         /// <param name="isVegan">Optional: Filter recipe by vegan status (true/false).</param>
         /// <param name="isVegetarian">Optional: Filter recipe by vegetarian status (true/false).</param>
-        /// <param name="page">Page number (default is 1).</param>
-        /// <param name="itemsPerPage">Number of items per page (default is 10).</param>
+        /// <param name="page">Page number .</param>
+        /// <param name="itemsPerPage">Number of items per page .</param>
+        /// <response code="200">Returns logged user's favorite recipes</response>
+        /// <response code="401">Unauthorized</response>
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(PagedResult<ResponseFavoriteDto>))] // 
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
+        [ProducesResponseType(200, Type = typeof(PagedResult<ResponseFavoriteDto>))]
         public async Task<IActionResult> GetFavorites(
            [FromQuery] string? name,
            [FromQuery] bool? isVegan,
@@ -54,9 +55,6 @@ namespace RecipeFinderAPI.Controllers
 
             var favorites = await _favoriteService.GetUserFavoriteRecipesAsync(loggedUserId, filter, page, itemsPerPage);
 
-            if (favorites == null)
-                return NotFound();
-
             return Ok(favorites);
         }
 
@@ -64,10 +62,11 @@ namespace RecipeFinderAPI.Controllers
         /// Add recipe to favorites
         /// </summary>
         /// <param name="recipeId">recipe's id</param>
+        /// <response code="200">Recipe added successfully to favorites</response>
+        /// <response code="400">Invalid/missing category id</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="404">Recipe with such id doesn't exist</response>
         [HttpPost("{recipeId}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
         public async Task<IActionResult> AddToFavorites(string recipeId)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -86,24 +85,29 @@ namespace RecipeFinderAPI.Controllers
         /// <summary>
         /// Remove recipe from favorites
         /// </summary>
-        /// <param name="recipeId">recipe's id</param>
+        /// <param name="recipeId">id of existing recipe</param>
+        /// <response code="400">Invalid/missing recipe id</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="404">Recipe with this id is not in favorites or doesn't exist</response>
         [HttpDelete("{recipeId}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
         public async Task<IActionResult> RemoveFromFavorites(string recipeId)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
+            
             if (loggedUserId == null)
                 return Unauthorized();
+
+            if(recipeId.IsNullOrEmpty())
+                return BadRequest(new { message = "Invalid recipe id" });
+
 
             var result = await _favoriteService.RemoveFromFavoritesAsync(loggedUserId, recipeId);
 
             if (!result)
-                return BadRequest(new { message = "Recipe not found in favorites" });
+                return NotFound(new { message = "Recipe not found in favorites" });
 
-            return Ok(new { message = "Recipe removed from favorites" });
+            return Ok();
+            //return Ok(new { message = "Recipe removed from favorites" });
         }
     }
 }

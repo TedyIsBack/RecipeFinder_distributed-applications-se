@@ -17,7 +17,7 @@ namespace RecipeFinderAPI.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    [Produces("application/json")] // 👈 Винаги връща JSON
+    [Produces("application/json")]
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
@@ -30,6 +30,12 @@ namespace RecipeFinderAPI.Controllers
         /// <summary>
         /// Returns all categories. Supports filtering by name and seasonal status.
         /// </summary>
+        /// <param name="name">Optional: Filter categories by name (partial match).</param>
+        /// <param name="IsSeasonal">Optional: Filter ingredients by allergen status (true/false).</param>
+        /// <param name="page">Page number .</param>
+        /// <param name="itemsPerPage">Number of items per page .</param>
+        /// <response code="200">Returns all categories</response>
+        /// <response code="401">Unauthorized</response>
         [HttpGet]
         [Authorize]
         [ProducesResponseType(typeof(PagedResult<ResponseCategoryDto>), 200)]
@@ -49,17 +55,20 @@ namespace RecipeFinderAPI.Controllers
         /// <summary>
         /// Get category by id.
         /// </summary>
-        [HttpGet("{id}")]
+        /// <param name="categoryId">id of existing category</param>
+        /// <response code="200">Returns category</response>
+        /// <response code="400">Invalid/missing category id</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="404">Category with this id doesn't exist</response>
+        [HttpGet("{categoryId}")]
         [Authorize]
         [ProducesResponseType(typeof(ResponseCategoryDto), 200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
-        public async Task<IActionResult> GetCategoryById(string id)
+        public async Task<IActionResult> GetCategoryById(string categoryId)
         {
-            if (string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(categoryId))
                 return BadRequest("Invalid client request");
 
-            var category = await _categoryService.GetCategoryByIdAsync(id);
+            var category = await _categoryService.GetCategoryByIdAsync(categoryId);
 
             if (category == null)
                 return NotFound();
@@ -70,11 +79,14 @@ namespace RecipeFinderAPI.Controllers
         /// <summary>
         /// Creates a new category. Accessible only to admin.
         /// </summary>
+        /// <param name="createCategoryDto">Required data to create new category</param>
+        /// <response code="200">Returns created category</response>
+        /// <response code="400">Invalid data</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="403">Forbidden. Only admin ca create category</response>
         [HttpPost]
         [Authorize(Roles = Constants.AdminRole)]
         [ProducesResponseType(typeof(ResponseCategoryDto), 200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
         public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryDto createCategoryDto)
         {
             if (createCategoryDto == null)
@@ -87,39 +99,52 @@ namespace RecipeFinderAPI.Controllers
             return Ok(result);
         }
 
+
         /// <summary>
         /// Edit existing category by id. Accessible only to admin.
         /// </summary>
-        [HttpPut("{id}")]
+        /// <param name="categoryId">id of existing category</param>
+        /// <param name="updateCategoryDto">Category info you can change</param>
+        /// <response code="200">Returns category</response>
+        /// <response code="400">Invalid/missing category id or wrong data</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="403">Forbidden. Only admin perform this action.</response>
+        /// <response code="404">Category with this id doesn't exist</response>
+        [HttpPut("{categoryId}")]
         [Authorize(Roles = Constants.AdminRole)]
         [ProducesResponseType(typeof(ResponseCategoryDto), 200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateCategory(string id, [FromBody] UpdateCategoryDto updateCategoryDto)
+        public async Task<IActionResult> UpdateCategory(string categoryId, [FromBody] UpdateCategoryDto updateCategoryDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var updatedCategory = await _categoryService.UpdateCategoryAsync(id, updateCategoryDto);
+            var updatedCategory = await _categoryService.UpdateCategoryAsync(categoryId, updateCategoryDto);
+
+            if (updatedCategory == null)
+                return NotFound();
+
             return Ok(updatedCategory);
         }
+
 
         /// <summary>
         /// Delete existing category by id. Accessible only to admin.
         /// </summary>
-        [HttpDelete("{id}")]
+        /// <param name="categoryId">id of existing category</param>
+        /// <response code="400">Invalid/missing category id</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="403">Forbidden. Only admin can perform this action.</response>
+        /// <response code="404">Category with this id doesn't exist</response>
+        [HttpDelete("{categoryId}")]
         [Authorize(Roles = Constants.AdminRole)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
-        public async Task<IActionResult> DeleteCategory(string id)
+        public async Task<IActionResult> DeleteCategory(string categoryId)
         {
-            bool isDeleted = await _categoryService.DeleteCategoryAsync(id);
+            bool isDeleted = await _categoryService.DeleteCategoryAsync(categoryId);
 
             if (!isDeleted)
                 return NotFound();
 
-            return NoContent();
+            return Ok();
         }
     }
 

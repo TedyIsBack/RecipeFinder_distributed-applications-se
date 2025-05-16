@@ -33,12 +33,12 @@ namespace RecipeFinderAPI.Controllers
         /// <param name="name">Optional: Filter recipe by name (partial match).</param>
         /// <param name="isVegan">Optional: Filter recipe by vegan status (true/false).</param>
         /// <param name="isVegetarian">Optional: Filter recipe by vegetarian status (true/false).</param>
-        /// <param name="page">Page number (default is 1).</param>
-        /// <param name="itemsPerPage">Number of items per page (default is 10).</param>
+        /// <param name="page">Page number .</param>
+        /// <param name="itemsPerPage">Number of items per page .</param>
+        /// <response code="200">Returns all recipes created by logged user</response>
+        /// <response code="401">Unauthorized.</response>
         [HttpGet("created")]
         [ProducesResponseType(typeof(PagedResult<ResponseRecipeDto>), 200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
         public async Task<IActionResult> GetCreatedRecipes(
           [FromQuery] string? name,
           [FromQuery] bool? isVegan,
@@ -55,9 +55,6 @@ namespace RecipeFinderAPI.Controllers
 
             var recipes = await _recipeService.GetAllRecipesAsync(filter, page, itemsPerPage);
 
-            if (recipes == null)
-                return NotFound();
-
             return Ok(recipes);
         }
 
@@ -67,12 +64,12 @@ namespace RecipeFinderAPI.Controllers
         /// <param name="name">Optional: Filter recipe by name (partial match).</param>
         /// <param name="isVegan">Optional: Filter recipe by vegan status (true/false).</param>
         /// <param name="isVegetarian">Optional: Filter recipe by vegetarian status (true/false).</param>
-        /// <param name="page">Page number (default is 1).</param>
-        /// <param name="itemsPerPage">Number of items per page (default is 10).</param>
+        /// <param name="page">Page number .</param>
+        /// <param name="itemsPerPage">Number of items per page .</param>
+        /// <response code="200">Returns all recipes</response>
+        /// <response code="401">Unauthorized.</response>
         [HttpGet]
         [ProducesResponseType(typeof(PagedResult<ResponseRecipeDto>), 200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
         public async Task<IActionResult> GetAllRecipes(
             [FromQuery] string? name,
             [FromQuery] bool? isVegan,
@@ -89,44 +86,50 @@ namespace RecipeFinderAPI.Controllers
 
             var recipes = await _recipeService.GetAllRecipesAsync(filter, page, itemsPerPage);
 
-            if (recipes == null)
-                return NotFound();
-
             return Ok(recipes);
         }
+
+
 
         /// <summary>
         /// Create new recipe. Only logged user can create it.
         /// </summary>
         /// <param name="createRecipeDto">Data to create recipe</param>
+        /// <response code="200">Recipe is created successfully</response>
+        /// <response code="400">Invalid/missing recipe id or invalid data</response>
+        /// <response code="401">Unauthorized</response>
         [HttpPost]
         [ProducesResponseType(typeof(ResponseRecipeDto), 200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
         public async Task<IActionResult> CreateRecipe([FromBody] CreateRecipeDto createRecipeDto)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
             if (loggedUserId == null)
                 return Unauthorized();
 
             var created = await _recipeService.CreateRecipeAsync(loggedUserId, createRecipeDto);
 
-            if (created == null)
-                return BadRequest("Recipe could not be created.");
-
             return Ok(created);
         }
+
+
 
         /// <summary>
         /// Edit existing recipe by id. Only the recipe's creator can edit it.
         /// </summary>
         /// <param name="recipeId">id of existing recipe</param>
         /// <param name="updateRecipeDto">Recipe data which only recipe's creator can edit</param>
+        /// <response code="200">Recipe is updated successfully</response>
+        /// <response code="400">Invalid/missing recipe id or wrong data</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="403">Forbidden. Only recipe's creator can perform this action.</response>
+        /// <response code="404">Recipe with this id doesn't exist</response>
+
         [HttpPut("{recipeId}")]
         [ProducesResponseType(typeof(ResponseRecipeDto), 200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
         public async Task<IActionResult> UpdateRecipe(string recipeId, [FromBody] UpdateRecipeDto updateRecipeDto)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -139,36 +142,44 @@ namespace RecipeFinderAPI.Controllers
             if (updated == null)
                 return NotFound();
 
+            if (updated.CreatedBy != loggedUserId)
+                return Forbid();
+
             return Ok(updated);
         }
+
+
 
         /// <summary>
         /// Delete existing recipe by id. Only the recipe's creator can delete it.
         /// </summary>
         /// <param name="recipeId">id of existing recipe</param>
+        /// <response code="400">Invalid/missing recipe id</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="403">Forbidden. Only recipe's creator can perform this action.</response>
+        /// <response code="404">Recipe with this id doesn't exist</response>
         [HttpDelete("{recipeId}")]
         [ProducesResponseType(typeof(string), 200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteRecipe(string recipeId)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (loggedUserId == null)
-                return Unauthorized("User is not logged in.");
+                return Unauthorized();
 
             var recipe = await _recipeService.GetRecipeByIdAsync(recipeId);
+
             if (recipe == null)
-                return NotFound("Recipe not found.");
+                return NotFound();
 
             if (recipe.CreatedBy != loggedUserId)
-                return Unauthorized("You are not authorized to delete this recipe.");
+                return Forbid();
 
             bool deleted = await _recipeService.DeleteRecipeAsync(recipeId);
             if (!deleted)
-                return NotFound("Failed to delete recipe.");
+                return NotFound();
 
-            return Ok("Recipe successfully deleted.");
+            return Ok();
         }
     }
 }

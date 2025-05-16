@@ -30,12 +30,12 @@ namespace RecipeFinderAPI.Controllers
         /// </summary>
         /// <param name="name">Optional: Filter ingredients by name (partial match).</param>
         /// <param name="isAllergen">Optional: Filter ingredients by allergen status (true/false).</param>
-        /// <param name="page">Page number (default is 1).</param>
-        /// <param name="itemsPerPage">Number of items per page (default is 10).</param>
+        /// <param name="page">Page number .</param>
+        /// <param name="itemsPerPage">Number of items per page .</param>
+        /// <response code="200">Returns all ingredients</response>
+        /// <response code="401">Unauthorized</response>
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(PagedResult<ResponseIngredientDto>))]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
         public async Task<IActionResult> GetAllIngredients(
             [FromQuery] string? name = null,
             [FromQuery] bool? isAllergen = null,
@@ -50,21 +50,25 @@ namespace RecipeFinderAPI.Controllers
             return Ok(result);
         }
 
+
+
         /// <summary>
         /// Get ingredient by id.
         /// </summary>
-        /// <param name="id">id of ingredient</param>
-        [HttpGet("{id}")]
+        /// <param name="ingredientId">id of ingredient</param>
+        /// <response code="200">Returns ingredient</response>
+        /// <response code="400">Invalid/missing ingredient id</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="404">Ingredient with this id doesn't exist</response>
+        [HttpGet("{ingredientId}")]
         [ProducesResponseType(200, Type = typeof(ResponseIngredientDto))]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
         [Authorize]
-        public async Task<IActionResult> GetIngredientById(string id)
+        public async Task<IActionResult> GetIngredientById(string ingredientId)
         {
-            if (string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(ingredientId))
                 return BadRequest(new { message = "Invalid client request" });
 
-            var ingredient = await _ingredientService.GetIngredientByIdAsync(id);
+            var ingredient = await _ingredientService.GetIngredientByIdAsync(ingredientId);
 
             if (ingredient == null)
                 return NotFound();
@@ -72,15 +76,19 @@ namespace RecipeFinderAPI.Controllers
             return Ok(ingredient);
         }
 
+
+
         /// <summary>
         /// Creates a new ingredient. Accessible only to admin.
         /// </summary>
         /// <param name="createIngredientDto">Object containing the new ingredient details.</param>
+        /// <response code="200">Ingredient is created successfully</response>
+        /// <response code="400">Invalid/missing ingredient id</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="403">Forbidden. Only admin can perform this action.</response>
         [HttpPost]
         [Authorize(Roles = Constants.AdminRole)]
         [ProducesResponseType(200, Type = typeof(ResponseIngredientDto))]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
         public async Task<IActionResult> CreateIngredient([FromBody] CreateIngredientDto createIngredientDto)
         {
             if (createIngredientDto == null)
@@ -93,42 +101,54 @@ namespace RecipeFinderAPI.Controllers
             return Ok(result);
         }
 
+
+
         /// <summary>
         /// Edit existing ingredient by id. Accessible only to admin.
         /// </summary>
-        /// <param name="id">ingredient's id</param>
+        /// <param name="ingredientId">ingredient's id</param>
         /// <param name="updateIngredientDto">Ingredient data admin can change</param>
-        [HttpPut("{id}")]
+        /// <response code="200">Ingredient is updated successfully</response>
+        /// <response code="400">Invalid/missing ingredient id</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="403">Forbidden. Only admin can perform this action.</response>
+        /// <response code="404">Ingredient with this id doesn't exist</response>
+        [HttpPut("{ingredientId}")]
         [Authorize(Roles = Constants.AdminRole)]
         [ProducesResponseType(200, Type = typeof(ResponseIngredientDto))]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateIngredient(string id, [FromBody] UpdateIngredientDto updateIngredientDto)
+        public async Task<IActionResult> UpdateIngredient(string ingredientId, [FromBody] UpdateIngredientDto updateIngredientDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var updatedIngredient = await _ingredientService.UpdateIngredientAsync(id, updateIngredientDto);
+            var updatedIngredient = await _ingredientService.UpdateIngredientAsync(ingredientId, updateIngredientDto);
+
+            if (updatedIngredient == null)
+                return NotFound();
+
             return Ok(updatedIngredient);
         }
+
+
 
         /// <summary>
         /// Deletes an ingredient by its ID. Accessible only to admins.
         /// </summary>
-        /// <param name="id">The ID of the ingredient to delete.</param>
-        [HttpDelete("{id}")]
+        /// <param name="ingredientId">The ID of the ingredient to delete.</param>
+        /// <response code="400">Invalid/missing ingredient id</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="403">Forbidden. Only admin can perform this action.</response>
+        /// <response code="404">Ingredient with this id doesn't exist</response>
+        [HttpDelete("{ingredientId}")]
         [Authorize(Roles = Constants.AdminRole)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
-        public async Task<IActionResult> DeleteIngredient(string id)
+        public async Task<IActionResult> DeleteIngredient(string ingredientId)
         {
-            bool isDeleted = await _ingredientService.DeleteIngredientAsync(id);
+            bool isDeleted = await _ingredientService.DeleteIngredientAsync(ingredientId);
 
             if (!isDeleted)
                 return NotFound();
 
-            return NoContent();
+            return Ok();
         }
     }
 }

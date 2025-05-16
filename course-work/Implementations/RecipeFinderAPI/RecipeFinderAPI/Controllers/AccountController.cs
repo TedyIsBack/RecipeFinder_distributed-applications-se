@@ -33,8 +33,6 @@ namespace RecipeFinderAPI.Controllers
         /// <response code="404">User not found</response>
         [HttpGet]
         [ProducesResponseType(typeof(ResponseAccountDto), 200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
         public async Task<IActionResult> GetLoggedUserInfo()
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -59,9 +57,6 @@ namespace RecipeFinderAPI.Controllers
         /// <response code="401">User is not authorized</response>
         /// <response code="404">User not found</response>
         [HttpPut]
-        [ProducesResponseType(typeof(UpdateAccountDto), 200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
         public async Task<IActionResult> UpdateLoggedUserInfo([FromBody] UpdateAccountDto updateAccountDto)
         {
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);

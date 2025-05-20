@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RecipeFinderAPI.Infrastructure.DTOs.IngredientDTOs
+namespace RecipeFinderMVC.VIewModels.Ingredients
 {
-    public class CreateIngredientDto
+    public class CreateIngredientVM
     {
         [Required]
         [StringLength(50,MinimumLength = 3,ErrorMessage = "Ingredient name must be at least 3 characters long")]

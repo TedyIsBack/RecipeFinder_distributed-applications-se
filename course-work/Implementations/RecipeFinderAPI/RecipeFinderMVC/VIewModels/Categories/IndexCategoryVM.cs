@@ -1,4 +1,4 @@
-﻿namespace RecipeFinderAPI.Infrastructure.DTOs.CategoryDTOs
+﻿namespace RecipeFinderMVC.VIewModels.Categories
 {
     public class IndexCategoryVM
     {

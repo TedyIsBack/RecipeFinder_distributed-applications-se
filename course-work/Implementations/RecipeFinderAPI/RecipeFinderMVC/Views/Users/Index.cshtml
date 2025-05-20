@@ -1,0 +1,80 @@
+﻿@model RecipeFinderMVC.VIewModels.Users.IndexUsersVM
+
+@{
+    ViewData["Title"] = "Users";
+}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">Users</h2>
+
+    <form action="/Users/Index" method="get" class="row g-3 align-items-center mb-4">
+        @foreach (var key in ViewContext.HttpContext.Request.Query.Keys)
+        {
+            if (key != "Email" && key != "FirstName" && key != "LastName" && key != "Pager.Page")
+            {
+                <input type="hidden" name="@key" value="@ViewContext.HttpContext.Request.Query[key]" />
+            }
+        }
+
+        <div class="col-md-4">
+            @Html.TextBoxFor(m => m.Username, new { @class = "form-control", placeholder = "Username" })
+        </div>
+
+        <div class="col-md-4">
+            @Html.DropDownListFor(m => m.IsActive,
+                     new SelectList(new[]
+                     {
+            new { Value = "true", Text = "Active" },
+            new { Value = "false", Text = "Inactive" }
+            }, "Value", "Text", Model.IsActive.ToString().ToLower()),
+                     "Select Status",
+                     new { @class = "form-select" })
+        </div>
+
+        <div class="col-md-4 d-flex justify-content-end gap-2">
+            <a href="/Users/Index" class="btn btn-outline-secondary">Clear</a>
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </div>
+    </form>
+
+    <div class="row fw-bold border-bottom py-2 text-center">
+        <div class="col-md-2">Email</div>
+        <div class="col-md-2">Username</div>
+        <div class="col-md-2">Role</div>
+        <div class="col-md-2">Is Active</div>
+        <div class="col-md-2">Created At</div>
+        <div class="col-md-2">Actions</div>
+    </div>
+
+    @if (Model.Items != null && Model.Items.Any())
+    {
+        @foreach (var item in Model.Items)
+        {
+            <div class="row align-items-center border-bottom py-2 text-center">
+                <div class="col-md-2">@item.Email</div>
+                <div class="col-md-2">@item.Username</div>
+                <div class="col-md-2">@item.Role</div>
+                <div class="col-md-2">@((item.IsActive) ? "Yes" : "No")</div>
+                <div class="col-md-2">@item.CreatedAt</div>
+                <div class="col-md-2">
+                    <a href="/Users/Edit?id=@item.Id" class="btn btn-sm btn-primary">Edit</a>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="row py-3 text-center text-muted">
+            <div class="col">No users found.</div>
+        </div>
+    }
+
+    @* Pager section here *@
+    
+    <div class="d-flex justify-content-center mt-4">
+        @Html.Partial("/Views/Shared/PagerPartial.cshtml", Model.Pager)
+    </div>
+   
+
+</div>

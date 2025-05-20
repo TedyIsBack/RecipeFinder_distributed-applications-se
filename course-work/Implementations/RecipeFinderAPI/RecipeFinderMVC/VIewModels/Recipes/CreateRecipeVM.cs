@@ -1,13 +1,14 @@
 ﻿using RecipeFinderAPI.Infrastructure.DTOs.CategoryDTOs;
 using RecipeFinderAPI.Infrastructure.DTOs.IngredientDTOs;
+using RecipeFinderMVC.VIewModels.Ingredients;
 using System.ComponentModel.DataAnnotations;
 
-namespace RecipeFinderAPI.Infrastructure.DTOs.RecipeDTOs
+namespace RecipeFinderMVC.VIewModels.Recipes
 {
-    public class UpdateRecipeDto
+    public class CreateRecipeVM
     {
         [Required]
-        [StringLength(100, MinimumLength = 10, ErrorMessage = "Recipe name must be at least 10 characters long.")]
+        [StringLength(100, MinimumLength = 10, ErrorMessage ="Recipe name must be at least 10 characters long.")]
         public string Name { get; set; }
 
         [Required]
@@ -32,10 +33,7 @@ namespace RecipeFinderAPI.Infrastructure.DTOs.RecipeDTOs
         [Required]
         public string CategoryId { get; set; }
 
-       // [Required]
-       // public ResponseCategoryDto Category { get; set; }
-
         [Required]
-        public ICollection<CreateRecipeIngredientDto> RecipeIngredients { get; set; }
+        public ICollection<CreateRecipeIngredientVM> RecipeIngredients { get; set; }
     }
 }

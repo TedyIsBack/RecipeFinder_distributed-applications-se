@@ -21,7 +21,6 @@ namespace RecipeFinderAPI.Services
 
         public async Task<bool> AddToFavoritesAsync(string userId, string recipeId)
         {
-            
             var exists = await _favoriteRepo.FirstOrDefault(f => f.UserId == userId && f.RecipeId == recipeId);
             if (exists != null)
                 return false; 
@@ -48,12 +47,7 @@ namespace RecipeFinderAPI.Services
             return true; 
         }
 
-        //public async Task<bool> IsRecipeFavoritedAsync(string userId, string recipeId)
-        //{
-        //    var favorite = await _favoriteRepo.FirstOrDefault(f => f.UserId == userId && f.RecipeId == recipeId);
-        //    return favorite != null; 
-        //}
-
+      
         public async Task<PagedResult<ResponseFavoriteDto>> GetUserFavoriteRecipesAsync(
       string userId,
       Expression<Func<Recipe, bool>> filter = null,

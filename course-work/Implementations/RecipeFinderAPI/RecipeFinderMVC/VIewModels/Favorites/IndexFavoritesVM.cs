@@ -1,11 +1,14 @@
 ﻿using RecipeFinderAPI.Infrastructure.DTOs.CategoryDTOs;
 using RecipeFinderAPI.Infrastructure.DTOs.IngredientDTOs;
+using RecipeFinderMVC.VIewModels.Categories;
+using RecipeFinderMVC.VIewModels.Ingredients;
 
-namespace RecipeFinderAPI.Infrastructure.DTOs.FavoriteDTOs
+namespace RecipeFinderMVC.VIewModels.Favorites
 {
-    public class ResponseFavoriteDto
+    public class IndexFavoritesVM
     {
 
+        //public string Id { get; set; }
         public string FavoritesId { get; set; }
         public string RecipeId { get; set; }
         public string Name { get; set; }
@@ -21,6 +24,6 @@ namespace RecipeFinderAPI.Infrastructure.DTOs.FavoriteDTOs
         public bool IsVegetarian { get; set; }
         public string CategoryId { get; set; }
         public IndexCategoryVM Category { get; set; }
-        public ICollection<ResponseIngredientDto> RecipeIngredients { get; set; }
+        public ICollection<IndexIngredientVM> RecipeIngredients { get; set; }
     }
 }

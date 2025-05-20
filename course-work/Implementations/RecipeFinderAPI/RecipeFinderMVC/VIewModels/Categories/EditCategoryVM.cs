@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RecipeFinderAPI.Infrastructure.DTOs.CategoryDTOs
+namespace RecipeFinderMVC.VIewModels.Categories
 {
-    public class UpdateCategoryVM
+    public class EditCategoryVM
     {
 
+        public string Id { get; set; } 
         //public string Id { get; set; }
         [Required]
         [StringLength(100, MinimumLength = 3, ErrorMessage = "Ingredient name must be at least 3 characters long")]

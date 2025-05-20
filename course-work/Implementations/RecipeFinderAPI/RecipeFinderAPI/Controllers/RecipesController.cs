@@ -112,6 +112,9 @@ namespace RecipeFinderAPI.Controllers
 
             var created = await _recipeService.CreateRecipeAsync(loggedUserId, createRecipeDto);
 
+            if(created == null)
+                return BadRequest(new { message = "Recipe already exists" });
+
             return Ok(created);
         }
 
@@ -177,7 +180,7 @@ namespace RecipeFinderAPI.Controllers
 
             bool deleted = await _recipeService.DeleteRecipeAsync(recipeId);
             if (!deleted)
-                return NotFound();
+                return NotFound("Recipe not found");
 
             return Ok();
         }

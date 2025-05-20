@@ -1,11 +1,13 @@
 ﻿using RecipeFinderAPI.Infrastructure.DTOs.AccountDTOs;
 using RecipeFinderAPI.Infrastructure.DTOs.CategoryDTOs;
 using RecipeFinderAPI.Infrastructure.DTOs.IngredientDTOs;
+using RecipeFinderMVC.VIewModels.Categories;
+using RecipeFinderMVC.VIewModels.Ingredients;
 using System.ComponentModel.DataAnnotations;
 
-namespace RecipeFinderAPI.Infrastructure.DTOs.RecipeDTOs
+namespace RecipeFinderMVC.VIewModels.Recipes
 {
-    public class ResponseRecipeDto
+    public class IndexRecipeVM
     {
       
         public string Id { get; set; }
@@ -24,6 +26,6 @@ namespace RecipeFinderAPI.Infrastructure.DTOs.RecipeDTOs
         public IndexCategoryVM Category { get; set; }
         public string CreatedBy { get; set; }
         public ResponseAccountDto CreatedByUser { get; set; }
-        public ICollection<ResponseRecipeIngredientDto> RecipeIngredients { get; set; }
+        public ICollection<IndexRecipeIngredientVM> RecipeIngredients { get; set; }
     }
 }

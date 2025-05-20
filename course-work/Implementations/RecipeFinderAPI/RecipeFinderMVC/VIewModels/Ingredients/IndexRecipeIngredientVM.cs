@@ -1,7 +1,8 @@
-﻿namespace RecipeFinderAPI.Infrastructure.DTOs.IngredientDTOs
+﻿namespace RecipeFinderMVC.VIewModels.Ingredients
 {
-    public class ResponseRecipeIngredientDto
+    public class IndexRecipeIngredientVM
     {
+        //public string Id { get; set; }         // Идентификатор на рецептат
         public string RecipeIngredientId { get; set; }
         public string IngredientId { get; set; }
         public double Quantity { get; set; }   // Количеството на съставката в рецептата

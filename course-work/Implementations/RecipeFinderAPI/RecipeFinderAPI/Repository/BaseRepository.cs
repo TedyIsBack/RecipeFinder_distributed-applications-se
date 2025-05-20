@@ -26,7 +26,10 @@ namespace RecipeFinderAPI.Repositories
             if (filter != null)
                 query = query.Where(filter);
 
-            int totalCount = await query.CountAsync(); 
+            int totalCount = await query.CountAsync();
+
+            int pagesCount =
+              (int)Math.Ceiling(totalCount / (double)itemsPerPage);
 
             var items = await query
                 .Skip((page - 1) * itemsPerPage)
@@ -38,7 +41,8 @@ namespace RecipeFinderAPI.Repositories
                 Items = items,
                 TotalCount = totalCount,
                 Page = page,
-                itemsPerPage = itemsPerPage
+                itemsPerPage = itemsPerPage,
+                PagesCount = pagesCount
             };
         }
 

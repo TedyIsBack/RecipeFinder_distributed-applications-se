@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RecipeFinderAPI.Infrastructure.DTOs.IngredientDTOs
+namespace RecipeFinderMVC.VIewModels.Ingredients
 {
-    public class CreateRecipeIngredientDto
+    public class CreateRecipeIngredientVM
     {
         public string IngredientId { get; set; }
 

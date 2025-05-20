@@ -148,7 +148,7 @@ namespace RecipeFinderAPI
             }
 
             // Enable CORS and Authentication
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseCors("AllowFrontend");  // Apply CORS policy
             app.UseAuthentication();
             app.UseAuthorization();

@@ -16,24 +16,28 @@ namespace RecipeFinderAPI.Services
     public class RecipeService : IRecipeService
     {
         private readonly BaseRepository<Recipe> _recipeRepository;
-
         private readonly IIngredientService _ingredientService;
         private readonly BaseRepository<User> _userRepository;
+        private readonly BaseRepository<Category> _categoryRepository;
         public RecipeService(BaseRepository<Recipe> baseRepository,
             BaseRepository<User> userRepository,
-            IIngredientService ingredientService)
+            IIngredientService ingredientService,
+            BaseRepository<Category> categoryRepository)
         {
             _recipeRepository = baseRepository;
             _ingredientService = ingredientService;
             _userRepository = userRepository;
+            _categoryRepository = categoryRepository;
         }
         public async Task<ResponseRecipeDto> CreateRecipeAsync(string userId, CreateRecipeDto createRecipeDto)
         {
             var existingRecipe = await _recipeRepository.FirstOrDefault(x => x.Name == createRecipeDto.Name);
             if (existingRecipe != null)
-                throw new InvalidOperationException("Recipe already exists");
+                return null;
+                //throw new InvalidOperationException("Recipe already exists");
 
             var user = await _userRepository.FirstOrDefault(x => x.UserId == userId);
+            var category = await _categoryRepository.FirstOrDefault(x => x.CategoryId == createRecipeDto.CategoryId);
 
             var newRecipe = new Recipe
             {
@@ -46,6 +50,7 @@ namespace RecipeFinderAPI.Services
                 IsVegan = createRecipeDto.IsVegan,
                 IsVegetarian = createRecipeDto.IsVegetarian,
                 CreatedBy = userId,
+                Category = category,
                 User = user,
                 CategoryId = createRecipeDto.CategoryId,
                 RecipeIngredients = new List<RecipeIngredient>()
@@ -61,9 +66,7 @@ namespace RecipeFinderAPI.Services
 
             newRecipe.RecipeIngredients = recipeIngredients;
 
-            await _recipeRepository.AddAsync(newRecipe);
-
-            var ingredientIds = createRecipeDto.RecipeIngredients.Select(ri => ri.IngredientId).ToList();
+             var ingredientIds = createRecipeDto.RecipeIngredients.Select(ri => ri.IngredientId).ToList();
 
             var responseIngredients = await _ingredientService.GetIngredientsByIdsAsync(ingredientIds);
 
@@ -73,7 +76,7 @@ namespace RecipeFinderAPI.Services
                 .Where(ri => ingredientsDict.ContainsKey(ri.IngredientId))
                 .Select((ri, index) => new ResponseRecipeIngredientDto
                 {
-                    RecipeIngredientId = recipeIngredients[index].RecipeIngredientId,  // Използване на съществуващото RecipeIngredientId
+                    RecipeIngredientId = recipeIngredients[index].RecipeIngredientId,  
                     IngredientId = ri.IngredientId,
                     Quantity = ri.Quantity,
                     Name = ingredientsDict[ri.IngredientId].Name,
@@ -88,6 +91,8 @@ namespace RecipeFinderAPI.Services
                 .Sum(ri => (ri.Quantity / 100) * ri.CaloriesPer100g);
 
             newRecipe.Calories = totalCalories;
+
+            await _recipeRepository.AddAsync(newRecipe);
 
             return new ResponseRecipeDto
             {
@@ -116,7 +121,7 @@ namespace RecipeFinderAPI.Services
                     Username = user.Username,
                     CreatedAt = user.CreatedAt.ToLongDateString() + " " + user.CreatedAt.ToLongTimeString(),
                 },
-                Calories = totalCalories
+                Calories =newRecipe.Calories
             };
         }
 

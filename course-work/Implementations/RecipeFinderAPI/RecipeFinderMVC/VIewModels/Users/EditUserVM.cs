@@ -2,8 +2,9 @@
 
 namespace RecipeFinderAPI.Infrastructure.DTOs.UsersDTOs
 {
-    public class UpdateUserDto
+    public class EditUserVM
     {
+        public string Id { get; set; }
 
         [Required]
         [StringLength(30, MinimumLength = 3, ErrorMessage = "Username must be at least 3 characters long.")]

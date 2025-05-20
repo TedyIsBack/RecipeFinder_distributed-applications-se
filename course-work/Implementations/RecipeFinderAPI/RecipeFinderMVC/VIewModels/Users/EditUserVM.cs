@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RecipeFinderAPI.Infrastructure.DTOs.UsersDTOs
+namespace RecipeFinderMVC.VIewModels.Users  
 {
     public class EditUserVM
     {
@@ -11,7 +11,7 @@ namespace RecipeFinderAPI.Infrastructure.DTOs.UsersDTOs
         public string Username { get; set; }
 
         [Required]
-        [StringLength(30, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long.")]
+        [StringLength(30, MinimumLength = 3, ErrorMessage = "Role name must be at least 3 characters long.")]
         public string Role { get; set; }
     }
 }

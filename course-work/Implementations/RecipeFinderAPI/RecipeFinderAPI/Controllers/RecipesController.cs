@@ -92,6 +92,31 @@ namespace RecipeFinderAPI.Controllers
 
 
         /// <summary>
+        /// Get recipe by id.
+        /// </summary>
+        /// <param name="recipeId">id of existing recipe</param>
+        /// <response code="200">Returns recipe</response>
+        /// <response code="400">Invalid/missing recipe id</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="404">Recipe with this id doesn't exist</response>
+        [HttpGet("{recipeId}")]
+        [ProducesResponseType(typeof(ResponseRecipeDto), 200)]
+        public async Task<IActionResult> GetRecipeById(string recipeId)
+        {
+            var loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (loggedUserId == null)
+                return Unauthorized();
+
+            var recipe = await _recipeService.GetRecipeByIdAsync(recipeId);
+
+            if (recipe == null)
+                return NotFound();
+
+            return Ok(recipe);
+        }
+
+        /// <summary>
         /// Create new recipe. Only logged user can create it.
         /// </summary>
         /// <param name="createRecipeDto">Data to create recipe</param>

@@ -48,6 +48,26 @@ namespace RecipeFinderAPI.Controllers
             return Ok(user);
         }
 
+
+        /// <summary>
+        /// Get account by id.
+        /// </summary>
+        /// <param name="userId">id of existing user</param>
+        /// <response code="200">Returns user</response>
+        /// <response code="404">user with this id doesn't exist</response>
+        [HttpGet("{userId}")]
+        [ProducesResponseType(typeof(ResponseAccountDto), 200)]
+        public async Task<IActionResult> GetAccountInfo()
+        {
+            string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var user = await _accountService.GetUserByIdAsync(loggedUserId);
+            if (user == null)
+                return NotFound();
+
+            return Ok(user);
+
+        }
         /// <summary>
         /// Logged user can update his/her information.
         /// </summary>

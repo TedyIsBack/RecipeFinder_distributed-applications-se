@@ -15,7 +15,6 @@
 			itemsPerPageQueryString += key + "=" + this.ViewContext.HttpContext.Request.Query[key] + "&";
 	}
 }
-<p>@Model.PagesCount</p>
 	
 @for (int i = 1; i <= Model.PagesCount; i++)
 {

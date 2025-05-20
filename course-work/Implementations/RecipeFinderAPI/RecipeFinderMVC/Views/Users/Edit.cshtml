@@ -1,0 +1,40 @@
+﻿@model RecipeFinderMVC.VIewModels.Users.EditUserVM
+
+
+<form action="/Users/Edit" method="post">
+	<div class="grid">
+		@Html.HiddenFor(m => m.Id)
+		<div class="row">
+			<div class="col-1">
+				<label class="form-label">@Html.DisplayNameFor(m => m.Username) </label>
+			</div>
+			<div class="col-6 mb-3">
+				@Html.TextBoxFor(m => m.Username, new { @class = "form-control" })
+			</div>
+			<div>
+				@Html.ValidationMessageFor(m => m.Username, null, new { @class = "text-danger" })
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-1">
+				<label class="form-label">@Html.DisplayNameFor(m => m.Role) </label>
+			</div>
+			<div class="col-6">
+				@Html.TextBoxFor(m => m.Role, new { @class = "form-control" })
+			</div>
+			<div>
+				@Html.ValidationMessageFor(m => m.Role, null, new { @class = "text-danger" })
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-3">
+				<input type="submit" value="Save" />
+				<a href="/Users/Index">Back</a>
+			</div>
+		</div>
+	</div>
+</form>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

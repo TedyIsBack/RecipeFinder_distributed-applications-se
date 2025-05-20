@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using RecipeFinderMVC.Models.Auth;
 using RecipeFinderMVC.VIewModels.Auth;
 using System.Net.Http;
 using System.Security.Claims;
@@ -76,6 +77,31 @@ namespace RecipeFinderMVC.Controllers
         public async Task<IActionResult> Register()
         {
             return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterUserVM model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var content = new StringContent(
+                JsonSerializer.Serialize(model),
+                System.Text.Encoding.UTF8,
+                "application/json"
+                );
+
+            var response = await _httpClient.PostAsync("Auth/Register",content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                ModelState.AddModelError("", error);
+                return View(model);
+            }
+
+            return RedirectToAction("Login");
+
         }
 
 

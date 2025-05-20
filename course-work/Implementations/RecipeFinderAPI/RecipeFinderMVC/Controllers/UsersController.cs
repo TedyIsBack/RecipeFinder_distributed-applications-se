@@ -4,6 +4,7 @@ using RecipeFinderAPI.Common;
 using RecipeFinderAPI.Infrastructure.DTOs.UsersDTOs;
 using RecipeFinderMVC.VIewModels;
 using RecipeFinderMVC.VIewModels.Users;
+using System.Net.Http;
 using System.Net.Http.Json;
 
 namespace RecipeFinderMVC.Controllers
@@ -25,7 +26,8 @@ namespace RecipeFinderMVC.Controllers
 
             model.Pager.Page = model.Pager.Page == 0 ? 1 : model.Pager.Page;
             model.Pager.ItemsPerPage = model.Pager.ItemsPerPage == 0 ? 10 : model.Pager.ItemsPerPage;
-           // model.Pager.TotalCount = model.Pager.TotalCount == 0 ? 0 : model.Pager.TotalCount;
+
+
             var query = $"Users?Username={model.Username}&IsActive={model.IsActive}&page={model.Pager.Page}&itemsPerPage={model.Pager.ItemsPerPage}";
             
             var response = await _httpClient.GetAsync(query);
@@ -38,7 +40,7 @@ namespace RecipeFinderMVC.Controllers
                 return View(model);
             }
 
-            var data = await response.Content.ReadFromJsonAsync<IndexUsersVM>();
+            var data = await response.Content.ReadFromJsonAsync<PagedResultVM<IndexUserVM>>();
 
             if (data == null)
             {
@@ -46,11 +48,16 @@ namespace RecipeFinderMVC.Controllers
                 return View(model);
             }
 
-            data.Username = model.Username;
-            data.IsActive = model.IsActive;
+            model.Items = data.Items;
+            model.Pager.TotalCount = data.TotalCount;
+            model.Pager.PagesCount = data.PagesCount;
+            model.Pager.Page = data.Page;
+            model.Pager.ItemsPerPage = data.itemsPerPage;
+            model.Username = model.Username;
+            model.IsActive = model.IsActive;
 
-            data.Pager = model.Pager;
-            return View(data);
+
+            return View(model);
         }
 
         [HttpGet]
@@ -59,7 +66,7 @@ namespace RecipeFinderMVC.Controllers
             if (string.IsNullOrEmpty(id))
                 return BadRequest();
 
-            var response = await _httpClient.GetAsync($"api/users/{id}");
+            var response = await _httpClient.GetAsync($"users/{id}");
             if (!response.IsSuccessStatusCode)
                 return NotFound();
 
@@ -82,7 +89,7 @@ namespace RecipeFinderMVC.Controllers
                 Role = model.Role
             };
 
-            var response = await _httpClient.PutAsJsonAsync($"api/users/{model.Id}", updateDto);
+            var response = await _httpClient.PutAsJsonAsync($"users/{model.Id}", updateDto);
 
             if (response.IsSuccessStatusCode)
             {
@@ -97,6 +104,18 @@ namespace RecipeFinderMVC.Controllers
                 ModelState.AddModelError(string.Empty, "Error updating user.");
                 return View(model);
             }
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(string id)
+        {
+
+            var response = await _httpClient.DeleteAsync($"users/{id}");
+            if (!response.IsSuccessStatusCode)
+                return NotFound();
+
+            return RedirectToAction("Index");
         }
     }
 }

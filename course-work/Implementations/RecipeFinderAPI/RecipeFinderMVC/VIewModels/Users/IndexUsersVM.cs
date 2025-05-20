@@ -2,8 +2,7 @@
 {
     public class IndexUsersVM
     {
-        public List<IndexUserVM> Items { get; set; }
- 
+        public IEnumerable<IndexUserVM> Items { get; set; }
 
         public string? Username { get; set; }
         public bool IsActive { get; set; } = true;

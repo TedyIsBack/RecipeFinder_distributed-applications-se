@@ -48,6 +48,24 @@ namespace RecipeFinderAPI.Controllers
             return await _userService.GetAllUsersAsync(filter, page, itemsPerPage);
         }
 
+
+        /// <summary>
+        /// Get user by id.
+        /// </summary>
+        /// <param name="userId">id of existing user</param>
+        /// <response code="200">Returns user</response>
+        /// <response code="404">user with this id doesn't exist</response>
+        [HttpGet("{userId}")]
+        [ProducesResponseType(typeof(ResponseUserDto), 200)]
+        public async Task<IActionResult> GetUserById(string userId)
+        {
+            var user = await _userService.GetUserByIdAsync(userId);
+            if (user == null)
+                return NotFound();
+
+            return Ok(user);
+        }
+
         /// <summary>
         /// Update existing user details by id.
         /// </summary>

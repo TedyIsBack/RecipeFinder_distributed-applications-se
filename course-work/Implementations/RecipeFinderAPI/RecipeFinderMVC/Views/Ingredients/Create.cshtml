@@ -1,0 +1,64 @@
+﻿@model RecipeFinderMVC.VIewModels.Ingredients.CreateIngredientVM
+
+@{
+    ViewData["Title"] = "Create Ingredient";
+}
+
+<h2>Create Ingredient</h2>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <div>@error.ErrorMessage</div>
+        }
+    </div>
+}
+
+@using (Html.BeginForm("Create", "Ingredients", FormMethod.Post))
+{
+    <div class="mb-3">
+        @Html.LabelFor(m => m.Name)
+        @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Name)
+    </div>
+
+    <div class="mb-3">
+        @Html.LabelFor(m => m.Unit)
+        @Html.TextBoxFor(m => m.Unit, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Unit)
+    </div>
+
+    <div class="mb-3">
+        @Html.LabelFor(m => m.CaloriesPer100g)
+        @Html.TextBoxFor(m => m.CaloriesPer100g, new { @class = "form-control", type = "number", step = "any" })
+        @Html.ValidationMessageFor(m => m.CaloriesPer100g)
+    </div>
+
+    <div class="mb-3">
+        @Html.LabelFor(m => m.ImgUrl)
+        @Html.TextBoxFor(m => m.ImgUrl, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.ImgUrl)
+    </div>
+
+    <div class="mb-3">
+        @Html.LabelFor(m => m.IsAllergen)
+        @Html.DropDownListFor(m => m.IsAllergen,
+                new List<SelectListItem>
+    {
+    new SelectListItem { Text = "Yes", Value = "true" },
+    new SelectListItem { Text = "No", Value = "false" }
+    },
+                "Select allergen status",
+                new { @class = "form-select" })
+        @Html.ValidationMessageFor(m => m.IsAllergen)
+    </div>
+
+    <div class="row">
+        <div class="col-3">
+            <input type="submit" value="Create" class="btn btn-primary" />
+            <a href="/Ingredients/Index" class="btn btn-secondary">Back</a>
+        </div>
+    </div>
+}

@@ -1,0 +1,59 @@
+﻿@model RecipeFinderMVC.VIewModels.Categories.CreateCategoryVM
+
+@{
+    ViewData["Title"] = "Create Category";
+}
+
+<h2>Create Category</h2>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <div>@error.ErrorMessage</div>
+        }
+    </div>
+}
+
+
+@using (Html.BeginForm("Create", "Categories", FormMethod.Post))
+{
+    <div class="mb-3">
+        @Html.LabelFor(m => m.Name)
+        @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Name)
+    </div>
+
+    <div class="mb-3">
+        @Html.LabelFor(m => m.Description)
+        @Html.TextAreaFor(m => m.Description, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Description)
+    </div>
+
+    <div class="mb-3">
+        @Html.LabelFor(m => m.ShortCode)
+        @Html.TextBoxFor(m => m.ShortCode, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.ShortCode)
+    </div>
+
+    <div class="mb-3">
+        @Html.LabelFor(m => m.IsSeasonal)
+        @Html.DropDownListFor(m => m.IsSeasonal,
+                new List<SelectListItem>
+    {
+    new SelectListItem { Text = "Yes", Value = "true" },
+    new SelectListItem { Text = "No", Value = "false" }
+    },
+                "Select Seasonal",
+                new { @class = "form-select" })
+        @Html.ValidationMessageFor(m => m.IsSeasonal)
+    </div>
+
+    <div class="row">
+        <div class="col-3">
+            <input type="submit" value="Create" />
+            <a href="/Locations/Index">Back</a>
+        </div>
+    </div>
+}

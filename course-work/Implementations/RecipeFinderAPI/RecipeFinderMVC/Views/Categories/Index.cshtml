@@ -1,0 +1,83 @@
+﻿@using RecipeFinderAPI.Common
+@model RecipeFinderMVC.VIewModels.Categories.IndexCategoriesVM
+
+@{
+    ViewData["Title"] = "Categories";
+}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">Categories</h2>
+
+    <form action="/Categories/Index" method="get" class="row g-3 align-items-center mb-4">
+        @foreach (var key in ViewContext.HttpContext.Request.Query.Keys)
+        {
+            if (key != "Name" && key != "IsSeasonal" && key != "Pager.Page")
+            {
+                <input type="hidden" name="@key" value="@ViewContext.HttpContext.Request.Query[key]" />
+            }
+        }
+
+        <div class="col-md-4">
+            @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
+        </div>
+
+        <div class="col-md-4">
+            @Html.DropDownListFor(m => m.IsSeasonal,
+                     new SelectList(new[]
+                     {
+            new { Value = "true", Text = "Sessional" },
+            new { Value = "false", Text = "Not sessional" }
+            }, "Value", "Text", Model.IsSeasonal.ToString().ToLower()),
+                     "Select Status",
+                     new { @class = "form-select" })
+        </div>
+
+        <div class="col-md-4 d-flex justify-content-end gap-2">
+            <div class="col-md-3 d-flex justify-content-end">
+                <a href="/Categories/Index" class="btn btn-secondary me-2">Clear</a>
+                <input type="submit" value="Filter" class="btn btn-primary" />
+            </div>
+        </div>
+    </form>
+
+    @if (User.IsInRole(Constants.AdminRole))
+    {
+        <p id="my-p">
+            <a href="/Categories/Create"  class="btn" style="background-color:turquoise">Create</a>
+        </p>
+    }
+    @if (Model.Items != null && Model.Items.Any())
+    {
+        @foreach (var item in Model.Items)
+        {
+            <div class="card mb-3 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">@item.Name (@item.ShortCode)</h5>
+                    <p class="card-text mb-2">
+                        <strong>Description:</strong> @item.Description <br />
+                        <strong>Is Seasonal:</strong> @(item.IsSeasonal ? "Yes" : "No")
+                    </p>
+                    @if (User.IsInRole(Constants.AdminRole))
+                  {
+                    <div class="d-flex gap-2">
+                        <a href="/Categories/Edit?id=@item.Id" class="btn btn-sm btn-primary">Edit</a>
+                        <a href="/Categories/Delete?id=@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                    </div>
+                  }
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-warning text-center">
+            No categories found.
+        </div>
+    }
+
+    <div class="d-flex justify-content-center mt-4">
+        @Html.Partial("/Views/Shared/PagerPartial.cshtml", Model.Pager)
+    </div>
+
+</div>

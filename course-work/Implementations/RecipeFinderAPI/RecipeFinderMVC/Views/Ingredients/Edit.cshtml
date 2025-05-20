@@ -1,0 +1,81 @@
+﻿@model RecipeFinderMVC.VIewModels.Ingredients.EditIngredientVM
+
+@{
+    ViewData["Title"] = "Edit Ingredient";
+}
+
+<h2>Edit Ingredient</h2>
+
+<form asp-action="Edit" asp-controller="Ingredients" method="post">
+    @Html.HiddenFor(m => m.Id)
+
+    <div class="grid">
+        <div class="row mb-3">
+            <div class="col-2">
+                <label class="form-label">@Html.DisplayNameFor(m => m.Name)</label>
+            </div>
+            <div class="col-6">
+                @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Name, null, new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-2">
+                <label class="form-label">@Html.DisplayNameFor(m => m.ImgUrl)</label>
+            </div>
+            <div class="col-6">
+                @Html.TextBoxFor(m => m.ImgUrl, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.ImgUrl, null, new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-2">
+                <label class="form-label">@Html.DisplayNameFor(m => m.CaloriesPer100g)</label>
+            </div>
+            <div class="col-6">
+                @Html.TextBoxFor(m => m.CaloriesPer100g, new { @class = "form-control", type = "number", step = "any" })
+                @Html.ValidationMessageFor(m => m.CaloriesPer100g, null, new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-2">
+                <label class="form-label">@Html.DisplayNameFor(m => m.Unit)</label>
+            </div>
+            <div class="col-6">
+                @Html.TextBoxFor(m => m.Unit, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Unit, null, new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-2">
+                <label class="form-label">@Html.DisplayNameFor(m => m.IsAllergen)</label>
+            </div>
+            <div class="col-6">
+                @Html.DropDownListFor(m => m.IsAllergen,
+                         new List<SelectListItem>
+                {
+                new SelectListItem { Text = "Yes", Value = "true" },
+                new SelectListItem { Text = "No", Value = "false" }
+                },
+                         "Select allergen status",
+                         new { @class = "form-select" })
+                @Html.ValidationMessageFor(m => m.IsAllergen, null, new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-3">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a href="/Ingredients/Index" class="btn btn-secondary">Back</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

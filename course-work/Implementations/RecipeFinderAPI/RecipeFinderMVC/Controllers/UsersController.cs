@@ -29,7 +29,7 @@ namespace RecipeFinderMVC.Controllers
 
 
             var query = $"Users?Username={model.Username}&IsActive={model.IsActive}&page={model.Pager.Page}&itemsPerPage={model.Pager.ItemsPerPage}";
-            
+
             var response = await _httpClient.GetAsync(query);
 
             /*Console.WriteLine("BaseAddress: " + _httpClient.BaseAddress);
@@ -63,8 +63,6 @@ namespace RecipeFinderMVC.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
-            if (string.IsNullOrEmpty(id))
-                return BadRequest();
 
             var response = await _httpClient.GetAsync($"users/{id}");
             if (!response.IsSuccessStatusCode)
@@ -91,19 +89,14 @@ namespace RecipeFinderMVC.Controllers
 
             var response = await _httpClient.PutAsJsonAsync($"users/{model.Id}", updateDto);
 
-            if (response.IsSuccessStatusCode)
-            {
-                return RedirectToAction("Index");
-            }
-            else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            if (!response.IsSuccessStatusCode)
             {
                 return NotFound();
+                //ModelState.AddModelError(string.Empty, "Error updating user.");
+                //return View(model);
             }
-            else
-            {
-                ModelState.AddModelError(string.Empty, "Error updating user.");
-                return View(model);
-            }
+
+            return RedirectToAction("Index");
         }
 
 

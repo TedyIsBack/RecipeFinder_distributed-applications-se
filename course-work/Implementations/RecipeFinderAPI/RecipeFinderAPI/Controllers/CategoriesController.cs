@@ -17,6 +17,7 @@ namespace RecipeFinderAPI.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = Constants.AdminRole)]
     [Produces("application/json")]
     public class CategoriesController : ControllerBase
     {
@@ -37,7 +38,7 @@ namespace RecipeFinderAPI.Controllers
         /// <response code="200">Returns all categories</response>
         /// <response code="401">Unauthorized</response>
         [HttpGet]
-        [Authorize]
+        //[Authorize]
         [ProducesResponseType(typeof(PagedResult<ResponseCategoryDto>), 200)]
         public async Task<PagedResult<ResponseCategoryDto>> GetAllCategories(
             [FromQuery] string? name = null,
@@ -61,7 +62,7 @@ namespace RecipeFinderAPI.Controllers
         /// <response code="401">Unauthorized</response>
         /// <response code="404">Category with this id doesn't exist</response>
         [HttpGet("{categoryId}")]
-        [Authorize]
+        //[Authorize]
         [ProducesResponseType(typeof(ResponseCategoryDto), 200)]
         public async Task<IActionResult> GetCategoryById(string categoryId)
         {
@@ -111,7 +112,7 @@ namespace RecipeFinderAPI.Controllers
         /// <response code="403">Forbidden. Only admin perform this action.</response>
         /// <response code="404">Category with this id doesn't exist</response>
         [HttpPut("{categoryId}")]
-        [Authorize(Roles = Constants.AdminRole)]
+        //[Authorize(Roles = Constants.AdminRole)]
         [ProducesResponseType(typeof(ResponseCategoryDto), 200)]
         public async Task<IActionResult> UpdateCategory(string categoryId, [FromBody] UpdateCategoryDto updateCategoryDto)
         {
@@ -136,7 +137,7 @@ namespace RecipeFinderAPI.Controllers
         /// <response code="403">Forbidden. Only admin can perform this action.</response>
         /// <response code="404">Category with this id doesn't exist</response>
         [HttpDelete("{categoryId}")]
-        [Authorize(Roles = Constants.AdminRole)]
+        //[Authorize(Roles = Constants.AdminRole)]
         public async Task<IActionResult> DeleteCategory(string categoryId)
         {
             bool isDeleted = await _categoryService.DeleteCategoryAsync(categoryId);

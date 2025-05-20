@@ -39,7 +39,7 @@ namespace RecipeFinderAPI.Services
                 Name = category.Name,
                 Description = category.Description,
                 ShortCode = category.ShortCode,
-                IsSeasonal = category.IsSeasonal,
+                IsSeasonal = category.IsSeasonal
             };
 
         }
@@ -76,7 +76,8 @@ namespace RecipeFinderAPI.Services
                 Items = reposnse,
                 TotalCount = categories.TotalCount,
                 Page = categories.Page,
-                itemsPerPage = categories.itemsPerPage
+                itemsPerPage = categories.itemsPerPage,
+                PagesCount = categories.PagesCount
             };
         }
 

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using RecipeFinderAPI.Common;
 using RecipeFinderAPI.Entities;
 using RecipeFinderAPI.Infrastructure;
 using RecipeFinderAPI.Infrastructure.DTOs.FavoriteDTOs;
@@ -16,7 +17,7 @@ namespace RecipeFinderAPI.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = Constants.UserRole)]
     [Produces("application/json")]
     public class FavoritesController : ControllerBase
     {

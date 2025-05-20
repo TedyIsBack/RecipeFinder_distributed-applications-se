@@ -193,7 +193,8 @@ namespace RecipeFinderAPI.Services
                 Items = response,
                 TotalCount = result.TotalCount,
                 Page = result.Page,
-                itemsPerPage = result.itemsPerPage
+                itemsPerPage = result.itemsPerPage,
+                PagesCount = result.PagesCount
             };
         }
 

@@ -11,7 +11,7 @@
     <form action="/Users/Index" method="get" class="row g-3 align-items-center mb-4">
         @foreach (var key in ViewContext.HttpContext.Request.Query.Keys)
         {
-            if (key != "Email" && key != "FirstName" && key != "LastName" && key != "Pager.Page")
+            if (key != "Username" && key != "isActive" && key != "Pager.Page")
             {
                 <input type="hidden" name="@key" value="@ViewContext.HttpContext.Request.Query[key]" />
             }

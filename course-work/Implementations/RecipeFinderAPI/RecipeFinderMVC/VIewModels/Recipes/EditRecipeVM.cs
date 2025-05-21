@@ -16,9 +16,9 @@ namespace RecipeFinderMVC.VIewModels.Recipes
         [Required]
         public string Description { get; set; }
 
-
-        //TODO: Set default value if not provided - https://images.ctfassets.net/kugm9fp9ib18/3aHPaEUU9HKYSVj1CTng58/d6750b97344c1dc31bdd09312d74ea5b/menu-default-image_220606_web.png
-        public string ImgUrl { get; set; }
+        [Display(Name = "Upload Image")]
+        public IFormFile? ImageFile { get; set; }
+        public string ImgUrl { get; set; } = "https://images.ctfassets.net/kugm9fp9ib18/3aHPaEUU9HKYSVj1CTng58/d6750b97344c1dc31bdd09312d74ea5b/menu-default-image_220606_web.png";
         [Required]
         [Range(10, int.MaxValue, ErrorMessage = "Preparation time must be at least 10 minutes.")]
         public int PreparationTime { get; set; }

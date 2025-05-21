@@ -62,18 +62,53 @@ namespace RecipeFinderMVC.Controllers
                 return View(model);
             }
 
+            if (model.ImageFile != null && model.ImageFile.Length > 0)
+            {
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.ImageFile.FileName);
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
+
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.ImageFile.CopyToAsync(stream);
+                }
+
+                model.ImgUrl = "/images/" + fileName;
+            }
+
             var response = await _httpClient.PostAsJsonAsync("ingredients", model);
 
             if (!response.IsSuccessStatusCode)
             {
-                ModelState.AddModelError(string.Empty, "Unable to create ingredients. Already exist");
+                if (response.StatusCode == System.Net.HttpStatusCode.Conflict) // 409
+                {
+                    // Чети съобщението за грешка от API-то (JSON с { message = "..." })
+                    var errorObj = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+                    if (errorObj != null && errorObj.TryGetValue("message", out var errorMessage))
+                    {
+                        ModelState.AddModelError(string.Empty, errorMessage);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Ingredient already exists.");
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Unable to create ingredient.");
+                }
+
                 return View(model);
             }
 
-            var data = await response.Content.ReadFromJsonAsync<IndexIngredientVM>();
-
             return RedirectToAction("Index");
         }
+
+
 
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
@@ -82,13 +117,12 @@ namespace RecipeFinderMVC.Controllers
             if (!response.IsSuccessStatusCode)
                 return NotFound();
 
-            var category = await response.Content.ReadFromJsonAsync<EditIngredientVM>();
-            if (category == null)
+            var ingredient = await response.Content.ReadFromJsonAsync<EditIngredientVM>();
+            if (ingredient == null)
                 return NotFound();
 
-            return View(category);
+            return View(ingredient);
         }
-
 
         [HttpPost]
         public async Task<IActionResult> Edit(EditIngredientVM model)
@@ -96,12 +130,29 @@ namespace RecipeFinderMVC.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            // Изпращаме актуализирания модел към API-то
+            if (model.ImageFile != null && model.ImageFile.Length > 0)
+            {
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.ImageFile.FileName);
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
+
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.ImageFile.CopyToAsync(stream);
+                }
+
+                model.ImgUrl = "/images/" + fileName;
+            }
+
             var response = await _httpClient.PutAsJsonAsync($"ingredients/{model.Id}", model);
 
             if (!response.IsSuccessStatusCode)
             {
-                ModelState.AddModelError(string.Empty, "Unable to update ingredients");
+                ModelState.AddModelError(string.Empty, "Unable to update ingredient.");
                 return View(model);
             }
 
@@ -109,14 +160,36 @@ namespace RecipeFinderMVC.Controllers
         }
 
 
+
         [HttpGet]
         public async Task<IActionResult> Delete(string id)
         {
             var response = await _httpClient.DeleteAsync($"ingredients/{id}");
-            if (!response.IsSuccessStatusCode)
-                return NotFound();
+
+            if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                var errorObj = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+
+                if (errorObj != null && errorObj.TryGetValue("message", out var errorMessage))
+                {
+                    TempData["ErrorMessage"] = errorMessage;
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Unable to delete ingredient.";
+                }
+
+                return RedirectToAction("Index");
+            }
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                TempData["ErrorMessage"] = "Ingredient not found.";
+                return RedirectToAction("Index");
+            }
 
             return RedirectToAction("Index");
         }
+
     }
 }

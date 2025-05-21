@@ -9,9 +9,11 @@ namespace RecipeFinderMVC.VIewModels.Ingredients
         [Display(Name = "Name")]
         public string Name { get; set; }
 
-        //TODO: Set default value if not provided - https://images.ctfassets.net/kugm9fp9ib18/3aHPaEUU9HKYSVj1CTng58/d6750b97344c1dc31bdd09312d74ea5b/menu-default-image_220606_web.png
         [Display(Name = "Image URL")]
-        public string? ImgUrl { get; set; }
+        public string ImgUrl { get; set; } = "https://images.ctfassets.net/kugm9fp9ib18/3aHPaEUU9HKYSVj1CTng58/d6750b97344c1dc31bdd09312d74ea5b/menu-default-image_220606_web.png";
+
+        [Display(Name = "Upload Image")]
+        public IFormFile? ImageFile { get; set; }
 
         [Required]
         [Range(0, double.MaxValue, ErrorMessage = "Calories per 100g must be a positive number")]

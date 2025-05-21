@@ -6,59 +6,45 @@
 
 <h2>Create Ingredient</h2>
 
-@if (!ViewData.ModelState.IsValid)
-{
-    <div class="alert alert-danger">
-        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-        {
-            <div>@error.ErrorMessage</div>
-        }
-    </div>
-}
+<form action="/Ingredients/Create" method="post" enctype="multipart/form-data">
 
-@using (Html.BeginForm("Create", "Ingredients", FormMethod.Post))
-{
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
     <div class="mb-3">
         @Html.LabelFor(m => m.Name)
         @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.Name)
+        @Html.ValidationMessageFor(m => m.Name, null, new { @class = "text-danger" })
     </div>
+
 
     <div class="mb-3">
         @Html.LabelFor(m => m.Unit)
         @Html.TextBoxFor(m => m.Unit, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.Unit)
+        @Html.ValidationMessageFor(m => m.Unit, null, new { @class = "text-danger" })
     </div>
 
     <div class="mb-3">
         @Html.LabelFor(m => m.CaloriesPer100g)
-        @Html.TextBoxFor(m => m.CaloriesPer100g, new { @class = "form-control", type = "number", step = "any" })
-        @Html.ValidationMessageFor(m => m.CaloriesPer100g)
+        @Html.TextBoxFor(m => m.CaloriesPer100g, new { @class = "form-control", type = "number", step = "0.1" })
+        @Html.ValidationMessageFor(m => m.CaloriesPer100g, null, new { @class = "text-danger" })
     </div>
 
     <div class="mb-3">
-        @Html.LabelFor(m => m.ImgUrl)
-        @Html.TextBoxFor(m => m.ImgUrl, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.ImgUrl)
+        @Html.LabelFor(m => m.ImageFile)
+        <input type="file" asp-for="ImageFile" class="form-control" />
+        @Html.ValidationMessageFor(m => m.ImageFile, null, new { @class = "text-danger" })
     </div>
 
     <div class="mb-3">
         @Html.LabelFor(m => m.IsAllergen)
-        @Html.DropDownListFor(m => m.IsAllergen,
-                new List<SelectListItem>
-    {
-    new SelectListItem { Text = "Yes", Value = "true" },
-    new SelectListItem { Text = "No", Value = "false" }
-    },
-                "Select allergen status",
-                new { @class = "form-select" })
-        @Html.ValidationMessageFor(m => m.IsAllergen)
+        @Html.DropDownListFor(m => m.IsAllergen, new List<SelectListItem>
+        {
+        new SelectListItem { Text = "Yes", Value = "true" },
+        new SelectListItem { Text = "No", Value = "false" }
+        }, "Select option", new { @class = "form-select" })
+        @Html.ValidationMessageFor(m => m.IsAllergen, null, new { @class = "text-danger" })
     </div>
 
-    <div class="row">
-        <div class="col-3">
-            <input type="submit" value="Create" class="btn btn-primary" />
-            <a href="/Ingredients/Index" class="btn btn-secondary">Back</a>
-        </div>
-    </div>
-}
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>

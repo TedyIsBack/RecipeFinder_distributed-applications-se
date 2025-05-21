@@ -110,12 +110,20 @@ namespace RecipeFinderAPI.Services
         public async Task<bool> DeleteIngredientAsync(string ingredientId)
         {
             var ingredient = await _ingredientRepository.FirstOrDefault(x => x.IngredientId == ingredientId);
+            
             if (ingredient == null)
             {
                 return false;
             }
-            await _ingredientRepository.DeleteAsync(ingredient);
-            return true;
+            try
+            {
+                await _ingredientRepository.DeleteAsync(ingredient);
+                return true;
+            }
+            catch (DbUpdateException)
+            {
+                throw new InvalidOperationException("This ingredient is used in a recipe and cannot be deleted.");
+            }
         }
 
         public async Task<PagedResult<ResponseIngredientDto>> GetAllIngredientAsync(

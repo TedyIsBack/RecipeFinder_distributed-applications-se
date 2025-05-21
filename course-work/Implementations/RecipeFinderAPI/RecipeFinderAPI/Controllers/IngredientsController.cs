@@ -97,8 +97,19 @@ namespace RecipeFinderAPI.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _ingredientService.CreateIngredientAsync(createIngredientDto);
-            return Ok(result);
+            try
+            {
+                var result = await _ingredientService.CreateIngredientAsync(createIngredientDto);
+                return Ok(result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "An error occurred while creating the ingredient." });
+            }
         }
 
 
@@ -143,12 +154,20 @@ namespace RecipeFinderAPI.Controllers
         [Authorize(Roles = Constants.AdminRole)]
         public async Task<IActionResult> DeleteIngredient(string ingredientId)
         {
-            bool isDeleted = await _ingredientService.DeleteIngredientAsync(ingredientId);
+            try
+            {
+                bool isDeleted = await _ingredientService.DeleteIngredientAsync(ingredientId);
 
-            if (!isDeleted)
-                return NotFound();
+                if (!isDeleted)
+                    return NotFound();
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "This ingredient is used in a recipe and cannot be deleted" });
+            }
         }
     }
+
 }

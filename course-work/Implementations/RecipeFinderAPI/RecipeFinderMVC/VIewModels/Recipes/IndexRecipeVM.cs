@@ -27,5 +27,7 @@ namespace RecipeFinderMVC.VIewModels.Recipes
         public string CreatedBy { get; set; }
         public ResponseAccountDto CreatedByUser { get; set; }
         public ICollection<IndexRecipeIngredientVM> RecipeIngredients { get; set; }
+
+
     }
 }

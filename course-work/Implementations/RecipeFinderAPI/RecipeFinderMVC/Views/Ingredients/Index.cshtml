@@ -8,6 +8,11 @@
 <div class="container mt-4">
 	<h2 class="mb-4">Ingredients</h2>
 
+	@if (TempData["ErrorMessage"] != null)
+	{
+		<div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+	}
+
 	<form action="/Ingredients/Index" method="get" class="row g-3 align-items-center mb-4">
 		@foreach (var key in ViewContext.HttpContext.Request.Query.Keys)
 		{
@@ -54,17 +59,16 @@
 		</div>
 	</form>
 
-	@if (User.IsInRole(Constants.AdminRole))
-	{
 		<div class="mb-3">
 			<a href="/Ingredients/Create" class="btn btn-success">Create New Ingredient</a>
 		</div>
-	}
+	
 
 	@if (Model.Items != null && Model.Items.Any())
 	{
 		<!-- Header row -->
-		<div class="d-flex fw-bold border-bottom pb-2 mb-2" style="background-color:#f0f0f0">
+		<!-- Header row -->
+		<div class="row fw-bold border-bottom pb-2 mb-2" style="background-color:#f0f0f0">
 			<div class="col-2">Image</div>
 			<div class="col-2">Name</div>
 			<div class="col-2">Unit</div>
@@ -76,28 +80,27 @@
 		<!-- Data rows -->
 		@foreach (var item in Model.Items)
 		{
-			<div class="d-flex align-items-center border-bottom py-2">
-				@if (!string.IsNullOrEmpty(item.ImgUrl))
-				{
-					<img src="@item.ImgUrl" alt="@item.Name" style="max-height:40px;" />
-				}
-				else
-				{
-					<span>No image</span>
-				}
+			<div class="row align-items-center border-bottom py-2">
+				<div class="col-2">
+					@if (!string.IsNullOrEmpty(item.ImgUrl))
+					{
+						<img src="@item.ImgUrl" alt="@item.Name" class="img-fluid" style="max-height:40px;" />
+					}
+					else
+					{
+						<span>No image</span>
+					}
+				</div>
 				<div class="col-2">@item.Name</div>
 				<div class="col-2">@item.Unit</div>
 				<div class="col-2">@item.CaloriesPer100g</div>
-				<div class="col-2">
-					
-				</div>
 				<div class="col-2">@(item.IsAllergen == true ? "Yes" : "No")</div>
-
 				<div class="col-2 text-end">
 					<a href="/Ingredients/Edit?id=@item.Id" class="btn btn-sm btn-primary me-2">Edit</a>
 					<a href="/Ingredients/Delete?id=@item.Id" class="btn btn-sm btn-danger">Delete</a>
 				</div>
 			</div>
+
 		}
 	}
 	else

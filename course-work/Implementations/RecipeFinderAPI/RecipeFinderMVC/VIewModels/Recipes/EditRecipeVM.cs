@@ -1,5 +1,7 @@
-﻿using RecipeFinderAPI.Infrastructure.DTOs.CategoryDTOs;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using RecipeFinderAPI.Infrastructure.DTOs.CategoryDTOs;
 using RecipeFinderAPI.Infrastructure.DTOs.IngredientDTOs;
+using RecipeFinderMVC.VIewModels.Categories;
 using RecipeFinderMVC.VIewModels.Ingredients;
 using System.ComponentModel.DataAnnotations;
 
@@ -40,5 +42,10 @@ namespace RecipeFinderMVC.VIewModels.Recipes
 
         [Required]
         public ICollection<CreateRecipeIngredientVM> RecipeIngredients { get; set; }
+        [BindNever]
+        public IEnumerable<IndexCategoryVM> AvailableCategories { get; set; } = new List<IndexCategoryVM>();
+
+        [BindNever]
+        public IEnumerable<IndexIngredientVM> AvailableIngredients { get; set; } = new List<IndexIngredientVM>();
     }
 }

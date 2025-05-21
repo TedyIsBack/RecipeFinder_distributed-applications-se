@@ -1,5 +1,4 @@
-﻿@using RecipeFinderAPI.Common
-@model RecipeFinderMVC.VIewModels.Recipes.IndexRecipesVM
+﻿@model RecipeFinderMVC.VIewModels.Recipes.IndexRecipesVM
 
 @{
 	ViewData["Title"] = "Recipes";
@@ -27,19 +26,18 @@
 		</div>
 
 		<div class="col-md-4">
-			<select name="isVegan" class="form-select">
+			<select asp-for="isVegan" class="form-select">
 				<option value="">Select Vegan Status</option>
-				<option value="true" @(Model.isVegan == true ? "selected" : "")>Vegan</option>
-				<option value="false" @(Model.isVegan == false ? "selected" : "")>Not Vegan</option>
+				<option value="true">Vegan</option>
+				<option value="false">Not Vegan</option>
 			</select>
 		</div>
 
 		<div class="col-md-4">
-			<select name="isVegetarian" class="form-select">
-				<option value="">Select Vegetarian Status</option>
-				<option value="true" @(Model.isVegetarian == true ? "selected" : "")>Vegetarian</option>
-				<option value="false" @(Model.isVegetarian == false ? "selected" : "")>Not Vegetarian</option>
-			</select>
+			<select asp-for="isVegetarian" class="form-select">
+				<option value="">Select Vegetarian</option>
+				<option value="false">Not Vegetarian</option>
+				</select>
 		</div>
 
 		<div class="col-md-4 d-flex justify-content-end gap-2">
@@ -72,9 +70,22 @@
 							</div>
 							<div class="col-md-7">
 								<h5 class="card-title">@item.Name</h5>
+
+								<div class="mb-2">
+									@if (item.IsVegan)
+									{
+										<span class="badge bg-success me-1">Vegan</span>
+									}
+									@if (item.IsVegetarian)
+									{
+										<span class="badge bg-primary">Vegetarian</span>
+									}
+								</div>
+
 								<p class="card-text"><strong>Description:</strong> @item.Description</p>
-								<p class="card-text"><strong>Category:</strong> @item.Category?.Name ?? "N/A"</p>
+								<p class="card-text"><strong>Category:</strong> @item.Category?.Name </p>
 								<p class="card-text"><strong>Preparation Time:</strong> @item.PreparationTime min</p>
+
 							</div>
 							<div class="col-md-2 text-end">
 								<a href="/Recipes/Edit?id=@item.Id" class="btn btn-sm btn-outline-primary w-100 mb-2">Edit</a>

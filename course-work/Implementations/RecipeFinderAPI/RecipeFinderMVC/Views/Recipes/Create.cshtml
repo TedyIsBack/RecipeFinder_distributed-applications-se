@@ -1,0 +1,110 @@
+﻿@model RecipeFinderMVC.VIewModels.Recipes.CreateRecipeVM
+
+@{
+    ViewData["Title"] = "Create Recipe";
+}
+
+<h2>Create Recipe</h2>
+
+<form action="/Recipes/Create" method="post" enctype="multipart/form-data">
+    <div>
+        <label for="Name">Recipe Name</label>
+        <input type="text" name="Name" id="Name" class="form-control" value="@Model?.Name" />
+    </div>
+
+    <div>
+        <label for="Description">Description</label>
+        <textarea name="Description" id="Description" class="form-control">@Model?.Description</textarea>
+    </div>
+
+    <div>
+        <label for="PreparationTime">Preparation Time (in minutes)</label>
+        <input type="number" name="PreparationTime" id="PreparationTime" class="form-control" value="@Model?.PreparationTime" />
+    </div>
+
+    <div>
+        <label for="ImageFile">Upload Image</label>
+        <input type="file" name="ImageFile" id="ImageFile" class="form-control" />
+    </div>
+
+    <div>
+        <label for="CategoryId">Category</label>
+        <select name="CategoryId" id="CategoryId" class="form-control">
+            <option value="">-- Select Category --</option>
+            @foreach (var category in Model.AvailableCategories)
+            {
+                var selected = category.Id == Model.CategoryId ? "selected" : "";
+                @: <option value="@category.Id" @selected>@category.Name</option>
+            }
+
+        </select>
+    </div>
+
+    <div class="form-check">
+        <input type="checkbox" name="IsVegan" id="IsVegan" class="form-check-input" value="true" @(Model.IsVegan ? "checked" : "") />
+        <label for="IsVegan" class="form-check-label">Vegan</label>
+    </div>
+
+    <div class="form-check">
+        <input type="checkbox" name="IsVegetarian" id="IsVegetarian" class="form-check-input" value="true" @(Model.IsVegetarian ? "checked" : "") />
+        <label for="IsVegetarian" class="form-check-label">Vegetarian</label>
+    </div>
+
+    <hr />
+
+    <h4>Ingredients</h4>
+    <div id="ingredients-container">
+        @for (int i = 0; i < Model.RecipeIngredients.Count(); i++)
+        {
+            <div class="form-row mb-2">
+                <div class="col">
+                    <select name="RecipeIngredients[@i].IngredientId" class="form-control">
+                        <option value="">-- Select Ingredient --</option>
+                        @foreach (var ingredient in Model.AvailableIngredients)
+                        {
+                            <option value="@ingredient.Id">@ingredient.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col">
+                    <input type="number" name="RecipeIngredients[@i].Quantity" class="form-control" placeholder="Quantity" step="0.1" />
+                </div>
+            </div>
+        }
+    </div>
+
+    <button type="button" class="btn btn-secondary" onclick="addIngredient()">+ Add Ingredient</button>
+
+    <br /><br />
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>
+
+@section Scripts {
+    <script>
+        let ingredientIndex = @Model.RecipeIngredients.Count() ;
+
+        function addIngredient() {
+            const container = document.getElementById("ingredients-container");
+
+            const html = `
+                <div class="form-row mb-2">
+                    <div class="col">
+                        <select name="RecipeIngredients[${ingredientIndex}].IngredientId" class="form-control">
+                            <option value="">-- Select Ingredient --</option>
+                            @foreach (var ingredient in Model.AvailableIngredients)
+                            {
+                                <text><option value="@ingredient.Id">@ingredient.Name</option></text>
+                            }
+                        </select>
+                    </div>
+                    <div class="col">
+                        <input type="number" name="RecipeIngredients[${ingredientIndex}].Quantity" class="form-control" step="0.1" />
+                    </div>
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', html);
+            ingredientIndex++;
+        }
+    </script>
+}

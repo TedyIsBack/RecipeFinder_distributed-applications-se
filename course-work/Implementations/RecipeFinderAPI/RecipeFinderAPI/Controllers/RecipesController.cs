@@ -77,12 +77,10 @@ namespace RecipeFinderAPI.Controllers
             [FromQuery] int page = 1,
             [FromQuery] int itemsPerPage = 10)
         {
-            Expression<Func<Recipe, bool>> filter = null;
-            if (!string.IsNullOrEmpty(name) || isVegan.HasValue || isVegetarian.HasValue)
-            {
-                filter = x =>
-                    (string.IsNullOrEmpty(name) || x.Name.Contains(name)) && (x.IsVegan == isVegan) && (x.IsVegetarian == isVegetarian);
-            }
+            Expression<Func<Recipe, bool>> filter = x =>
+                    (string.IsNullOrEmpty(name) || x.Name.Contains(name))
+                    && (!isVegan.HasValue || x.IsVegan == isVegan)
+                    && (!isVegetarian.HasValue ||x.IsVegetarian == isVegetarian);
 
             var recipes = await _recipeService.GetAllRecipesAsync(filter, page, itemsPerPage);
 

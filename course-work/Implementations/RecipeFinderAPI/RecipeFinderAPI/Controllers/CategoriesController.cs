@@ -17,7 +17,7 @@ namespace RecipeFinderAPI.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = Constants.AdminRole)]
+    [Authorize]
     [Produces("application/json")]
     public class CategoriesController : ControllerBase
     {

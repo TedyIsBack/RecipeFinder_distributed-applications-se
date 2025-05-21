@@ -1,0 +1,92 @@
+﻿@model RecipeFinderMVC.VIewModels.Recipes.EditRecipeVM
+
+@{
+    ViewData["Title"] = "Edit Recipe";
+}
+
+<h2>Edit Recipe</h2>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="Id" value="@Model.Id" />
+
+    <div class="form-group">
+        <label for="Name">Name</label>
+        <input id="Name" name="Name" class="form-control" value="@Model.Name" />
+        <span class="text-danger">@ViewData.ModelState["Name"]?.Errors.FirstOrDefault()?.ErrorMessage</span>
+    </div>
+
+    <div class="form-group">
+        <label for="Description">Description</label>
+        <textarea id="Description" name="Description" class="form-control">@Model.Description</textarea>
+        <span class="text-danger">@ViewData.ModelState["Description"]?.Errors.FirstOrDefault()?.ErrorMessage</span>
+    </div>
+
+    <div class="form-group">
+        <label for="ImageFile">Upload Image</label>
+        <input id="ImageFile" name="ImageFile" type="file" class="form-control" />
+        <img src="@Model.ImgUrl" alt="Recipe Image" style="max-height: 200px; margin-top: 10px;" />
+        <span class="text-danger">@ViewData.ModelState["ImageFile"]?.Errors.FirstOrDefault()?.ErrorMessage</span>
+    </div>
+
+    <div class="form-group">
+        <label for="PreparationTime">Preparation Time (minutes)</label>
+        <input id="PreparationTime" name="PreparationTime" type="number" class="form-control" value="@Model.PreparationTime" />
+        <span class="text-danger">@ViewData.ModelState["PreparationTime"]?.Errors.FirstOrDefault()?.ErrorMessage</span>
+    </div>
+
+    <div class="form-check">
+        <input id="IsVegan" name="IsVegan" type="checkbox" class="form-check-input" @(Model.IsVegan ? "checked" : "") />
+        <label for="IsVegan" class="form-check-label">Vegan</label>
+    </div>
+
+    <div class="form-check">
+        <input id="IsVegetarian" name="IsVegetarian" type="checkbox" class="form-check-input" @(Model.IsVegetarian ? "checked" : "") />
+        <label for="IsVegetarian" class="form-check-label">Vegetarian</label>
+    </div>
+
+    <div class="form-group">
+        <label for="CategoryId">Category</label>
+        <select id="CategoryId" name="CategoryId" class="form-control">
+            <option value="">-- Select Category --</option>
+            @foreach (var category in Model.AvailableCategories)
+            {
+                var selected = category.Id == Model.CategoryId ? "selected" : "";
+                <option value="@category.Id" @selected>@category.Name</option>
+            }
+        </select>
+        <span class="text-danger">@ViewData.ModelState["CategoryId"]?.Errors.FirstOrDefault()?.ErrorMessage</span>
+    </div>
+
+    <h4>Ingredients</h4>
+    <div id="ingredients-list">
+        @for (int i = 0; i < Model.RecipeIngredients.Count; i++)
+        {
+            var ingredient = Model.RecipeIngredients.ElementAt(i);
+            <div class="ingredient-item">
+                <input type="hidden" name="RecipeIngredients[@i].Id" value="@ingredient.IngredientId" />
+                <div class="form-group">
+                    <label>Ingredient</label>
+                    <select name="RecipeIngredients[@i].IngredientId" class="form-control">
+                        <option value="">-- Select Ingredient --</option>
+                        @foreach (var ing in Model.AvailableIngredients)
+                        {
+                            var selected = ing.Id == ingredient.IngredientId ? "selected" : "";
+                            <option value="@ing.Id" @selected>@ing.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Quantity</label>
+                    <input name="RecipeIngredients[@i].Quantity" class="form-control" value="@ingredient.Quantity" />
+                </div>
+            </div>
+        }
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

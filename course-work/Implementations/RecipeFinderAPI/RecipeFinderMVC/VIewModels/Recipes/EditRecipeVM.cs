@@ -10,7 +10,7 @@ namespace RecipeFinderMVC.VIewModels.Recipes
     public class EditRecipeVM
     {
 
-        public int Id { get; set; }
+        public string Id { get; set; }
         [Required]
         [StringLength(100, MinimumLength = 10, ErrorMessage = "Recipe name must be at least 10 characters long.")]
         public string Name { get; set; }
@@ -37,9 +37,8 @@ namespace RecipeFinderMVC.VIewModels.Recipes
         [Required]
         public string CategoryId { get; set; }
 
-       // [Required]
-       // public ResponseCategoryDto Category { get; set; }
-
+        // [Required]
+        // public ResponseCategoryDto Category { get; set; }
         [Required]
         public ICollection<CreateRecipeIngredientVM> RecipeIngredients { get; set; }
         [BindNever]

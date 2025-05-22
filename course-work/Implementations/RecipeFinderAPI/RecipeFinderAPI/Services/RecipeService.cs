@@ -327,8 +327,13 @@ namespace RecipeFinderAPI.Services
                 recipe.RecipeIngredients.Add(add);
             }
 
-            // Записваме промените
-            await _recipeRepository.UpdateAsync(recipe);
+           
+
+            recipe = await _recipeRepository.Query()
+                .Include(r => r.User)
+                .Include(r => r.Category)
+                .FirstOrDefaultAsync(x => x.RecipeId == recipeId);
+
 
             // Зареждаме детайлите за съставките, за да изчислим калориите
             var ingredientIds = recipe.RecipeIngredients.Select(ri => ri.IngredientId).ToList();
@@ -348,7 +353,8 @@ namespace RecipeFinderAPI.Services
             }).ToList();
 
             recipe.Calories = recipeIngredientsDto.Sum(ri => (ri.Quantity / 100.0) * ri.CaloriesPer100g);
-
+            // Записваме промените
+            await _recipeRepository.UpdateAsync(recipe);
             // Връщаме отговора
             return new ResponseRecipeDto
             {
@@ -360,6 +366,7 @@ namespace RecipeFinderAPI.Services
                 IsVegan = recipe.IsVegan,
                 IsVegetarian = recipe.IsVegetarian,
                 CreatedBy = recipe.CreatedBy,
+
                 CreatedByUser = new ResponseAccountDto()
                 {
                     CreatedAt = recipe.User.CreatedAt.ToLongDateString(),
@@ -370,11 +377,13 @@ namespace RecipeFinderAPI.Services
                 CategoryId = recipe.CategoryId,
                 Category = new ResponseCategoryDto()
                 {
+                    Id = recipe.Category.CategoryId,
                     Name = recipe.Category.Name,
-                    ShortCode = recipe.Category.ShortCode,
                     Description = recipe.Category.Description,
                     IsSeasonal = recipe.Category.IsSeasonal,
+                    ShortCode = recipe.Category.ShortCode,
                 },
+            
                 RecipeIngredients = recipeIngredientsDto,
                 Calories = recipe.Calories
             };

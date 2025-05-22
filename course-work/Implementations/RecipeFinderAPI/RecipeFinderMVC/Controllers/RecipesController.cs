@@ -8,6 +8,8 @@ using RecipeFinderAPI.Infrastructure;
 using RecipeFinderMVC.VIewModels.Categories;
 using System.Text;
 using System.Text.Json;
+using RecipeFinderAPI.Entities;
+using System.Security.Claims;
 
 namespace RecipeFinderMVC.Controllers
 {
@@ -40,6 +42,8 @@ namespace RecipeFinderMVC.Controllers
                 return View(model);
             }
 
+ 
+
             var data = await response.Content.ReadFromJsonAsync<PagedResultVM<IndexRecipeVM>>();
 
             model.Items = data.Items;
@@ -51,8 +55,27 @@ namespace RecipeFinderMVC.Controllers
             model.isVegan = model.isVegan;
             model.isVegetarian = model.isVegetarian;
 
+
             return View(model);
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Details(string id)
+        {
+            var response = await _httpClient.GetAsync($"recipes/{id}");
+            if (!response.IsSuccessStatusCode)
+            {
+                return NotFound();
+            }
+            var recipe = await response.Content.ReadFromJsonAsync<IndexRecipeVM>();
+            if (recipe == null)
+            {
+                return NotFound();
+            }
+            return View(recipe);
+        }
+
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -153,7 +176,7 @@ namespace RecipeFinderMVC.Controllers
     
 
     [HttpGet]
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(string id)
         {
             // Вземаме рецептата по id от API
             var response = await _httpClient.GetAsync($"recipes/{id}");

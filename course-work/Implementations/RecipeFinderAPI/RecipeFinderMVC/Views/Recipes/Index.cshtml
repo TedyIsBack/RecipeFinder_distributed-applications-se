@@ -1,7 +1,9 @@
-﻿@model RecipeFinderMVC.VIewModels.Recipes.IndexRecipesVM
+﻿@using System.Security.Claims
+@model RecipeFinderMVC.VIewModels.Recipes.IndexRecipesVM
 
 @{
 	ViewData["Title"] = "Recipes";
+	var loggedUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 }
 
 <div class="container mt-4">
@@ -37,7 +39,7 @@
 			<select asp-for="isVegetarian" class="form-select">
 				<option value="">Select Vegetarian</option>
 				<option value="false">Not Vegetarian</option>
-				</select>
+			</select>
 		</div>
 
 		<div class="col-md-4 d-flex justify-content-end gap-2">
@@ -81,16 +83,22 @@
 										<span class="badge bg-primary">Vegetarian</span>
 									}
 								</div>
-
 								<p class="card-text"><strong>Description:</strong> @item.Description</p>
 								<p class="card-text"><strong>Category:</strong> @item.Category?.Name </p>
+								<p class="card-text"><strong>Calories:</strong> @Math.Ceiling(item.Calories)</p>
 								<p class="card-text"><strong>Preparation Time:</strong> @item.PreparationTime min</p>
-
 							</div>
 							<div class="col-md-2 text-end">
-								<a href="/Recipes/Edit?id=@item.Id" class="btn btn-sm btn-outline-primary w-100 mb-2">Edit</a>
-								<a href="/Recipes/Delete?id=@item.Id" class="btn btn-sm btn-outline-danger w-100">Delete</a>
+								<a href="/Recipes/Details?id=@item.Id" class="btn btn-sm btn-outline-info w-100 mb-2">View</a>
+
+								@if (item.CreatedBy == loggedUserId)
+								{
+									<a href="/Recipes/Edit?id=@item.Id" class="btn btn-sm btn-outline-primary w-100 mb-2">Edit</a>
+									<a href="/Recipes/Delete?id=@item.Id" class="btn btn-sm btn-outline-danger w-100">Delete</a>
+								}
 							</div>
+
+							}
 						</div>
 					</div>
 				</div>

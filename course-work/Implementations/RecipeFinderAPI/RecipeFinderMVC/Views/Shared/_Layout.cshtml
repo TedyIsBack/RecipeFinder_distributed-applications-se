@@ -1,6 +1,7 @@
 ﻿@using RecipeFinderAPI.Common
 @{
 	var isLoggedUser = Context.Session.GetString("JWT") != null;
+	var loggedUserRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role);
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -40,6 +41,13 @@
 							<li class="nav-item">
 								<a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Logout">Logout</a>
 							</li>
+						}
+
+						@if (User.IsInRole(Constants.AdminRole))
+						{
+							<li class="nav-item">
+								<a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
+							</li>
 
 							<li class="nav-item">
 								<a class="nav-link text-dark" asp-area="" asp-controller="Categories" asp-action="Index">Categories</a>
@@ -49,19 +57,15 @@
 							</li>
 						}
 
-						@if (User.IsInRole(Constants.AdminRole))
-						{
-							<li class="nav-item">
-								<a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
-							</li>
-						}
-
 						@if (User.IsInRole(Constants.UserRole))
 						{
 							<li class="nav-item">
 								<a class="nav-link text-dark" asp-area="" asp-controller="Recipes" asp-action="Index">Recipes</a>
 							</li>
-						})
+							<li class="nav-item">
+								<a class="nav-link text-dark" asp-area="" asp-controller="Recipes" asp-action="MyRecipes">My Recipes</a>
+							</li>
+						}
 					</ul>
 				</div>
 			</div>

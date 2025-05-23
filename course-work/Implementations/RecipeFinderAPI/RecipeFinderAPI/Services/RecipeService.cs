@@ -352,7 +352,7 @@ namespace RecipeFinderAPI.Services
                 Unit = ingredientsDict[ri.IngredientId].Unit
             }).ToList();
 
-            recipe.Calories = recipeIngredientsDto.Sum(ri => (ri.Quantity / 100.0) * ri.CaloriesPer100g);
+            recipe.Calories = recipeIngredientsDto.Sum(ri => (ri.Quantity / 100) * ri.CaloriesPer100g); ;
             // Записваме промените
             await _recipeRepository.UpdateAsync(recipe);
             // Връщаме отговора

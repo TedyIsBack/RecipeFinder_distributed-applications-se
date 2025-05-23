@@ -2,7 +2,7 @@
 @model RecipeFinderMVC.VIewModels.Recipes.IndexRecipesVM
 
 @{
-	ViewData["Title"] = "Recipes";
+	ViewData["Title"] = "My Recipes";
 	var loggedUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 }
 
@@ -13,8 +13,10 @@
 	{
 		<div class="alert alert-danger">@TempData["ErrorMessage"]</div>
 	}
+	@Html.ValidationMessage("CustomError")
 
-	<form action="/Recipes/Index" method="get" class="row g-3 align-items-center mb-4">
+
+	<form action="/Recipes/MyRecipes" method="get" class="row g-3 align-items-center mb-4">
 		@foreach (var key in ViewContext.HttpContext.Request.Query.Keys)
 		{
 			if (key != "Name" && key != "isVegan" && key != "isVegetarian" && key != "Pager.Page")
@@ -22,6 +24,7 @@
 				<input type="hidden" name="@key" value="@ViewContext.HttpContext.Request.Query[key]" />
 			}
 		}
+
 
 		<div class="col-md-4">
 			<input type="text" name="Name" value="@Model.Name" class="form-control" placeholder="Name" />
@@ -43,14 +46,14 @@
 		</div>
 
 		<div class="col-md-4 d-flex justify-content-end gap-2">
-			<a href="/Recipes/Index" class="btn btn-secondary">Clear</a>
+			<a href="/Recipes/MyRecipes" class="btn btn-secondary">Clear</a>
 			<input type="submit" value="Filter" class="btn btn-primary" />
 		</div>
 	</form>
 
-	@* <div class="mb-3">
+	<div class="mb-3">
 		<a href="/Recipes/Create" class="btn btn-success">Create New Recipe</a>
-	</div> *@
+	</div>
 
 	@if (Model.Items != null && Model.Items.Any())
 	{
@@ -90,10 +93,17 @@
 							</div>
 							<div class="col-md-2 text-end">
 								<a href="/Recipes/Details?id=@item.Id" class="btn btn-sm btn-outline-info w-100 mb-2">View</a>
+
+								@if (item.CreatedBy == loggedUserId)
+								{
+									<a href="/Recipes/Edit?id=@item.Id" class="btn btn-sm btn-outline-primary w-100 mb-2">Edit</a>
+									<a href="/Recipes/Delete?id=@item.Id" class="btn btn-sm btn-outline-danger w-100">Delete</a>
+								}
 								<a href="/Favorites/Add?recipeId=@item.Id"
 								   class="btn btn-sm btn-outline-warning w-100 mt-2">
 									❤️Add Favorite
 								</a>
+
 							</div>
 						</div>
 					</div>

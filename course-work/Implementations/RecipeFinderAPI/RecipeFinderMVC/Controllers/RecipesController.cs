@@ -42,7 +42,7 @@ namespace RecipeFinderMVC.Controllers
                 return View(model);
             }
 
- 
+
 
             var data = await response.Content.ReadFromJsonAsync<PagedResultVM<IndexRecipeVM>>();
 
@@ -59,6 +59,39 @@ namespace RecipeFinderMVC.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> MyRecipes(IndexRecipesVM model)
+        {
+            model.Pager ??= new PagerVM();
+
+            model.Pager.Page = model.Pager.Page == 0 ? 1 : model.Pager.Page;
+            model.Pager.ItemsPerPage = model.Pager.ItemsPerPage == 0 ? 10 : model.Pager.ItemsPerPage;
+
+
+            var query = $"recipes/created?Name={model.Name}&isVegan={model.isVegan}&isVegetarian={model.isVegetarian}&page={model.Pager.Page}&itemsPerPage={model.Pager.ItemsPerPage}";
+
+            var response = await _httpClient.GetAsync(query);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                ModelState.AddModelError(string.Empty, "Unable to load recipes");
+                return View(model);
+            }
+
+            var data = await response.Content.ReadFromJsonAsync<PagedResultVM<IndexRecipeVM>>();
+
+            model.Items = data.Items;
+            model.Pager.TotalCount = data.TotalCount;
+            model.Pager.PagesCount = data.PagesCount;
+            model.Pager.Page = data.Page;
+            model.Pager.ItemsPerPage = data.itemsPerPage;
+            model.Name = model.Name;
+            model.isVegan = model.isVegan;
+            model.isVegetarian = model.isVegetarian;
+
+
+            return View(model);
+        }
 
         [HttpGet]
         public async Task<IActionResult> Details(string id)
@@ -173,9 +206,9 @@ namespace RecipeFinderMVC.Controllers
 
             return RedirectToAction("Index");
         }
-    
 
-    [HttpGet]
+
+        [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
             // Вземаме рецептата по id от API
@@ -257,7 +290,23 @@ namespace RecipeFinderMVC.Controllers
                 return View(model);
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("MyRecipes");
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var response = await _httpClient.DeleteAsync($"recipes/{id}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                ModelState.AddModelError("CustomError", "Unable to delete recipe.");
+                return RedirectToAction("MyRecipes");
+            }
+
+
+            return RedirectToAction("MyRecipes");
         }
 
     }

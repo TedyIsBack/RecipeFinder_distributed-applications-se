@@ -44,11 +44,14 @@ namespace RecipeFinderMVC.VIewModels.Recipes
 
         [Required]
         public IEnumerable<CreateRecipeIngredientVM> RecipeIngredients { get; set; } = new List<CreateRecipeIngredientVM>();
-      
-        [BindNever]        
+
+        [BindNever]
+        [Range(1,1, ErrorMessage = "Please select category.")]
+
         public IEnumerable<IndexCategoryVM> AvailableCategories { get; set; } = new List<IndexCategoryVM>();
 
         [BindNever]
+        [Range(1, int.MaxValue, ErrorMessage = "Please select at least one ingredient.")]
         public IEnumerable<IndexIngredientVM> AvailableIngredients { get; set; }  = new List<IndexIngredientVM>();
 
     }

@@ -27,6 +27,8 @@ namespace RecipeFinderMVC.VIewModels.Recipes
         public string CategoryId { get; set; }
         public IndexCategoryVM Category { get; set; }
         public string CreatedBy { get; set; }
+
+        public bool IsFavorite { get; set; }
         public IndexAccountVM CreatedByUser { get; set; }
         public ICollection<IndexRecipeIngredientVM> RecipeIngredients { get; set; }
 

@@ -77,8 +77,8 @@ namespace RecipeFinderAPI.Services
             // Преобразуване към ResponseFavoriteDto
             var responseItems = pagedResult.Items.Select(fav => new ResponseFavoriteDto
             {
-                FavoritesId = fav.FavoriteRecipeId,
-                RecipeId = fav.Recipe.RecipeId,
+               // FavoritesId = fav.FavoriteRecipeId,
+                Id = fav.Recipe.RecipeId,
                 Name = fav.Recipe.Name,
                 Description = fav.Recipe.Description,
                 ImgUrl = fav.Recipe.ImgUrl,
@@ -95,9 +95,9 @@ namespace RecipeFinderAPI.Services
                     ShortCode = fav.Recipe.Category.ShortCode,
                     IsSeasonal = fav.Recipe.Category.IsSeasonal,
                 },
-                RecipeIngredients = fav.Recipe.RecipeIngredients.Select(ri => new ResponseIngredientDto
+                RecipeIngredients = fav.Recipe.RecipeIngredients.Select(ri =>  new ResponseRecipeIngredientDto
                 {
-                    Id = ri.IngredientId,
+                    IngredientId = ri.IngredientId,
                     Name = ri.Ingredient.Name,
                     ImgUrl = ri.Ingredient.ImgUrl,
                     CaloriesPer100g = ri.Ingredient.CaloriesPer100g,
@@ -116,8 +116,12 @@ namespace RecipeFinderAPI.Services
             };
         }
 
+        public async Task<bool> IsRecipeFavoritedAsync(string userId, string recipeId)
+        {
+            var item = await _favoriteRepo.FirstOrDefault(f => f.UserId == userId && f.RecipeId == recipeId);
 
-
+            return item != null; 
+        }
     }
 
 }

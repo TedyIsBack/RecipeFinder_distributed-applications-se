@@ -90,10 +90,24 @@
 							</div>
 							<div class="col-md-2 text-end">
 								<a href="/Recipes/Details?id=@item.Id" class="btn btn-sm btn-outline-info w-100 mb-2">View</a>
-								<a href="/Favorites/Add?recipeId=@item.Id"
-								   class="btn btn-sm btn-outline-warning w-100 mt-2">
-									❤️Add Favorite
-								</a>
+								@if (!item.IsFavorite)
+								{
+									<form action="/Favorites/Add" method="post" style="display: inline;">
+										<input type="hidden" name="id" value="@item.Id" />
+										<button type="submit" class="btn btn-danger btn-sm w-100 mt-2">
+											❤️Add Favorite
+										</button>
+									</form>
+								}
+								else
+								{
+									<form action="/Favorites/Remove" method="post" style="display: inline;">
+										<input type="hidden" name="id" value="@item.Id" />
+										<button type="submit" class="btn btn-danger btn-sm w-100 mt-2">
+											x Remove from Favorites
+										</button>
+									</form>
+								}
 							</div>
 						</div>
 					</div>

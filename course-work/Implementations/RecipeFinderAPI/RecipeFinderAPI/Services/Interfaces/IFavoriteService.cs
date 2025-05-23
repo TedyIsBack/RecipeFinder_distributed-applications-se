@@ -14,7 +14,7 @@ namespace RecipeFinderAPI.Services.Interfaces
             int itemsPerPage = 10);
         Task<bool> AddToFavoritesAsync(string userId, string recipeId);
         Task<bool> RemoveFromFavoritesAsync(string userId, string recipeId);
-        //Task<bool> IsRecipeFavoritedAsync(string userId, string recipeId);
+        Task<bool> IsRecipeFavoritedAsync(string userId, string recipeId);
 
     }
 }

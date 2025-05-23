@@ -1,14 +1,15 @@
 ﻿using RecipeFinderAPI.Entities;
 using RecipeFinderAPI.Infrastructure.DTOs.CategoryDTOs;
 using RecipeFinderAPI.Infrastructure.DTOs.IngredientDTOs;
+using RecipeFinderAPI.Infrastructure.DTOs.RecipeDTOs;
 
 namespace RecipeFinderAPI.Infrastructure.DTOs.FavoriteDTOs
 {
-    public class ResponseFavoriteDto
+    public class ResponseFavoriteDto : ResponseRecipeDto
     {
 
-        public string FavoritesId { get; set; }
-        public string RecipeId { get; set; }
+      /*  //public string FavoritesId { get; set; }
+        public string Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
 
@@ -23,5 +24,6 @@ namespace RecipeFinderAPI.Infrastructure.DTOs.FavoriteDTOs
         public string CategoryId { get; set; }
         public ResponseCategoryDto Category { get; set; }
         public ICollection<ResponseIngredientDto> RecipeIngredients { get; set; }
+    */
     }
 }

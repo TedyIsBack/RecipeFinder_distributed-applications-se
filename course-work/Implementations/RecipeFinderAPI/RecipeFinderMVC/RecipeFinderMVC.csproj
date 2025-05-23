@@ -17,8 +17,4 @@
     <ProjectReference Include="..\RecipeFinderAPI\RecipeFinderAPI.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Views\Errors\" />
-  </ItemGroup>
-
 </Project>

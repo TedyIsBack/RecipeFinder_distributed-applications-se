@@ -21,10 +21,11 @@ namespace RecipeFinderAPI.Controllers
     public class RecipesController : ControllerBase
     {
         private readonly IRecipeService _recipeService;
-
-        public RecipesController(IRecipeService recipeService)
+        private readonly IFavoriteService _favoriteService;
+        public RecipesController(IRecipeService recipeService, IFavoriteService favoriteService)
         {
             _recipeService = recipeService;
+            _favoriteService = favoriteService;
         }
 
         /// <summary>
@@ -51,9 +52,16 @@ namespace RecipeFinderAPI.Controllers
                 return Unauthorized();
 
             Expression<Func<Recipe, bool>> filter = x =>
-                (string.IsNullOrEmpty(name) || x.Name.Contains(name)) && (x.CreatedBy == loggedUserId);
+                (string.IsNullOrEmpty(name) || x.Name.Contains(name)) 
+                && (x.CreatedBy == loggedUserId);
 
             var recipes = await _recipeService.GetAllRecipesAsync(filter, page, itemsPerPage);
+
+
+            foreach (var recipe in recipes.Items)
+            {
+                recipe.IsFavorite = await _favoriteService.IsRecipeFavoritedAsync(loggedUserId, recipe.Id);
+            }
 
             return Ok(recipes);
         }
@@ -83,6 +91,13 @@ namespace RecipeFinderAPI.Controllers
                     && (!isVegetarian.HasValue ||x.IsVegetarian == isVegetarian);
 
             var recipes = await _recipeService.GetAllRecipesAsync(filter, page, itemsPerPage);
+            string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            foreach (var recipe in recipes.Items)
+            {
+                recipe.IsFavorite = await _favoriteService.IsRecipeFavoritedAsync(loggedUserId, recipe.Id);
+            }
+
 
             return Ok(recipes);
         }
@@ -110,6 +125,8 @@ namespace RecipeFinderAPI.Controllers
 
             if (recipe == null)
                 return NotFound();
+
+            recipe.IsFavorite = await _favoriteService.IsRecipeFavoritedAsync(loggedUserId, recipe.Id);
 
             return Ok(recipe);
         }

@@ -23,6 +23,9 @@ namespace RecipeFinderAPI.Infrastructure.DTOs.RecipeDTOs
         public string CategoryId { get; set; }
         public ResponseCategoryDto Category { get; set; }
         public string CreatedBy { get; set; }
+        
+        public bool IsFavorite { get; set; }
+
         public ResponseAccountDto CreatedByUser { get; set; }
         public ICollection<ResponseRecipeIngredientDto> RecipeIngredients { get; set; }
     }

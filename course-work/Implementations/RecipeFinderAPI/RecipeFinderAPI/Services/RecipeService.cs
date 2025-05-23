@@ -76,7 +76,7 @@ namespace RecipeFinderAPI.Services
                 .Where(ri => ingredientsDict.ContainsKey(ri.IngredientId))
                 .Select((ri, index) => new ResponseRecipeIngredientDto
                 {
-                    RecipeIngredientId = recipeIngredients[index].RecipeIngredientId,  
+                    //RecipeIngredientId = recipeIngredients[index].RecipeIngredientId,  
                     IngredientId = ri.IngredientId,
                     Quantity = ri.Quantity,
                     Name = ingredientsDict[ri.IngredientId].Name,
@@ -177,7 +177,7 @@ namespace RecipeFinderAPI.Services
 
                 RecipeIngredients = recipe.RecipeIngredients.Select(ri => new ResponseRecipeIngredientDto
                 {
-                    RecipeIngredientId = ri.RecipeIngredientId,
+                    //RecipeIngredientId = ri.RecipeIngredientId,
                     IngredientId = ri.IngredientId,
                     Quantity = ri.Quantity,
                     Name = ri.Ingredient.Name,
@@ -213,7 +213,7 @@ namespace RecipeFinderAPI.Services
 
             var recipeIngredients = recipe.RecipeIngredients.Select(ri => new ResponseRecipeIngredientDto
             {
-                RecipeIngredientId = ri.RecipeIngredientId,
+                //RecipeIngredientId = ri.RecipeIngredientId,
                 IngredientId = ri.IngredientId,
                 Quantity = ri.Quantity
             }).ToList();
@@ -248,7 +248,7 @@ namespace RecipeFinderAPI.Services
 
                 RecipeIngredients = recipe.RecipeIngredients.Select(ri => new ResponseRecipeIngredientDto
                 {
-                    RecipeIngredientId = ri.RecipeIngredientId,
+                    //RecipeIngredientId = ri.RecipeIngredientId,
                     IngredientId = ri.IngredientId,
                     Quantity = ri.Quantity,
                     Name = ri.Ingredient.Name,
@@ -342,7 +342,7 @@ namespace RecipeFinderAPI.Services
 
             var recipeIngredientsDto = recipe.RecipeIngredients.Select(ri => new ResponseRecipeIngredientDto
             {
-                RecipeIngredientId = ri.RecipeIngredientId,
+                //RecipeIngredientId = ri.RecipeIngredientId,
                 IngredientId = ri.IngredientId,
                 Quantity = ri.Quantity,
                 Name = ingredientsDict[ri.IngredientId].Name,

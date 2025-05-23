@@ -22,9 +22,11 @@ namespace RecipeFinderAPI.Controllers
     public class FavoritesController : ControllerBase
     {
         private readonly IFavoriteService _favoriteService;
-        public FavoritesController(IFavoriteService favoriteService)
+        private readonly IRecipeService _recipeService;
+        public FavoritesController(IFavoriteService favoriteService, IRecipeService recipeService)
         {
             _favoriteService = favoriteService;
+            _recipeService = recipeService;
         }
 
         /// <summary>
@@ -56,6 +58,11 @@ namespace RecipeFinderAPI.Controllers
 
             var favorites = await _favoriteService.GetUserFavoriteRecipesAsync(loggedUserId, filter, page, itemsPerPage);
 
+            foreach (var recipe in favorites.Items)
+            {
+                recipe.IsFavorite = await _favoriteService.IsRecipeFavoritedAsync(loggedUserId, recipe.Id);
+            }
+
             return Ok(favorites);
         }
 
@@ -80,8 +87,14 @@ namespace RecipeFinderAPI.Controllers
             if (!result)
                 return BadRequest(new { message = "Recipe already in favorites" });
 
+            var recipe = await _recipeService.GetRecipeByIdAsync(recipeId);
+
+            recipe.IsFavorite = await _favoriteService.IsRecipeFavoritedAsync(loggedUserId,recipeId);
+
             return Ok(new { message = "Recipe added to favorites" });
         }
+
+
 
         /// <summary>
         /// Remove recipe from favorites
@@ -106,6 +119,12 @@ namespace RecipeFinderAPI.Controllers
 
             if (!result)
                 return NotFound(new { message = "Recipe not found in favorites" });
+
+
+            var recipe = await _recipeService.GetRecipeByIdAsync(recipeId);
+
+            recipe.IsFavorite = await _favoriteService.IsRecipeFavoritedAsync(loggedUserId, recipeId);
+
 
             return Ok();
             //return Ok(new { message = "Recipe removed from favorites" });

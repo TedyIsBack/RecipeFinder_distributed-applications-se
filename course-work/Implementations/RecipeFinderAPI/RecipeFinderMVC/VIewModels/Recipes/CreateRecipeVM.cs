@@ -31,11 +31,11 @@ namespace RecipeFinderMVC.VIewModels.Recipes
         //TODO: Calories will be calculated based on the ingredients
         //public double Calories { get; set; }
 
-        [Required]
+        //[Required]
         [Display(Name = "Vegan")]
         public bool IsVegan { get; set; }
 
-        [Required]
+        //[Required]
         [Display(Name = "Vegetarian")]
         public bool IsVegetarian { get; set; }
 
@@ -46,12 +46,9 @@ namespace RecipeFinderMVC.VIewModels.Recipes
         public IEnumerable<CreateRecipeIngredientVM> RecipeIngredients { get; set; } = new List<CreateRecipeIngredientVM>();
 
         [BindNever]
-        [Range(1,1, ErrorMessage = "Please select category.")]
-
         public IEnumerable<IndexCategoryVM> AvailableCategories { get; set; } = new List<IndexCategoryVM>();
 
         [BindNever]
-        [Range(1, int.MaxValue, ErrorMessage = "Please select at least one ingredient.")]
         public IEnumerable<IndexIngredientVM> AvailableIngredients { get; set; }  = new List<IndexIngredientVM>();
 
     }

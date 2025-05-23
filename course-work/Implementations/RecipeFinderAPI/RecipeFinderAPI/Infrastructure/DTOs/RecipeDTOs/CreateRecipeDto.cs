@@ -24,10 +24,10 @@ namespace RecipeFinderAPI.Infrastructure.DTOs.RecipesDTOs
         //TODO: Calories will be calculated based on the ingredients
         //public double Calories { get; set; }
 
-        [Required]
+        //[Required]
         public bool IsVegan { get; set; }
 
-        [Required]
+        //[Required]
         public bool IsVegetarian { get; set; }
 
         [Required]

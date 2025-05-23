@@ -60,6 +60,9 @@
 						@if (User.IsInRole(Constants.UserRole))
 						{
 							<li class="nav-item">
+								<a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Index">My account</a>
+							</li>
+							<li class="nav-item">
 								<a class="nav-link text-dark" asp-area="" asp-controller="Recipes" asp-action="Index">Recipes</a>
 							</li>
 							<li class="nav-item">

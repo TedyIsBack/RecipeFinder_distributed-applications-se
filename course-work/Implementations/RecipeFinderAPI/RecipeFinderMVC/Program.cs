@@ -1,4 +1,5 @@
 using RecipeFinderMVC.Security;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace RecipeFinderMVC
 {
@@ -51,6 +52,9 @@ namespace RecipeFinderMVC
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+           // app.UseStatusCodePagesWithRedirects("/StatusCode/{0}");
+
 
             //app.UseHttpsRedirection();
             app.UseStaticFiles();

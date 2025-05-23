@@ -1,0 +1,24 @@
+﻿@model RecipeFinderMVC.VIewModels.Accounts.IndexAccountVM
+
+@{
+    ViewData["Title"] = "My Account";
+}
+
+<h2>My Account</h2>
+
+<div class="card mt-4">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Email</dt>
+            <dd class="col-sm-9">@Model.Email</dd>
+
+            <dt class="col-sm-3">Username</dt>
+            <dd class="col-sm-9">@Model.Username</dd>
+
+            <dt class="col-sm-3">Created At</dt>
+            <dd class="col-sm-9">@Model.CreatedAt</dd>
+        </dl>
+
+        <a href="/Account/Edit/@Model.Id" class="btn btn-primary mt-3">Редактирай</a>
+    </div>
+</div>

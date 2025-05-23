@@ -131,6 +131,16 @@ namespace RecipeFinderMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateRecipeVM model)
         {
+            /*if (!model.RecipeIngredients.Any())
+            {
+                ModelState.AddModelError("RecipeIngredients", "Please select at least one ingredient.");
+            }
+
+            if (!model.AvailableCategories.Any())
+            {
+                ModelState.AddModelError("AvailableCategories", "Please select category.");
+            }
+*/
             if (!ModelState.IsValid)
             {
                 // Зареждаме отново категориите и съставките при грешка

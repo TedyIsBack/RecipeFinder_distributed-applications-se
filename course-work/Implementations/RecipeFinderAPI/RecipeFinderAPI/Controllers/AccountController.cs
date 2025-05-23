@@ -76,6 +76,7 @@ namespace RecipeFinderAPI.Controllers
         /// <response code="200">Returns the updated user data</response>
         /// <response code="401">User is not authorized</response>
         /// <response code="404">User not found</response>
+        //[HttpPut("{id}")]
         [HttpPut]
         public async Task<IActionResult> UpdateLoggedUserInfo([FromBody] UpdateAccountDto updateAccountDto)
         {

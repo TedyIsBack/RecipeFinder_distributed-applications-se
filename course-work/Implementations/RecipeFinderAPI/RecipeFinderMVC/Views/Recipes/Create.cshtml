@@ -41,23 +41,20 @@
             {
                 var selected = category.Id == Model.CategoryId ? "selected" : "";
                 @: <option value="@category.Id" @selected>@category.Name</option> 
-                    @Html.ValidationMessageFor(x => x.CategoryId, "", new { @class = "text-danger" })
             }
-            @Html.ValidationMessageFor(x => x.AvailableCategories, "", new { @class = "text-danger" })
-
         </select>
+       @*  @Html.ValidationMessage("AvailableCategories", "Please select category", new { @class = "text-danger" }) *@
+
     </div>
 
     <div class="form-check">
         <input type="checkbox" name="IsVegan" id="IsVegan" class="form-check-input" value="true" @(Model.IsVegan ? "checked" : "") />
         <label for="IsVegan" class="form-check-label">Vegan</label>
-        @Html.ValidationMessageFor(x => x.IsVegan, "", new { @class = "text-danger" })
     </div>
 
     <div class="form-check">
         <input type="checkbox" name="IsVegetarian" id="IsVegetarian" class="form-check-input" value="true" @(Model.IsVegetarian ? "checked" : "") />
         <label for="IsVegetarian" class="form-check-label">Vegetarian</label>
-        @Html.ValidationMessageFor(x => x.IsVegetarian, "", new { @class = "text-danger" })
     </div>
 
     <hr />
@@ -75,13 +72,13 @@
                             <option value="@ingredient.Id">@ingredient.Name</option>
                         }
                     </select>
-                    @Html.ValidationMessageFor(x => x.RecipeIngredients, "", new { @class = "text-danger" })
                 </div>
                 <div class="col">
                     <input type="number" name="RecipeIngredients[@i].Quantity" class="form-control" placeholder="Quantity" step="0.1" />
                 </div>
             </div>
         }
+        @* @Html.ValidationMessage("RecipeIngredients","Please select at least one ingredient.",new {@class = "text-danger"} ) *@
     </div>
 
     <button type="button" class="btn btn-secondary" onclick="addIngredient()">+ Add Ingredient</button>

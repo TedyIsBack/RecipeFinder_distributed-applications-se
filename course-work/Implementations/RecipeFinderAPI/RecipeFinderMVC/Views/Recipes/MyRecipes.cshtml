@@ -1,5 +1,5 @@
 ﻿@using System.Security.Claims
-@model RecipeFinderMVC.VIewModels.Recipes.IndexRecipesVM
+@model RecipeFinderMVC.Models.Recipes.IndexRecipesModel
 
 @{
 	ViewData["Title"] = "My Recipes";
@@ -41,6 +41,7 @@
 		<div class="col-md-4">
 			<select asp-for="isVegetarian" class="form-select">
 				<option value="">Select Vegetarian</option>
+				<option value="true">Vegetarian</option>
 				<option value="false">Not Vegetarian</option>
 			</select>
 		</div>

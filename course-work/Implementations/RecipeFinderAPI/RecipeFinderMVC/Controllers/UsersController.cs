@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using RecipeFinderAPI.Common;
 using RecipeFinderAPI.Infrastructure.DTOs.UsersDTOs;
-using RecipeFinderMVC.VIewModels;
-using RecipeFinderMVC.VIewModels.Users;
+using RecipeFinderMVC.Models;
+using RecipeFinderMVC.Models.Users;
 using System.Net.Http;
 using System.Net.Http.Json;
 
@@ -20,9 +20,9 @@ namespace RecipeFinderMVC.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(IndexUsersVM model)
+        public async Task<IActionResult> Index(IndexUsersModel model)
         {
-            model.Pager ??= new PagerVM();
+            model.Pager ??= new PagerModel();
 
             model.Pager.Page = model.Pager.Page == 0 ? 1 : model.Pager.Page;
             model.Pager.ItemsPerPage = model.Pager.ItemsPerPage == 0 ? 10 : model.Pager.ItemsPerPage;
@@ -40,7 +40,7 @@ namespace RecipeFinderMVC.Controllers
                 return View(model);
             }
 
-            var data = await response.Content.ReadFromJsonAsync<PagedResultVM<IndexUserVM>>();
+            var data = await response.Content.ReadFromJsonAsync<PagedResultModel<IndexUserModel>>();
 
             if (data == null)
             {
@@ -68,7 +68,7 @@ namespace RecipeFinderMVC.Controllers
             if (!response.IsSuccessStatusCode)
                 return NotFound();
 
-            var user = await response.Content.ReadFromJsonAsync<EditUserVM>();
+            var user = await response.Content.ReadFromJsonAsync<EditUserModel>();
             if (user == null)
                 return NotFound();
 
@@ -76,7 +76,7 @@ namespace RecipeFinderMVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(EditUserVM model)
+        public async Task<IActionResult> Edit(EditUserModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);

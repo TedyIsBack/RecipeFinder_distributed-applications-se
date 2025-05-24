@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RecipeFinderAPI.Common;
-using RecipeFinderMVC.VIewModels.Accounts;
+using RecipeFinderMVC.Models.Accounts;
 using System.Threading.Tasks;
 
 namespace RecipeFinderMVC.Controllers
 {
-    [Authorize(Roles =Constants.UserRole)]
+    [Authorize(Roles = Constants.UserRole)]
     public class AccountController : Controller
     {
         private readonly HttpClient _httpClient;
@@ -17,7 +17,7 @@ namespace RecipeFinderMVC.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(IndexAccountVM model)
+        public async Task<IActionResult> Index(IndexAccountModel model)
         {
             var response = await _httpClient.GetAsync("account");
 
@@ -26,7 +26,7 @@ namespace RecipeFinderMVC.Controllers
                 ModelState.AddModelError("CustomError", "Failed to load this account.");
             }
 
-            var account = await response.Content.ReadFromJsonAsync<IndexAccountVM>();
+            var account = await response.Content.ReadFromJsonAsync<IndexAccountModel>();
 
             return View(account);
         }
@@ -36,18 +36,18 @@ namespace RecipeFinderMVC.Controllers
         {
             var response = await _httpClient.GetAsync($"account/{id}");
 
-            if(!response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
                 ModelState.AddModelError("CustomError", "Failed to load this account.");
             }
 
-            var account = await response.Content.ReadFromJsonAsync<EditAccountVM>();
+            var account = await response.Content.ReadFromJsonAsync<EditAccountModel>();
 
             return View(account);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(EditAccountVM model)
+        public async Task<IActionResult> Edit(EditAccountModel model)
         {
             //var response = await _httpClient.PutAsJsonAsync($"account/{model.Id}",model);
             var response = await _httpClient.PutAsJsonAsync($"account", model);

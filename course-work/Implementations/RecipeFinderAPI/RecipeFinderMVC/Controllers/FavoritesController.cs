@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RecipeFinderAPI.Common;
-using RecipeFinderMVC.VIewModels;
-using RecipeFinderMVC.VIewModels.Favorites;
+using RecipeFinderMVC.Models;
+using RecipeFinderMVC.Models.Favorites;
 
 namespace RecipeFinderMVC.Controllers
 {
@@ -17,9 +17,9 @@ namespace RecipeFinderMVC.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(IndexFavoritesVM model)
+        public async Task<IActionResult> Index(IndexFavoritesModel model)
         {
-            model.Pager ??= new PagerVM();
+            model.Pager ??= new PagerModel();
 
             model.Pager.Page = model.Pager.Page == 0 ? 1 : model.Pager.Page;
             model.Pager.ItemsPerPage = model.Pager.ItemsPerPage == 0 ? 10 : model.Pager.ItemsPerPage;
@@ -35,7 +35,7 @@ namespace RecipeFinderMVC.Controllers
                 return View(model);
             }
 
-            var data = await response.Content.ReadFromJsonAsync<PagedResultVM<IndexFavoriteVM>>();
+            var data = await response.Content.ReadFromJsonAsync<PagedResultModel<IndexFavoriteModel>>();
 
             model.Items = data.Items;
             model.Pager.TotalCount = data.TotalCount;
@@ -60,13 +60,12 @@ namespace RecipeFinderMVC.Controllers
             {
                 return BadRequest();
             }
-            var model = await response.Content.ReadFromJsonAsync<IndexFavoriteVM>();
+            var model = await response.Content.ReadFromJsonAsync<IndexFavoriteModel>();
 
-           // return RedirectToAction("Details", "Recipes", new { id });
-           return RedirectToAction("Index");
+           return RedirectToAction("Index", "Recipes");
         }
 
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> Remove(string id)
         {
             var response = await _httpClient.DeleteAsync($"favorites/{id}");
@@ -75,9 +74,8 @@ namespace RecipeFinderMVC.Controllers
             {
                 return BadRequest();
             }
-            var model = await response.Content.ReadFromJsonAsync<IndexFavoriteVM>();
+            var model = await response.Content.ReadFromJsonAsync<IndexFavoriteModel>();
 
-            //return RedirectToAction("Details", "Recipes", new { id });
             return RedirectToAction("Index");
         }
     }

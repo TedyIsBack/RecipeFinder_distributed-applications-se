@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using RecipeFinderMVC.Models.Auth;
-using RecipeFinderMVC.VIewModels.Auth;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Text.Json;
@@ -26,7 +25,7 @@ namespace RecipeFinderMVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginVM model)
+        public async Task<IActionResult> Login(LoginModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
@@ -80,7 +79,7 @@ namespace RecipeFinderMVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterUserVM model)
+        public async Task<IActionResult> Register(RegisterUserModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);

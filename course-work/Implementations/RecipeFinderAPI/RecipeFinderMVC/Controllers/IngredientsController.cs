@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RecipeFinderMVC.VIewModels.Ingredients;
-using RecipeFinderMVC.VIewModels;
+using RecipeFinderMVC.Models.Ingredients;
+using RecipeFinderMVC.Models;
 using Microsoft.AspNetCore.Authorization;
 using RecipeFinderAPI.Common;
 
@@ -16,9 +16,9 @@ namespace RecipeFinderMVC.Controllers
             _httpClient = httpClientFactory.CreateClient("ApiClient");
         }
         [HttpGet]
-        public async Task<IActionResult> Index(IndexIngredientsVM model)
+        public async Task<IActionResult> Index(IndexIngredientsModel model)
         {
-            model.Pager ??= new PagerVM();
+            model.Pager ??= new PagerModel();
 
             model.Pager.Page = model.Pager.Page == 0 ? 1 : model.Pager.Page;
             model.Pager.ItemsPerPage = model.Pager.ItemsPerPage == 0 ? 10 : model.Pager.ItemsPerPage;
@@ -34,7 +34,7 @@ namespace RecipeFinderMVC.Controllers
                 return View(model);
             }
 
-            var data = await response.Content.ReadFromJsonAsync<PagedResultVM<IndexIngredientVM>>();
+            var data = await response.Content.ReadFromJsonAsync<PagedResultModel<IndexIngredientModel>>();
 
             model.Items = data.Items;
             model.Pager.TotalCount = data.TotalCount;
@@ -55,7 +55,7 @@ namespace RecipeFinderMVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateIngredientVM model)
+        public async Task<IActionResult> Create(CreateIngredientModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -117,7 +117,7 @@ namespace RecipeFinderMVC.Controllers
             if (!response.IsSuccessStatusCode)
                 return NotFound();
 
-            var ingredient = await response.Content.ReadFromJsonAsync<EditIngredientVM>();
+            var ingredient = await response.Content.ReadFromJsonAsync<EditIngredientModel>();
             if (ingredient == null)
                 return NotFound();
 
@@ -125,7 +125,7 @@ namespace RecipeFinderMVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(EditIngredientVM model)
+        public async Task<IActionResult> Edit(EditIngredientModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);

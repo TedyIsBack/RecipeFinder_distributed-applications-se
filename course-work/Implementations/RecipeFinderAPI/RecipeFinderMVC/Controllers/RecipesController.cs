@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RecipeFinderAPI.Common;
-using RecipeFinderMVC.VIewModels.Recipes;
-using RecipeFinderMVC.VIewModels;
-using RecipeFinderMVC.VIewModels.Ingredients;
+using RecipeFinderMVC.Models.Recipes;
+using RecipeFinderMVC.Models;
+using RecipeFinderMVC.Models.Ingredients;
 using RecipeFinderAPI.Infrastructure;
-using RecipeFinderMVC.VIewModels.Categories;
+using RecipeFinderMVC.Models.Categories;
 using System.Text;
 using System.Text.Json;
 using RecipeFinderAPI.Entities;
@@ -24,9 +24,9 @@ namespace RecipeFinderMVC.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(IndexRecipesVM model)
+        public async Task<IActionResult> Index(IndexRecipesModel model)
         {
-            model.Pager ??= new PagerVM();
+            model.Pager ??= new PagerModel();
 
             model.Pager.Page = model.Pager.Page == 0 ? 1 : model.Pager.Page;
             model.Pager.ItemsPerPage = model.Pager.ItemsPerPage == 0 ? 10 : model.Pager.ItemsPerPage;
@@ -44,7 +44,7 @@ namespace RecipeFinderMVC.Controllers
 
 
 
-            var data = await response.Content.ReadFromJsonAsync<PagedResultVM<IndexRecipeVM>>();
+            var data = await response.Content.ReadFromJsonAsync<PagedResultModel<IndexRecipeModel>>();
 
             model.Items = data.Items;
             model.Pager.TotalCount = data.TotalCount;
@@ -60,9 +60,9 @@ namespace RecipeFinderMVC.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> MyRecipes(IndexRecipesVM model)
+        public async Task<IActionResult> MyRecipes(IndexRecipesModel model)
         {
-            model.Pager ??= new PagerVM();
+            model.Pager ??= new PagerModel();
 
             model.Pager.Page = model.Pager.Page == 0 ? 1 : model.Pager.Page;
             model.Pager.ItemsPerPage = model.Pager.ItemsPerPage == 0 ? 10 : model.Pager.ItemsPerPage;
@@ -78,7 +78,7 @@ namespace RecipeFinderMVC.Controllers
                 return View(model);
             }
 
-            var data = await response.Content.ReadFromJsonAsync<PagedResultVM<IndexRecipeVM>>();
+            var data = await response.Content.ReadFromJsonAsync<PagedResultModel<IndexRecipeModel>>();
 
             model.Items = data.Items;
             model.Pager.TotalCount = data.TotalCount;
@@ -101,7 +101,7 @@ namespace RecipeFinderMVC.Controllers
             {
                 return NotFound();
             }
-            var recipe = await response.Content.ReadFromJsonAsync<IndexRecipeVM>();
+            var recipe = await response.Content.ReadFromJsonAsync<IndexRecipeModel>();
             if (recipe == null)
             {
                 return NotFound();
@@ -113,13 +113,13 @@ namespace RecipeFinderMVC.Controllers
         public async Task<IActionResult> Create()
         {
             // Зареждаме категории и сътавки при отваряне на формата
-            var responseCategories = await _httpClient.GetFromJsonAsync<PagedResultVM<IndexCategoryVM>>($"categories?itemsPerPage={int.MaxValue}");
-            var categories = responseCategories?.Items ?? new List<IndexCategoryVM>();
+            var responseCategories = await _httpClient.GetFromJsonAsync<PagedResultModel<IndexCategoryModel>>($"categories?itemsPerPage={int.MaxValue}");
+            var categories = responseCategories?.Items ?? new List<IndexCategoryModel>();
 
-            var responseIngredients = await _httpClient.GetFromJsonAsync<PagedResultVM<IndexIngredientVM>>($"ingredients?itemsPerPage={int.MaxValue}");
-            var ingredients = responseIngredients?.Items ?? new List<IndexIngredientVM>();
+            var responseIngredients = await _httpClient.GetFromJsonAsync<PagedResultModel<IndexIngredientModel>>($"ingredients?itemsPerPage={int.MaxValue}");
+            var ingredients = responseIngredients?.Items ?? new List<IndexIngredientModel>();
 
-            var model = new CreateRecipeVM
+            var model = new CreateRecipeModel
             {
                 AvailableCategories = categories,
                 AvailableIngredients = ingredients
@@ -129,7 +129,7 @@ namespace RecipeFinderMVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateRecipeVM model)
+        public async Task<IActionResult> Create(CreateRecipeModel model)
         {
             /*if (!model.RecipeIngredients.Any())
             {
@@ -144,11 +144,11 @@ namespace RecipeFinderMVC.Controllers
             if (!ModelState.IsValid)
             {
                 // Зареждаме отново категориите и съставките при грешка
-                var pagedCategories = await _httpClient.GetFromJsonAsync<PagedResultVM<IndexCategoryVM>>($"categories?itemsPerPage={int.MaxValue}");
-                var categories = pagedCategories?.Items ?? new List<IndexCategoryVM>();
+                var pagedCategories = await _httpClient.GetFromJsonAsync<PagedResultModel<IndexCategoryModel>>($"categories?itemsPerPage={int.MaxValue}");
+                var categories = pagedCategories?.Items ?? new List<IndexCategoryModel>();
 
-                var pagedIngredients = await _httpClient.GetFromJsonAsync<PagedResultVM<IndexIngredientVM>>($"ingredients?itemsPerPage={int.MaxValue}");
-                var ingredients = pagedIngredients?.Items ?? new List<IndexIngredientVM>();
+                var pagedIngredients = await _httpClient.GetFromJsonAsync<PagedResultModel<IndexIngredientModel>>($"ingredients?itemsPerPage={int.MaxValue}");
+                var ingredients = pagedIngredients?.Items ?? new List<IndexIngredientModel>();
 
                 model.AvailableCategories = categories;
                 model.AvailableIngredients = ingredients;
@@ -202,11 +202,11 @@ namespace RecipeFinderMVC.Controllers
                 }
 
                 // Зареждаме категориите и съставките отново при грешка
-                var pagedCategories = await _httpClient.GetFromJsonAsync<PagedResultVM<IndexCategoryVM>>($"categories?itemsPerPage={int.MaxValue}");
-                var categories = pagedCategories?.Items ?? new List<IndexCategoryVM>();
+                var pagedCategories = await _httpClient.GetFromJsonAsync<PagedResultModel<IndexCategoryModel>>($"categories?itemsPerPage={int.MaxValue}");
+                var categories = pagedCategories?.Items ?? new List<IndexCategoryModel>();
 
-                var pagedIngredients = await _httpClient.GetFromJsonAsync<PagedResultVM<IndexIngredientVM>>($"ingredients?itemsPerPage={int.MaxValue}");
-                var ingredients = pagedIngredients?.Items ?? new List<IndexIngredientVM>();
+                var pagedIngredients = await _httpClient.GetFromJsonAsync<PagedResultModel<IndexIngredientModel>>($"ingredients?itemsPerPage={int.MaxValue}");
+                var ingredients = pagedIngredients?.Items ?? new List<IndexIngredientModel>();
 
                 model.AvailableCategories = categories;
                 model.AvailableIngredients = ingredients;
@@ -228,7 +228,7 @@ namespace RecipeFinderMVC.Controllers
                 return NotFound();
             }
 
-            var recipe = await response.Content.ReadFromJsonAsync<EditRecipeVM>();
+            var recipe = await response.Content.ReadFromJsonAsync<EditRecipeModel>();
 
             if (recipe == null)
             {
@@ -236,26 +236,26 @@ namespace RecipeFinderMVC.Controllers
             }
 
             // Зареждаме наличните категории и съставки
-            var pagedCategories = await _httpClient.GetFromJsonAsync<PagedResultVM<IndexCategoryVM>>($"categories?itemsPerPage={int.MaxValue}");
-            recipe.AvailableCategories = pagedCategories?.Items ?? new List<IndexCategoryVM>();
+            var pagedCategories = await _httpClient.GetFromJsonAsync<PagedResultModel<IndexCategoryModel>>($"categories?itemsPerPage={int.MaxValue}");
+            recipe.AvailableCategories = pagedCategories?.Items ?? new List<IndexCategoryModel>();
 
-            var pagedIngredients = await _httpClient.GetFromJsonAsync<PagedResultVM<IndexIngredientVM>>($"ingredients?itemsPerPage={int.MaxValue}");
-            recipe.AvailableIngredients = pagedIngredients?.Items ?? new List<IndexIngredientVM>();
+            var pagedIngredients = await _httpClient.GetFromJsonAsync<PagedResultModel<IndexIngredientModel>>($"ingredients?itemsPerPage={int.MaxValue}");
+            recipe.AvailableIngredients = pagedIngredients?.Items ?? new List<IndexIngredientModel>();
 
             return View(recipe);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(EditRecipeVM model)
+        public async Task<IActionResult> Edit(EditRecipeModel model)
         {
             if (!ModelState.IsValid)
             {
                 // При грешка презареждаме категориите и съставките
-                var pagedCategories = await _httpClient.GetFromJsonAsync<PagedResultVM<IndexCategoryVM>>($"categories?itemsPerPage={int.MaxValue}");
-                model.AvailableCategories = pagedCategories?.Items ?? new List<IndexCategoryVM>();
+                var pagedCategories = await _httpClient.GetFromJsonAsync<PagedResultModel<IndexCategoryModel>>($"categories?itemsPerPage={int.MaxValue}");
+                model.AvailableCategories = pagedCategories?.Items ?? new List<IndexCategoryModel>();
 
-                var pagedIngredients = await _httpClient.GetFromJsonAsync<PagedResultVM<IndexIngredientVM>>($"ingredients?itemsPerPage={int.MaxValue}");
-                model.AvailableIngredients = pagedIngredients?.Items ?? new List<IndexIngredientVM>();
+                var pagedIngredients = await _httpClient.GetFromJsonAsync<PagedResultModel<IndexIngredientModel>>($"ingredients?itemsPerPage={int.MaxValue}");
+                model.AvailableIngredients = pagedIngredients?.Items ?? new List<IndexIngredientModel>();
 
                 return View(model);
             }
@@ -291,11 +291,11 @@ namespace RecipeFinderMVC.Controllers
                 ModelState.AddModelError(string.Empty, "Unable to update recipe.");
 
                 // При грешка презареждаме категориите и съставките
-                var pagedCategories = await _httpClient.GetFromJsonAsync<PagedResultVM<IndexCategoryVM>>($"categories?itemsPerPage={int.MaxValue}");
-                model.AvailableCategories = pagedCategories?.Items ?? new List<IndexCategoryVM>();
+                var pagedCategories = await _httpClient.GetFromJsonAsync<PagedResultModel<IndexCategoryModel>>($"categories?itemsPerPage={int.MaxValue}");
+                model.AvailableCategories = pagedCategories?.Items ?? new List<IndexCategoryModel>();
 
-                var pagedIngredients = await _httpClient.GetFromJsonAsync<PagedResultVM<IndexIngredientVM>>($"ingredients?itemsPerPage={int.MaxValue}");
-                model.AvailableIngredients = pagedIngredients?.Items ?? new List<IndexIngredientVM>();
+                var pagedIngredients = await _httpClient.GetFromJsonAsync<PagedResultModel<IndexIngredientModel>>($"ingredients?itemsPerPage={int.MaxValue}");
+                model.AvailableIngredients = pagedIngredients?.Items ?? new List<IndexIngredientModel>();
 
                 return View(model);
             }

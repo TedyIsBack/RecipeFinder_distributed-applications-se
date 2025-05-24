@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Win32;
 using RecipeFinderAPI.Common;
-using RecipeFinderMVC.VIewModels;
-using RecipeFinderMVC.VIewModels.Categories;
-using RecipeFinderMVC.VIewModels.Users;
+using RecipeFinderMVC.Models;
+using RecipeFinderMVC.Models.Categories;
+using RecipeFinderMVC.Models.Users;
 
 namespace RecipeFinderMVC.Controllers
 {
@@ -21,9 +21,9 @@ namespace RecipeFinderMVC.Controllers
 
         
         [HttpGet]
-        public async Task<IActionResult> Index(IndexCategoriesVM model)
+        public async Task<IActionResult> Index(IndexCategoriesModel model)
         {
-            model.Pager ??= new PagerVM();
+            model.Pager ??= new PagerModel();
 
             model.Pager.Page = model.Pager.Page == 0 ? 1 : model.Pager.Page;
             model.Pager.ItemsPerPage = model.Pager.ItemsPerPage == 0 ? 10 : model.Pager.ItemsPerPage;
@@ -40,7 +40,7 @@ namespace RecipeFinderMVC.Controllers
                 return View(model);
             }
 
-            var data = await response.Content.ReadFromJsonAsync<PagedResultVM<IndexCategoryVM>>();
+            var data = await response.Content.ReadFromJsonAsync<PagedResultModel<IndexCategoryModel>>();
 
             model.Items = data.Items;
             model.Pager.TotalCount = data.TotalCount;
@@ -61,7 +61,7 @@ namespace RecipeFinderMVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateCategoryVM model)
+        public async Task<IActionResult> Create(CreateCategoryModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -76,7 +76,7 @@ namespace RecipeFinderMVC.Controllers
                 return View(model);
             }
 
-            var data = await response.Content.ReadFromJsonAsync<IndexCategoryVM>();
+            var data = await response.Content.ReadFromJsonAsync<IndexCategoryModel>();
 
             return RedirectToAction("Index");
         }
@@ -88,7 +88,7 @@ namespace RecipeFinderMVC.Controllers
             if (!response.IsSuccessStatusCode)
                 return NotFound();
 
-            var category = await response.Content.ReadFromJsonAsync<EditCategoryVM>();
+            var category = await response.Content.ReadFromJsonAsync<EditCategoryModel>();
             if (category == null)
                 return NotFound();
 
@@ -96,7 +96,7 @@ namespace RecipeFinderMVC.Controllers
 
         }
         [HttpPost]
-        public async Task<IActionResult> Edit(EditCategoryVM model)
+        public async Task<IActionResult> Edit(EditCategoryModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);

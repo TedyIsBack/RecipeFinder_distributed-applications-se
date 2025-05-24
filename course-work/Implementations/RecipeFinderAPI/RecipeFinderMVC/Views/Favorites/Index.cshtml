@@ -1,5 +1,5 @@
 ﻿@using System.Security.Claims
-@model RecipeFinderMVC.VIewModels.Favorites.IndexFavoritesVM
+@model RecipeFinderMVC.Models.Favorites.IndexFavoritesModel
 
 @{
 	ViewData["Title"] = "Recipes";
@@ -38,6 +38,7 @@
 		<div class="col-md-4">
 			<select asp-for="isVegetarian" class="form-select">
 				<option value="">Select Vegetarian</option>
+				<option value="true">Vegetarian</option>
 				<option value="false">Not Vegetarian</option>
 			</select>
 		</div>
@@ -48,9 +49,6 @@
 		</div>
 	</form>
 
-	@* <div class="mb-3">
-		<a href="/Recipes/Create" class="btn btn-success">Create New Recipe</a>
-	</div> *@
 
 	@if (Model.Items != null && Model.Items.Any())
 	{

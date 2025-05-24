@@ -1,5 +1,5 @@
 ﻿@using System.Security.Claims
-@model RecipeFinderMVC.VIewModels.Recipes.IndexRecipesVM
+@model RecipeFinderMVC.Models.Recipes.IndexRecipesModel
 
 @{
 	ViewData["Title"] = "Recipes";
@@ -48,9 +48,7 @@
 		</div>
 	</form>
 
-	@* <div class="mb-3">
-		<a href="/Recipes/Create" class="btn btn-success">Create New Recipe</a>
-	</div> *@
+
 
 	@if (Model.Items != null && Model.Items.Any())
 	{

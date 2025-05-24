@@ -126,8 +126,8 @@ namespace RecipeFinderAPI.Controllers
             recipe.IsFavorite = await _favoriteService.IsRecipeFavoritedAsync(loggedUserId, recipeId);
 
 
-            return Ok();
-            //return Ok(new { message = "Recipe removed from favorites" });
+            //return Ok();
+            return Ok(new { message = "Recipe removed from favorites" });
         }
     }
 }

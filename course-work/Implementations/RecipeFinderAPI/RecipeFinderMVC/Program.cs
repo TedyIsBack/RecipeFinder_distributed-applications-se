@@ -22,8 +22,8 @@ namespace RecipeFinderMVC
                     config.ExpireTimeSpan = TimeSpan.FromMinutes(5);
                     config.SlidingExpiration = true;
                 });
-            builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+            builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             builder.Services.AddTransient<JwtTokenHandler>();
 
             builder.Services.AddHttpClient("ApiClient", client =>

@@ -1,7 +1,6 @@
-﻿
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Authentication;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Net.Http.Headers;
 
 namespace RecipeFinderMVC.Security
@@ -9,6 +8,7 @@ namespace RecipeFinderMVC.Security
     public class JwtTokenHandler : DelegatingHandler
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+
         public JwtTokenHandler(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
@@ -16,47 +16,33 @@ namespace RecipeFinderMVC.Security
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var session = _httpContextAccessor.HttpContext.Session;
-            var jwt = session.GetString("JWT");
+            var context = _httpContextAccessor.HttpContext;
+            var token = context?.Session.GetString("JWT");
 
-            if (!string.IsNullOrWhiteSpace(jwt))
+            if (!string.IsNullOrEmpty(token))
             {
-                // 🔒 Проверка дали токенът е изтекъл
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var jwtToken = tokenHandler.ReadToken(jwt) as JwtSecurityToken;
-                var expiration = jwtToken?.ValidTo;
+                var handler = new JwtSecurityTokenHandler();
 
-                if (expiration != null && expiration < DateTime.UtcNow)
+                if (handler.CanReadToken(token))
                 {
-                    // Токенът е изтекъл – изтриваме сесията и cookie-то
-                    session.Remove("JWT");
-                    await _httpContextAccessor.HttpContext.SignOutAsync("CookieLogin");
+                    var jwt = handler.ReadJwtToken(token);
+                    var expiration = jwt.ValidTo;
 
-                    // Прекъсваме заявката и пренасочваме
-                    var response = new HttpResponseMessage(System.Net.HttpStatusCode.Unauthorized)
+                    if (expiration < DateTime.UtcNow)
                     {
-                        RequestMessage = request
-                    };
-                    return response;
+                        context.Session.Remove("JWT");
+                        await context.SignOutAsync("CookieLogin");
+
+                        return new HttpResponseMessage(HttpStatusCode.Unauthorized)
+                        {
+                            RequestMessage = request,
+                            ReasonPhrase = "JWT expired"
+                        };
+                    }
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 }
-
-                // Ако токенът е валиден – добавяме го към Authorization header
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
             }
-
             return await base.SendAsync(request, cancellationToken);
         }
-        /* protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-         {
-             var token = _httpContextAccessor.HttpContext.Session.GetString("JWT");
-             if (!string.IsNullOrEmpty(token))
-             {
-                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-             }
-             Console.WriteLine("JWT in handler: " + token);
-
-             return await base.SendAsync(request, cancellationToken);
-         }*/
     }
-    
 }

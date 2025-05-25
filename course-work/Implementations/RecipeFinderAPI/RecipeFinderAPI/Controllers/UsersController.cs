@@ -7,6 +7,7 @@ using RecipeFinderAPI.Infrastructure;
 using RecipeFinderAPI.Infrastructure.DTOs.UsersDTOs;
 using RecipeFinderAPI.Services.Interfaces;
 using System.Linq.Expressions;
+using System.Security.Claims;
 
 namespace RecipeFinderAPI.Controllers
 {
@@ -38,13 +39,15 @@ namespace RecipeFinderAPI.Controllers
         [ProducesResponseType(typeof(PagedResult<ResponseUserDto>), 200)]
         public async Task<PagedResult<ResponseUserDto>> GetAllUsers(
             [FromQuery] string? Username = null,
-            [FromQuery] bool IsActive = true,
+            [FromQuery] bool? IsActive = true,
             [FromQuery] int page = 1,
             [FromQuery] int itemsPerPage = 10)
         {
+            var loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             Expression<Func<User, bool>> filter = x =>
                 (string.IsNullOrEmpty(Username) || x.Username.Contains(Username)) &&
-                (x.IsActive == IsActive);
+                (x.IsActive == IsActive) && x.Username != "admin" && x.UserId != loggedUserId && x.UserId != Constants.UndefinedUserId;
+            
             return await _userService.GetAllUsersAsync(filter, page, itemsPerPage);
         }
 

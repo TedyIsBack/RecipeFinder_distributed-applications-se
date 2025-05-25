@@ -28,13 +28,34 @@ namespace RecipeFinderAPI.Data
                     Email = adminEmail,
                     Username = adminUsername,
                     Password = adminPassword,
-                    Role = Constants.AdminRole.ToString(), 
+                    Role = Constants.AdminRole.ToString(),
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow
                 };
 
                 context.Users.Add(newAdmin);
                 await context.SaveChangesAsync();
+            }
+
+            var defaultUser = await context.Users
+                .FirstOrDefaultAsync(u => u.UserId == Constants.UndefinedUserId);
+
+            if (defaultUser == null)
+            {
+
+                var newDefaultUser = new User
+                {
+                    UserId = Constants.UndefinedUserId,
+                    Email = "undefined@system.local",
+                    Username = "Undefined",
+                    Password = "N/A", 
+                    Role = "system",
+                    IsActive = false,
+                    CreatedAt = DateTime.UtcNow
+                };
+                context.Users.Add(newDefaultUser);
+                await context.SaveChangesAsync();
+
             }
         }
     }

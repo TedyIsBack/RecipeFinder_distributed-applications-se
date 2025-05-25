@@ -3,8 +3,7 @@
 @{
     ViewData["Title"] = "Create Recipe";
 }
-	@Html.ValidationMessage("CustomError")
-
+@Html.ValidationMessage("CustomError")
 
 <h2>Create Recipe</h2>
 
@@ -19,7 +18,6 @@
         <label for="Description">Description</label>
         <textarea name="Description" id="Description" class="form-control">@Model?.Description</textarea>
         @Html.ValidationMessageFor(x => x.Description, "", new { @class = "text-danger" })
-
     </div>
 
     <div>
@@ -40,11 +38,10 @@
             @foreach (var category in Model.AvailableCategories)
             {
                 var selected = category.Id == Model.CategoryId ? "selected" : "";
-                @: <option value="@category.Id" @selected>@category.Name</option> 
+                @:<option value="@category.Id" @(selected)>@category.Name</option>
             }
         </select>
-       @*  @Html.ValidationMessage("AvailableCategories", "Please select category", new { @class = "text-danger" }) *@
-
+        @* @Html.ValidationMessage("AvailableCategories", "Please select category", new { @class = "text-danger" }) *@
     </div>
 
     <div class="form-check">
@@ -60,25 +57,32 @@
     <hr />
 
     <h4>Ingredients</h4>
+    @{
+        var ingredientsList = Model.RecipeIngredients.ToList(); // Без да променяме IEnumerable
+    }
     <div id="ingredients-container">
-        @for (int i = 0; i < Model.RecipeIngredients.Count(); i++)
+        @for (int i = 0; i < ingredientsList.Count; i++)
         {
-            <div class="form-row mb-2">
+            var currentIngredient = ingredientsList[i];
+            <div class="form-row mb-3 border rounded p-3">
                 <div class="col">
-                    <select name="RecipeIngredients[@i].IngredientId" class="form-control">
+                    <label>Ingredient</label>
+                    <select name="RecipeIngredients[@i].IngredientId" class="form-control ingredient-select" onchange="updateAllergenInfo(this, @i)">
                         <option value="">-- Select Ingredient --</option>
                         @foreach (var ingredient in Model.AvailableIngredients)
                         {
-                            <option value="@ingredient.Id">@ingredient.Name</option>
+                            var selected = ingredient.Id == currentIngredient.IngredientId ? "selected" : "";
+                            @:<option value="@ingredient.Id" @(selected)>@ingredient.Name (@ingredient.Unit, @ingredient.CaloriesPer100g kcal)</option>
                         }
                     </select>
+                    <div id="allergen-info-@i" class="mt-1 small"></div>
                 </div>
                 <div class="col">
-                    <input type="number" name="RecipeIngredients[@i].Quantity" class="form-control" placeholder="Quantity" step="0.1" />
+                    <label>Quantity</label>
+                    <input type="number" name="RecipeIngredients[@i].Quantity" class="form-control" step="0.1" value="@currentIngredient.Quantity" />
                 </div>
             </div>
         }
-        @* @Html.ValidationMessage("RecipeIngredients","Please select at least one ingredient.",new {@class = "text-danger"} ) *@
     </div>
 
     <button type="button" class="btn btn-secondary" onclick="addIngredient()">+ Add Ingredient</button>
@@ -88,31 +92,53 @@
 </form>
 
 @section Scripts {
-    <script>
-        let ingredientIndex = @Model.RecipeIngredients.Count() ;
+<script>
+    const ingredientData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.AvailableIngredients));
+    let ingredientIndex = @(Model.RecipeIngredients.Count());
 
-        function addIngredient() {
-            const container = document.getElementById("ingredients-container");
+    function addIngredient() {
+        const container = document.getElementById("ingredients-container");
 
-            const html = `
-                <div class="form-row mb-2">
-                    <div class="col">
-                        <select name="RecipeIngredients[${ingredientIndex}].IngredientId" class="form-control">
-                            <option value="">-- Select Ingredient --</option>
-                            @foreach (var ingredient in Model.AvailableIngredients)
-                            {
-                                <text><option value="@ingredient.Id">@ingredient.Name</option></text>
-                            }
-                        </select>
-                    </div>
-                    <div class="col">
-                        <input type="number" name="RecipeIngredients[${ingredientIndex}].Quantity" class="form-control" step="0.1" />
-                    </div>
-                </div>
-            `;
+        const ingredientOptions = ingredientData.map(i => `
+            <option value="${i.Id}">${i.Name} (${i.Unit}, ${i.CaloriesPer100g} kcal)</option>
+        `).join('');
 
-            container.insertAdjacentHTML('beforeend', html);
-            ingredientIndex++;
+        const html = `
+        <div class="form-row mb-3 border rounded p-3">
+            <div class="col">
+                <label>Ingredient</label>
+                <select name="RecipeIngredients[${ingredientIndex}].IngredientId" class="form-control ingredient-select" onchange="updateAllergenInfo(this, ${ingredientIndex})">
+                    <option value="">-- Select Ingredient --</option>
+                    ${ingredientOptions}
+                </select>
+                <div id="allergen-info-${ingredientIndex}" class="mt-1 small"></div>
+            </div>
+            <div class="col">
+                <label>Quantity</label>
+                <input type="number" name="RecipeIngredients[${ingredientIndex}].Quantity" class="form-control" step="0.1" />
+            </div>
+        </div>
+        `;
+
+        container.insertAdjacentHTML('beforeend', html);
+        ingredientIndex++;
+    }
+
+    function updateAllergenInfo(selectElement, index) {
+        const selectedId = selectElement.value;
+        const ingredient = ingredientData.find(i => i.Id == selectedId);
+        const infoContainer = document.getElementById(`allergen-info-${index}`);
+
+        if (!ingredient) {
+            infoContainer.innerHTML = '';
+            return;
         }
-    </script>
+
+        if (ingredient.IsAllergen) {
+            infoContainer.innerHTML = '<span class="badge bg-danger">⚠ Allergen</span>';
+        } else {
+            infoContainer.innerHTML = '<span class="badge bg-success">✔ Not Allergen</span>';
+        }
+    }
+</script>
 }

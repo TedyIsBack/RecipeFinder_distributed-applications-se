@@ -51,17 +51,15 @@
     {
         @foreach (var item in Model.Items)
         {
-            <div class="row align-items-center border-bottom py-2 text-center">
+            <div class="row align-items-center border-bottom py-1 text-center">
                 <div class="col-md-2">@item.Email</div>
                 <div class="col-md-2">@item.Username</div>
                 <div class="col-md-2">@item.Role</div>
                 <div class="col-md-2">@((item.IsActive) ? "Yes" : "No")</div>
                 <div class="col-md-2">@item.CreatedAt</div>
-                <div class="col-md-2">
+                <div class="col-md-2 d-flex justify-content-center gap-2">
                     <a href="/Users/Edit?id=@item.Id" class="btn btn-sm btn-primary">Edit</a>
-                </div>
-                <div class="col-md-2">
-                    <a href="/Users/Delete?id=@item.Id" class="btn btn-sm btn-primary">Delete</a>
+                    <a href="/Users/Delete?id=@item.Id" class="btn btn-sm btn-danger">Delete</a>
                 </div>
             </div>
         }

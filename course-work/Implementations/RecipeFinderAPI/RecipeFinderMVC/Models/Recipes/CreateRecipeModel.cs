@@ -43,7 +43,7 @@ namespace RecipeFinderMVC.Models.Recipes
         public string CategoryId { get; set; }
 
         [Required]
-        public IEnumerable<CreateRecipeIngredientModel> RecipeIngredients { get; set; } = new List<CreateRecipeIngredientModel>();
+        public IEnumerable<CreateRecipeIngredientModel> RecipeIngredients { get; set; }= new List<CreateRecipeIngredientModel>();
 
         [BindNever]
         public IEnumerable<IndexCategoryModel> AvailableCategories { get; set; } = new List<IndexCategoryModel>();

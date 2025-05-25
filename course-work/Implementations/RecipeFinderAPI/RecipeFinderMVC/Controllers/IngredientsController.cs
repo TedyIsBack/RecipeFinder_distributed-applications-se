@@ -84,25 +84,40 @@ namespace RecipeFinderMVC.Controllers
 
             if (!response.IsSuccessStatusCode)
             {
-                if (response.StatusCode == System.Net.HttpStatusCode.Conflict) // 409
+                if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
                 {
-                    // Чети съобщението за грешка от API-то (JSON с { message = "..." })
-                    var errorObj = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
-                    if (errorObj != null && errorObj.TryGetValue("message", out var errorMessage))
+                    ModelState.AddModelError("Already exist", "Ingredient with this name already exist");
+
+                }
+                else
+                {
+                    ModelState.AddModelError("Error", "Unexpected Error");
+                }
+                    /*
+                    // Чети ModelState грешки от JSON
+                    var modelStateErrors = await response.Content.ReadFromJsonAsync<Dictionary<string, string[]>>();
+
+                    if (modelStateErrors != null && modelStateErrors.Any())
                     {
-                        ModelState.AddModelError(string.Empty, errorMessage);
+                        foreach (var keyErrorsPair in modelStateErrors)
+                        {
+                            foreach (var error in keyErrorsPair.Value)
+                            {
+                                ModelState.AddModelError(keyErrorsPair.Key, error);
+                            }
+                        }
                     }
                     else
                     {
-                        ModelState.AddModelError(string.Empty, "Ingredient already exists.");
+                        ModelState.AddModelError(string.Empty, "Unable to create ingredient.");
                     }
                 }
                 else
                 {
                     ModelState.AddModelError(string.Empty, "Unable to create ingredient.");
-                }
+                }*/
 
-                return View(model);
+                    return View(model);
             }
 
             return RedirectToAction("Index");
@@ -152,8 +167,19 @@ namespace RecipeFinderMVC.Controllers
 
             if (!response.IsSuccessStatusCode)
             {
-                ModelState.AddModelError(string.Empty, "Unable to update ingredient.");
-                return View(model);
+                if (!response.IsSuccessStatusCode)
+                {
+                    if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                    {
+                        ModelState.AddModelError("Already exist", "Ingredient with this name already exist");
+
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("Error", "Unexpected Error");
+                    }
+                    return View(model);
+                }
             }
 
             return RedirectToAction("Index");
@@ -168,16 +194,16 @@ namespace RecipeFinderMVC.Controllers
 
             if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
             {
-                var errorObj = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+               /* var errorObj = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
 
                 if (errorObj != null && errorObj.TryGetValue("message", out var errorMessage))
                 {
                     TempData["ErrorMessage"] = errorMessage;
                 }
                 else
-                {
+                {*/
                     TempData["ErrorMessage"] = "Unable to delete ingredient.";
-                }
+               // }
 
                 return RedirectToAction("Index");
             }

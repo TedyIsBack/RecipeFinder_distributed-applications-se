@@ -245,12 +245,12 @@
 
       if ($) {
         const name = plugin.NAME;
-        const JQUERY_NO_CONFLICT = $.fn[name];
+        const JQUERY_NO_BadRequest = $.fn[name];
         $.fn[name] = plugin.jQueryInterface;
         $.fn[name].Constructor = plugin;
 
-        $.fn[name].noConflict = () => {
-          $.fn[name] = JQUERY_NO_CONFLICT;
+        $.fn[name].noBadRequest = () => {
+          $.fn[name] = JQUERY_NO_BadRequest;
           return plugin.jQueryInterface;
         };
       }
@@ -5147,7 +5147,7 @@
       if (isVisible(this)) {
         this.focus();
       }
-    }); // avoid conflict when clicking a toggler of an offcanvas, while another is open
+    }); // avoid BadRequest when clicking a toggler of an offcanvas, while another is open
 
     const allReadyOpen = SelectorEngine.findOne(OPEN_SELECTOR);
 

@@ -5,6 +5,8 @@
 }
 
 <h2>Edit Ingredient</h2>
+@Html.ValidationMessage("Error", "", new { @class = "text-danger" })
+@Html.ValidationMessage("Already exist", "", new { @class = "text-danger" })
 
 <form action="/Ingredients/Edit" method="post" enctype="multipart/form-data">
     @Html.HiddenFor(m => m.Id)

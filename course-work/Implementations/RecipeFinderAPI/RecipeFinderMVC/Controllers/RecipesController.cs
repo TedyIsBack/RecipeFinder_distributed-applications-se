@@ -184,7 +184,7 @@ namespace RecipeFinderMVC.Controllers
 
             if (!response.IsSuccessStatusCode)
             {
-                if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
+                if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
                 {
                     var errorObj = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
                     if (errorObj != null && errorObj.TryGetValue("message", out var errorMessage))
@@ -221,7 +221,7 @@ namespace RecipeFinderMVC.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
-            // Вземаме рецептата по id от API
+
             var response = await _httpClient.GetAsync($"recipes/{id}");
             if (!response.IsSuccessStatusCode)
             {
@@ -230,12 +230,19 @@ namespace RecipeFinderMVC.Controllers
 
             var recipe = await response.Content.ReadFromJsonAsync<EditRecipeModel>();
 
-            if (recipe == null)
-            {
-                return NotFound();
-            }
 
-            // Зареждаме наличните категории и съставки
+            var responseCheck = await _httpClient.GetAsync($"recipes/{id}");
+            var recipeCheck = await responseCheck.Content.ReadFromJsonAsync<IndexRecipeModel>();
+
+            string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (loggedUserId != recipeCheck.CreatedBy)
+                return Forbid();
+
+            if (recipe == null)
+                return NotFound();
+
+
             var pagedCategories = await _httpClient.GetFromJsonAsync<PagedResultModel<IndexCategoryModel>>($"categories?itemsPerPage={int.MaxValue}");
             recipe.AvailableCategories = pagedCategories?.Items ?? new List<IndexCategoryModel>();
 
@@ -248,9 +255,9 @@ namespace RecipeFinderMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(EditRecipeModel model)
         {
+
             if (!ModelState.IsValid)
             {
-                // При грешка презареждаме категориите и съставките
                 var pagedCategories = await _httpClient.GetFromJsonAsync<PagedResultModel<IndexCategoryModel>>($"categories?itemsPerPage={int.MaxValue}");
                 model.AvailableCategories = pagedCategories?.Items ?? new List<IndexCategoryModel>();
 
@@ -260,7 +267,7 @@ namespace RecipeFinderMVC.Controllers
                 return View(model);
             }
 
-            // Ако има нова снимка - качваме я локално
+            // Ако има нова снимка - качва се локално
             if (model.ImageFile != null && model.ImageFile.Length > 0)
             {
                 var fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.ImageFile.FileName);
@@ -283,14 +290,12 @@ namespace RecipeFinderMVC.Controllers
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            // Изпращаме PUT заявка към API-то (предполагам, че API-то има PUT за обновяване)
             var response = await _httpClient.PutAsync($"recipes/{model.Id}", content);
 
             if (!response.IsSuccessStatusCode)
             {
                 ModelState.AddModelError(string.Empty, "Unable to update recipe.");
 
-                // При грешка презареждаме категориите и съставките
                 var pagedCategories = await _httpClient.GetFromJsonAsync<PagedResultModel<IndexCategoryModel>>($"categories?itemsPerPage={int.MaxValue}");
                 model.AvailableCategories = pagedCategories?.Items ?? new List<IndexCategoryModel>();
 

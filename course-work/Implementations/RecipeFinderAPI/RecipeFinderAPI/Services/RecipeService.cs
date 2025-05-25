@@ -34,7 +34,6 @@ namespace RecipeFinderAPI.Services
             var existingRecipe = await _recipeRepository.FirstOrDefault(x => x.Name == createRecipeDto.Name);
             if (existingRecipe != null)
                 return null;
-                //throw new InvalidOperationException("Recipe already exists");
 
             var user = await _userRepository.FirstOrDefault(x => x.UserId == userId);
             var category = await _categoryRepository.FirstOrDefault(x => x.CategoryId == createRecipeDto.CategoryId);
@@ -66,7 +65,7 @@ namespace RecipeFinderAPI.Services
 
             newRecipe.RecipeIngredients = recipeIngredients;
 
-             var ingredientIds = createRecipeDto.RecipeIngredients.Select(ri => ri.IngredientId).ToList();
+            var ingredientIds = createRecipeDto.RecipeIngredients.Select(ri => ri.IngredientId).ToList();
 
             var responseIngredients = await _ingredientService.GetIngredientsByIdsAsync(ingredientIds);
 
@@ -121,20 +120,10 @@ namespace RecipeFinderAPI.Services
                     Username = user.Username,
                     CreatedAt = user.CreatedAt.ToLongDateString() + " " + user.CreatedAt.ToLongTimeString(),
                 },
-                Calories =newRecipe.Calories
+                Calories = newRecipe.Calories
             };
         }
 
-        public async Task<bool> DeleteRecipeAsync(string id)
-        {
-            var existingRecipe = await _recipeRepository.FirstOrDefault(x => x.RecipeId == id);
-            if (existingRecipe == null)  // Ако рецептата не съществува, не може да се изтрие
-                return false;
-
-            // Изтриване на рецептата
-            await _recipeRepository.DeleteAsync(existingRecipe);
-            return true;
-        }
 
         public async Task<PagedResult<ResponseRecipeDto>> GetAllRecipesAsync(Expression<Func<Recipe, bool>> filter = null, int page = 1, int itemsPerPage = 10)
         {
@@ -327,7 +316,7 @@ namespace RecipeFinderAPI.Services
                 recipe.RecipeIngredients.Add(add);
             }
 
-           
+
 
             recipe = await _recipeRepository.Query()
                 .Include(r => r.User)
@@ -383,10 +372,20 @@ namespace RecipeFinderAPI.Services
                     IsSeasonal = recipe.Category.IsSeasonal,
                     ShortCode = recipe.Category.ShortCode,
                 },
-            
+
                 RecipeIngredients = recipeIngredientsDto,
                 Calories = recipe.Calories
             };
+        }
+        public async Task<bool> DeleteRecipeAsync(string id)
+        {
+            var existingRecipe = await _recipeRepository.FirstOrDefault(x => x.RecipeId == id);
+            if (existingRecipe == null)  // Ако рецептата не съществува, не може да се изтрие
+                return false;
+
+            // Изтриване на рецептата
+            await _recipeRepository.DeleteAsync(existingRecipe);
+            return true;
         }
 
     }

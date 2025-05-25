@@ -7,6 +7,7 @@ using RecipeFinderAPI.Infrastructure;
 using RecipeFinderAPI.Infrastructure.DTOs.IngredientDTOs;
 using RecipeFinderAPI.Repositories;
 using RecipeFinderAPI.Services.Interfaces;
+using System.Data.Common;
 using System.Linq.Expressions;
 
 namespace RecipeFinderAPI.Services
@@ -120,7 +121,7 @@ namespace RecipeFinderAPI.Services
                 await _ingredientRepository.DeleteAsync(ingredient);
                 return true;
             }
-            catch (DbUpdateException)
+            catch (Exception)
             {
                 throw new InvalidOperationException("This ingredient is used in a recipe and cannot be deleted.");
             }

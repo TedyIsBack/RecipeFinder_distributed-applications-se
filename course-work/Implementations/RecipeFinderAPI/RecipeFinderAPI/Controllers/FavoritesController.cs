@@ -54,7 +54,9 @@ namespace RecipeFinderAPI.Controllers
                 return Unauthorized();
 
             Expression<Func<Recipe, bool>> filter = x =>
-                (string.IsNullOrEmpty(name) || x.Name.Contains(name));
+                    (string.IsNullOrEmpty(name) || x.Name.Contains(name))
+                    && (!isVegan.HasValue || x.IsVegan == isVegan)
+                    && (!isVegetarian.HasValue || x.IsVegetarian == isVegetarian);
 
             var favorites = await _favoriteService.GetUserFavoriteRecipesAsync(loggedUserId, filter, page, itemsPerPage);
 

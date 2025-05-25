@@ -7,6 +7,7 @@ using RecipeFinderAPI.Infrastructure;
 using RecipeFinderAPI.Infrastructure.DTOs.CategoryDTOs;
 using RecipeFinderAPI.Services;
 using RecipeFinderAPI.Services.Interfaces;
+using System.Data.Common;
 using System.Linq.Expressions;
 
 namespace RecipeFinderAPI.Controllers
@@ -140,13 +141,20 @@ namespace RecipeFinderAPI.Controllers
         //[Authorize(Roles = Constants.AdminRole)]
         public async Task<IActionResult> DeleteCategory(string categoryId)
         {
-            bool isDeleted = await _categoryService.DeleteCategoryAsync(categoryId);
+            try
+            {
+                bool isDeleted = await _categoryService.DeleteCategoryAsync(categoryId);
 
-            if (!isDeleted)
-                return NotFound();
+                if (!isDeleted)
+                    return NotFound();
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Unable to delete category. Category is used in a recipe.");
+            }
         }
-    }
 
+    }
 }

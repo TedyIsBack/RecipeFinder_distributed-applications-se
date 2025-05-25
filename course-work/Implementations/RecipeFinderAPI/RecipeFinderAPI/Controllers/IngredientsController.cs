@@ -103,7 +103,7 @@ namespace RecipeFinderAPI.Controllers
             }
             catch (InvalidOperationException ex)
             {
-                return Conflict(new { message = ex.Message });
+                return BadRequest(new { message = ex.Message });
             }
             catch (Exception)
             {
@@ -131,12 +131,18 @@ namespace RecipeFinderAPI.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var updatedIngredient = await _ingredientService.UpdateIngredientAsync(ingredientId, updateIngredientDto);
+            try
+            {
+                var updatedIngredient = await _ingredientService.UpdateIngredientAsync(ingredientId, updateIngredientDto);
 
-            if (updatedIngredient == null)
-                return NotFound();
-
-            return Ok(updatedIngredient);
+                if (updatedIngredient == null)
+                    return NotFound();
+                return Ok(updatedIngredient);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new {message = "This ingredient already exists." });
+            }
         }
 
 

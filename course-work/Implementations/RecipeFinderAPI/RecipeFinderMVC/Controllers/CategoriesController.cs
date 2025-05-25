@@ -19,7 +19,7 @@ namespace RecipeFinderMVC.Controllers
             _httpClient = httpClientFactory.CreateClient("ApiClient");
         }
 
-        
+
         [HttpGet]
         public async Task<IActionResult> Index(IndexCategoriesModel model)
         {
@@ -72,7 +72,7 @@ namespace RecipeFinderMVC.Controllers
 
             if (!response.IsSuccessStatusCode)
             {
-                ModelState.AddModelError(string.Empty, "Unable to create category. Already exist");
+                ModelState.AddModelError("Existing Category", "Unable to create category. Already exist category with this code. Short code should be unique");
                 return View(model);
             }
 
@@ -118,10 +118,15 @@ namespace RecipeFinderMVC.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             var response = await _httpClient.DeleteAsync($"categories/{id}");
-            if(!response.IsSuccessStatusCode)
-                return NotFound();
-
-            return RedirectToAction("Index");
+            if (!response.IsSuccessStatusCode)
+            {
+                if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    TempData["ErrorMessage"] = "Unable to delete category. Category is used in a recipe.";
+                    return RedirectToAction("Index");
+                }
+            }
+                return RedirectToAction("Index");
         }
     }
 }

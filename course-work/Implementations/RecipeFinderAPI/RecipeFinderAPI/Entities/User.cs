@@ -16,6 +16,7 @@ namespace RecipeFinderAPI.Entities
         [MaxLength(50)]
         [EmailAddress]
         public string Email { get; set; }
+
         [Required]
         [MaxLength(30)]
         public string Username { get; set; }

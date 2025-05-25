@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RecipeFinderAPI.Common;
 using RecipeFinderAPI.Data;
 using RecipeFinderAPI.Entities;
 using RecipeFinderAPI.Infrastructure;
@@ -14,9 +15,11 @@ namespace RecipeFinderAPI.Services
     {
 
         private readonly BaseRepository<User> _userRepository;
-        public UserService(BaseRepository<User> userRepository)
+        private readonly BaseRepository<Recipe> _recipeRepository;
+        public UserService(BaseRepository<User> userRepository, BaseRepository<Recipe> recipeRepository)
         {
             _userRepository = userRepository;
+            _recipeRepository = recipeRepository;
         }
 
         public async Task<ResponseUserDto> GetUserByIdAsync(string id)
@@ -65,7 +68,7 @@ namespace RecipeFinderAPI.Services
             int page = 1,
             int itemsPerPage = 10)
         {
-            var users = await _userRepository.GetAllAsync(_userRepository.Query(),filter, page, itemsPerPage);
+            var users = await _userRepository.GetAllAsync(_userRepository.Query(), filter, page, itemsPerPage);
             var responseUsers = users.Items.Select(u => new ResponseUserDto()
             {
                 Id = u.UserId,
@@ -73,7 +76,7 @@ namespace RecipeFinderAPI.Services
                 Username = u.Username,
                 Role = u.Role,
                 IsActive = u.IsActive,
-                CreatedAt =  u.CreatedAt.ToLongDateString() + " " + u.CreatedAt.ToLongTimeString()
+                CreatedAt = u.CreatedAt.ToLongDateString() + " " + u.CreatedAt.ToLongTimeString()
             }).ToList();
 
             return new PagedResult<ResponseUserDto>()
@@ -91,8 +94,22 @@ namespace RecipeFinderAPI.Services
         {
             var user = await _userRepository.FirstOrDefault(u => u.UserId == userId);
 
+
             if (user == null)
                 return false;
+
+            Expression<Func<Recipe, bool>> filter = x =>
+                x.CreatedBy == userId;
+
+            var recipes = await _recipeRepository
+                .Query()
+                .Where(filter)
+                .ToListAsync();
+
+            foreach (var recipe in recipes)
+            {
+                recipe.CreatedBy = Constants.UndefinedUserId;
+            }
 
             await _userRepository.DeleteAsync(user);
             return true;

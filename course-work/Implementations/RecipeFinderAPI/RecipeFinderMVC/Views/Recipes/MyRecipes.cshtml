@@ -82,10 +82,19 @@
 									{
 										<span class="badge bg-success me-1">Vegan</span>
 									}
+									else
+									{
+										<span class="badge bg-secondary me-1">Non-Vegan</span>
+									}
 									@if (item.IsVegetarian)
 									{
-										<span class="badge bg-primary">Vegetarian</span>
+										<span class="badge bg-primary me-1">Vegetarian</span>
 									}
+									else
+									{
+										<span class="badge bg-secondary me-1">Non-Vegetarian</span>
+									}
+
 								</div>
 								<p class="card-text"><strong>Description:</strong> @item.Description</p>
 								<p class="card-text"><strong>Category:</strong> @item.Category?.Name </p>

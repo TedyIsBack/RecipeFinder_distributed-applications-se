@@ -5477,7 +5477,7 @@ jQuery.event = {
 					for ( i = 0; i < delegateCount; i++ ) {
 						handleObj = handlers[ i ];
 
-						// Don't conflict with Object.prototype properties (#13203)
+						// Don't BadRequest with Object.prototype properties (#13203)
 						sel = handleObj.selector + " ";
 
 						if ( matchedSelectors[ sel ] === undefined ) {
@@ -10831,7 +10831,7 @@ jQuery.trim = function( text ) {
 // way to register. Lowercase jquery is used because AMD module names are
 // derived from file names, and jQuery is normally delivered in a lowercase
 // file name. Do this after creating the global so that if an AMD module wants
-// to call noConflict to hide this version of jQuery, it will work.
+// to call noBadRequest to hide this version of jQuery, it will work.
 
 // Note that for maximum portability, libraries that are not jQuery should
 // declare themselves as anonymous modules, and avoid setting a global if an
@@ -10855,7 +10855,7 @@ var
 	// Map over the $ in case of overwrite
 	_$ = window.$;
 
-jQuery.noConflict = function( deep ) {
+jQuery.noBadRequest = function( deep ) {
 	if ( window.$ === jQuery ) {
 		window.$ = _$;
 	}

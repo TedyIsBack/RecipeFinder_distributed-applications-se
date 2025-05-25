@@ -1,8 +1,10 @@
-﻿using RecipeFinderAPI.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using RecipeFinderAPI.Entities;
 using RecipeFinderAPI.Infrastructure;
 using RecipeFinderAPI.Infrastructure.DTOs.CategoryDTOs;
 using RecipeFinderAPI.Repositories;
 using RecipeFinderAPI.Services.Interfaces;
+using System.Data.Common;
 using System.Linq.Expressions;
 
 namespace RecipeFinderAPI.Services
@@ -44,23 +46,12 @@ namespace RecipeFinderAPI.Services
 
         }
 
-        public async Task<bool> DeleteCategoryAsync(string id)
-        {
-            var category = await _categoryRepository.FirstOrDefault(x => x.CategoryId == id);
-            if (category == null)
-            {
-                return false;
-            }
-            await _categoryRepository.DeleteAsync(category);
-            return true;
-        }
-
         public async Task<PagedResult<ResponseCategoryDto>> GetAllCategoryAsync(
-            Expression<Func<Category, bool>> filter = null, 
-            int page = 1, 
+            Expression<Func<Category, bool>> filter = null,
+            int page = 1,
             int itemsPerPage = 10)
         {
-            var categories = await _categoryRepository.GetAllAsync(_categoryRepository.Query(),filter, page, itemsPerPage);
+            var categories = await _categoryRepository.GetAllAsync(_categoryRepository.Query(), filter, page, itemsPerPage);
 
             var reposnse = categories.Items.Select(x => new ResponseCategoryDto()
             {
@@ -85,14 +76,14 @@ namespace RecipeFinderAPI.Services
         {
             Category category = await _categoryRepository.FirstOrDefault(x => x.CategoryId == id);
 
-            if(category == null)
+            if (category == null)
             {
                 return null;
             }
 
             ResponseCategoryDto responseCategoryDto = new ResponseCategoryDto();
 
-            if(category != null)
+            if (category != null)
             {
                 responseCategoryDto.Id = category.CategoryId;
                 responseCategoryDto.Name = category.Name;
@@ -130,5 +121,24 @@ namespace RecipeFinderAPI.Services
                 IsSeasonal = category.IsSeasonal,
             };
         }
+        public async Task<bool> DeleteCategoryAsync(string id)
+        {
+            var category = await _categoryRepository.FirstOrDefault(x => x.CategoryId == id);
+            if (category == null)
+            {
+                return false;
+            }
+
+            try
+            {
+                await _categoryRepository.DeleteAsync(category);
+                return true;
+            }
+            catch (Exception)
+            {
+                throw new InvalidOperationException("Unable to delete category. Category is used in a recipe.");
+            }
+        }
+
     }
 }

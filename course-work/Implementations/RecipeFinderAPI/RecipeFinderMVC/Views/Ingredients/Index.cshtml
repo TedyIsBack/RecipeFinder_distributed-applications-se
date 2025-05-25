@@ -16,7 +16,7 @@
 	<form action="/Ingredients/Index" method="get" class="row g-3 align-items-center mb-4">
 		@foreach (var key in ViewContext.HttpContext.Request.Query.Keys)
 		{
-			if (key != "Name" && key != "IsSeasonal" && key != "Pager.Page")
+			if (key != "Name" && key != "IsAllergen" && key != "Pager.Page")
 			{
 				<input type="hidden" name="@key" value="@ViewContext.HttpContext.Request.Query[key]" />
 			}
@@ -32,20 +32,20 @@
 
 				@if (Model.isAllergen == true)
 				{
-					<option value="true" selected>Seasonal</option>
+					<option value="true" selected>Allergen</option>
 				}
 				else
 				{
-					<option value="true">Seasonal</option>
+					<option value="true">Allergen</option>
 				}
 
 				@if (Model.isAllergen == false)
 				{
-					<option value="false" selected>Not seasonal</option>
+					<option value="false" selected>Not allergen</option>
 				}
 				else
 				{
-					<option value="false">Not seasonal</option>
+					<option value="false">Not allergen</option>
 				}
 			</select>
 		</div>

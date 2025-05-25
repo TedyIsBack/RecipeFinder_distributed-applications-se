@@ -51,6 +51,8 @@ namespace RecipeFinderAPI
                         ValidateIssuer = true,
                         ValidateAudience = true,
                         ValidateIssuerSigningKey = true,
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero,
                         ValidIssuer = jwtSettings.Issuer,
                         ValidAudience = jwtSettings.Audience,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
@@ -61,19 +63,19 @@ namespace RecipeFinderAPI
             //builder.Services.AddControllers();
             builder.Services.AddControllers(options =>
             {
-                options.ReturnHttpNotAcceptable = true; // Ако не е application/json, връща 406
+                options.ReturnHttpNotAcceptable = true; 
             });
 
-            /*  // CORS configuration
-              builder.Services.AddCors(options =>
-              {
-                  options.AddPolicy("AllowFrontend", policy =>
-                  {
-                      policy.WithOrigins("https://localhost:5001") // Replace with your actual frontend URL
-                            .AllowAnyHeader()
-                            .AllowAnyMethod();
-                  });
-              });*/
+            // CORS configuration
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
+                {
+                    policy.WithOrigins("https://localhost:7227") 
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
+            });
 
 
             builder.Services.AddEndpointsApiExplorer();

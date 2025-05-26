@@ -189,16 +189,16 @@ namespace RecipeFinderMVC.Controllers
                     var errorObj = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
                     if (errorObj != null && errorObj.TryGetValue("message", out var errorMessage))
                     {
-                        ModelState.AddModelError(string.Empty, errorMessage);
+                        ModelState.AddModelError("ErrorMessage", errorMessage);
                     }
                     else
                     {
-                        ModelState.AddModelError(string.Empty, "Recipe already exists.");
+                        ModelState.AddModelError("ErrorMessage", "Recipe already exists.");
                     }
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Unable to create recipe.");
+                    ModelState.AddModelError("ErroMessage", "Unable to create recipe.");
                 }
 
                 // Зареждаме категориите и съставките отново при грешка

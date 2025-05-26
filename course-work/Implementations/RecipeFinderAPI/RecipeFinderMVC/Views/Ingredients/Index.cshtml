@@ -13,6 +13,9 @@
 		<div class="alert alert-danger">@TempData["ErrorMessage"]</div>
 	}
 
+	   @* @Html.ValidationMessage("ErrorMessage", null, new { @class = "text-danger" }) *@
+
+
 	<form action="/Ingredients/Index" method="get" class="row g-3 align-items-center mb-4">
 		@foreach (var key in ViewContext.HttpContext.Request.Query.Keys)
 		{

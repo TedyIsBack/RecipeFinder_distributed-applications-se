@@ -52,8 +52,10 @@ namespace RecipeFinderAPI.Controllers
                 return Unauthorized();
 
             Expression<Func<Recipe, bool>> filter = x =>
-                (string.IsNullOrEmpty(name) || x.Name.Contains(name)) 
-                && (x.CreatedBy == loggedUserId);
+                (string.IsNullOrEmpty(name) || x.Name.Contains(name))
+                    && (!isVegan.HasValue || x.IsVegan == isVegan)
+                    && (!isVegetarian.HasValue || x.IsVegetarian == isVegetarian)
+                    && (x.CreatedBy == loggedUserId);
 
             var recipes = await _recipeService.GetAllRecipesAsync(filter, page, itemsPerPage);
 
@@ -88,7 +90,7 @@ namespace RecipeFinderAPI.Controllers
             Expression<Func<Recipe, bool>> filter = x =>
                     (string.IsNullOrEmpty(name) || x.Name.Contains(name))
                     && (!isVegan.HasValue || x.IsVegan == isVegan)
-                    && (!isVegetarian.HasValue ||x.IsVegetarian == isVegetarian);
+                    && (!isVegetarian.HasValue || x.IsVegetarian == isVegetarian);
 
             var recipes = await _recipeService.GetAllRecipesAsync(filter, page, itemsPerPage);
             string loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -152,7 +154,7 @@ namespace RecipeFinderAPI.Controllers
 
             var created = await _recipeService.CreateRecipeAsync(loggedUserId, createRecipeDto);
 
-            if(created == null)
+            if (created == null)
                 return BadRequest(new { message = "Recipe already exists" });
 
             return Ok(created);

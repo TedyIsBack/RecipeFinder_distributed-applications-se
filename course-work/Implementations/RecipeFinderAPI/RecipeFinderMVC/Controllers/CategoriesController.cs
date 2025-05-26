@@ -36,7 +36,7 @@ namespace RecipeFinderMVC.Controllers
 
             if (!response.IsSuccessStatusCode)
             {
-                ModelState.AddModelError(string.Empty, "Unable to load categories");
+                ModelState.AddModelError("ErrorMessage", "Unable to load categories");
                 return View(model);
             }
 
@@ -106,7 +106,7 @@ namespace RecipeFinderMVC.Controllers
 
             if (!response.IsSuccessStatusCode)
             {
-                ModelState.AddModelError(string.Empty, "Unable to update category");
+                ModelState.AddModelError("Existing Category", "Unable to create category. Already exist category with this code. Short code should be unique");
                 return View(model);
             }
 

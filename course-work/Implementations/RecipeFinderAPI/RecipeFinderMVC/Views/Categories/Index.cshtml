@@ -8,11 +8,8 @@
 <div class="container mt-4">
 
     <h2 class="mb-4">Categories</h2>
+    @Html.ValidationMessage("ErrorMessage", null, new { @class = "text-danger" })
 
-    @if (TempData["ErrorMessage"] != null)
-	{
-		<div class="alert alert-danger">@TempData["ErrorMessage"]</div>
-	}
 
     <form action="/Categories/Index" method="get" class="row g-3 align-items-center mb-4">
         @foreach (var key in ViewContext.HttpContext.Request.Query.Keys)

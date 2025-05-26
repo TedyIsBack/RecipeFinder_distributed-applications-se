@@ -6,7 +6,7 @@
 @Html.ValidationMessage("CustomError")
 
 <h2>Create Recipe</h2>
-
+@Html.ValidationMessage("ErrorMessage", "", new { @class = "text-danger" })
 <form action="/Recipes/Create" method="post" enctype="multipart/form-data">
     <div>
         <label for="Name">Recipe Name</label>
